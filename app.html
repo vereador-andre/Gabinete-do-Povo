@@ -8,10 +8,82 @@
 
 <style>
 body {
+  body {
   margin:0;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   background:#0f172a;
   color:white;
+}
+
+/* TELA INICIAL */
+#inicio {
+  height:100vh;
+  background:linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('fundo.jpg');
+  background-size:cover;
+  background-position:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+#inicio h1 {
+  font-size:24px;
+  background:rgba(0,0,0,0.6);
+  padding:20px;
+  border-radius:12px;
+}
+
+/* MENU */
+#menu {
+  display:none;
+  padding:20px;
+}
+
+/* TOPO */
+.header {
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.header h2 {
+  margin:5px 0;
+}
+
+.header p {
+  font-size:14px;
+  color:#94a3b8;
+}
+
+/* GRID */
+.grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+/* CARDS */
+.card {
+  background:linear-gradient(145deg, #1e293b, #0f172a);
+  padding:25px 15px;
+  border-radius:18px;
+  text-align:center;
+  font-weight:bold;
+  font-size:14px;
+  cursor:pointer;
+  transition:0.3s;
+  box-shadow:0 4px 10px rgba(0,0,0,0.4);
+}
+
+.card span {
+  display:block;
+  font-size:26px;
+  margin-bottom:8px;
+}
+
+.card:hover {
+  background:#16a34a;
+  transform:scale(1.05);
 }
 
 /* TELA INICIAL */
@@ -67,21 +139,25 @@ body {
 </div>
 
 <div id="menu">
-  <h2>Gabinete do Povo</h2>
+
+  <div class="header">
+    <h2>Gabinete do Povo</h2>
+    <p>Vereador André de Dedé</p>
+  </div>
 
   <div class="grid">
 
-  <div class="card">📊 Ações do Mandato</div>
-  <div class="card">📌 Indicações</div>
-  <div class="card">📄 Requerimentos</div>
-  <div class="card">⚖️ Projetos de Lei</div>
-  <div class="card">📰 Notícias</div>
-  <div class="card">🎤 Sessões</div>
-  <div class="card">📞 Fale Conosco</div>
+    <div class="card"><span>📊</span>Ações do Mandato</div>
+    <div class="card"><span>📌</span>Indicações</div>
+    <div class="card"><span>📄</span>Requerimentos</div>
+    <div class="card"><span>⚖️</span>Projetos de Lei</div>
+    <div class="card"><span>📰</span>Notícias</div>
+    <div class="card"><span>🎤</span>Sessões</div>
+    <div class="card"><span>📞</span>Fale Conosco</div>
+
+  </div>
 
 </div>
-</div>
-
 <script>
 function entrar(){
   document.getElementById("inicio").style.display = "none";
