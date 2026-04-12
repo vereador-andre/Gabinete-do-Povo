@@ -6,11 +6,13 @@
 
 <title>Gabinete do Povo</title>
 
+<!-- Fonte moderna -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
 body {
-  body {
   margin:0;
-  font-family: Arial, sans-serif;
+  font-family:'Poppins', sans-serif;
   background:#0f172a;
   color:white;
 }
@@ -18,20 +20,36 @@ body {
 /* TELA INICIAL */
 #inicio {
   height:100vh;
-  background:linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('fundo.jpg');
+  background:linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.8)), url('fundo.jpg');
   background-size:cover;
   background-position:center;
   display:flex;
+  flex-direction:column;
   align-items:center;
   justify-content:center;
   text-align:center;
+  padding:20px;
 }
 
 #inicio h1 {
-  font-size:24px;
-  background:rgba(0,0,0,0.6);
-  padding:20px;
-  border-radius:12px;
+  font-size:28px;
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+#inicio p {
+  font-size:16px;
+  opacity:0.8;
+}
+
+.botao-entrar {
+  margin-top:20px;
+  background:#16a34a;
+  padding:15px 25px;
+  border-radius:30px;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 4px 15px rgba(0,0,0,0.5);
 }
 
 /* MENU */
@@ -40,19 +58,20 @@ body {
   padding:20px;
 }
 
-/* TOPO */
+/* HEADER */
 .header {
-  text-align:center;
   margin-bottom:20px;
 }
 
 .header h2 {
-  margin:5px 0;
+  margin:0;
+  font-weight:600;
 }
 
 .header p {
-  font-size:14px;
+  margin:0;
   color:#94a3b8;
+  font-size:14px;
 }
 
 /* GRID */
@@ -62,106 +81,104 @@ body {
   gap:15px;
 }
 
-/* CARDS */
+/* CARDS MODERNOS */
 .card {
-  background:linear-gradient(145deg, #1e293b, #0f172a);
-  padding:25px 15px;
-  border-radius:18px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(10px);
+  border-radius:20px;
+  padding:20px;
   text-align:center;
-  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+  border:1px solid rgba(255,255,255,0.1);
+}
+
+.card:hover {
+  transform:scale(1.05);
+  background:#16a34a;
+}
+
+.icon {
+  font-size:28px;
+  margin-bottom:10px;
+}
+
+.texto {
   font-size:14px;
-  cursor:pointer;
-  transition:0.3s;
-  box-shadow:0 4px 10px rgba(0,0,0,0.4);
-}
-
-.card span {
-  display:block;
-  font-size:26px;
-  margin-bottom:8px;
-}
-
-.card:hover {
-  background:#16a34a;
-  transform:scale(1.05);
-}
-
-/* TELA INICIAL */
-#inicio {
-  height:100vh;
-  background:linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('fundo.jpg');
-  background-size:cover;
-  background-position:center;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-#inicio h1 {
-  background:rgba(0,0,0,0.6);
-  padding:20px;
-  border-radius:10px;
-}
-
-/* MENU */
-#menu {
-  display:none;
-  padding:20px;
-}
-
-.grid {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:15px;
-}
-
-.card {
-  background:#1e293b;
-  padding:20px;
-  border-radius:15px;
-  text-align:center;
-  font-weight:bold;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.card:hover {
-  background:#16a34a;
-  transform:scale(1.05);
+  font-weight:500;
 }
 </style>
 </head>
 
 <body>
 
-<div id="inicio" onclick="entrar()">
-  <h1>Toque na tela para entrar</h1>
+<!-- TELA INICIAL -->
+<div id="inicio">
+  <h1>Gabinete do Povo</h1>
+  <p>Transparência, participação e trabalho</p>
+
+  <div class="botao-entrar" onclick="entrar()">
+    Entrar no aplicativo
+  </div>
 </div>
 
+<!-- MENU -->
 <div id="menu">
 
   <div class="header">
-    <h2>Gabinete do Povo</h2>
-    <p>Vereador André de Dedé</p>
+    <h2>Olá 👋</h2>
+    <p>Escolha uma opção</p>
   </div>
 
   <div class="grid">
 
-    <div class="card"><span>📊</span>Ações do Mandato</div>
-    <div class="card"><span>📌</span>Indicações</div>
-    <div class="card"><span>📄</span>Requerimentos</div>
-    <div class="card"><span>⚖️</span>Projetos de Lei</div>
-    <div class="card"><span>📰</span>Notícias</div>
-    <div class="card"><span>🎤</span>Sessões</div>
-    <div class="card"><span>📞</span>Fale Conosco</div>
+    <div class="card" onclick="ir('acoes.html')">
+      <div class="icon">📊</div>
+      <div class="texto">Ações</div>
+    </div>
+
+    <div class="card">
+      <div class="icon">📌</div>
+      <div class="texto">Indicações</div>
+    </div>
+
+    <div class="card">
+      <div class="icon">📄</div>
+      <div class="texto">Requerimentos</div>
+    </div>
+
+    <div class="card">
+      <div class="icon">⚖️</div>
+      <div class="texto">Projetos</div>
+    </div>
+
+    <div class="card">
+      <div class="icon">📰</div>
+      <div class="texto">Notícias</div>
+    </div>
+
+    <div class="card">
+      <div class="icon">🎤</div>
+      <div class="texto">Sessões</div>
+    </div>
+
+    <div class="card">
+      <div class="icon">📞</div>
+      <div class="texto">Fale Conosco</div>
+    </div>
 
   </div>
 
 </div>
+
 <script>
 function entrar(){
   document.getElementById("inicio").style.display = "none";
   document.getElementById("menu").style.display = "block";
+}
+
+function ir(pagina){
+  window.location.href = pagina;
 }
 </script>
 
