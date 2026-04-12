@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Gabinete do Povo</title>
+
+<style>
+body {
+  margin:0;
+  font-family: Arial;
+  background:#0f172a;
+  color:white;
+}
+
+/* TELA INICIAL */
+#inicio {
+  height:100vh;
+  background:url('https://i.imgur.com/SEU-FUNDO.jpg') no-repeat center/cover;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+#inicio h1 {
+  background:rgba(0,0,0,0.6);
+  padding:20px;
+  border-radius:10px;
+}
+
+/* MENU */
+#menu {
+  display:none;
+  padding:20px;
+}
+
+.botao {
+  background:#16a34a;
+  padding:15px;
+  margin:10px 0;
+  border-radius:10px;
+  text-align:center;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div id="inicio" onclick="entrar()">
+  <h1>Toque na tela para entrar</h1>
+</div>
+
+<div id="menu">
+  <h2>Gabinete do Povo</h2>
+
+  <div class="botao">Ações do Mandato</div>
+  <div class="botao">Indicações</div>
+  <div class="botao">Requerimentos</div>
+  <div class="botao">Projetos de Lei</div>
+  <div class="botao">Notícias</div>
+  <div class="botao">Sessões</div>
+  <div class="botao">Fale Conosco</div>
+</div>
+
+<script>
+function entrar(){
+  document.getElementById("inicio").style.display = "none";
+  document.getElementById("menu").style.display = "block";
+}
+</script>
+
+</body>
+</html>
