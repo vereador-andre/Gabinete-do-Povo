@@ -49,27 +49,26 @@ body {
   display:grid;
   grid-template-columns:repeat(2, 1fr);
   gap:15px;
+  height:calc(100vh - 100px);
 }
-
+  
 /* CARDS */
 .card {
   background:rgba(255,255,255,0.06);
   border-radius:20px;
-  padding:25px;
+  padding:20px;
   text-align:center;
   cursor:pointer;
   transition:0.2s;
-}
 
-.card:active {
-  transform:scale(0.95);
-  background:#22c55e;
-}
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
 
-.icon {
-  font-size:40px;
-  margin-bottom:10px;
+  height:140px;
 }
+  
 </style>
 </head>
 
