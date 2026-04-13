@@ -80,7 +80,9 @@ button:active {
 </div>
 
 <!-- FORM -->
-<select id="tipo">
+<form action="https://formspree.io/f/xjgjverp" method="POST">
+
+<select name="tipo">
   <option>Sugestão</option>
   <option>Crítica</option>
   <option>Elogio</option>
@@ -88,14 +90,38 @@ button:active {
   <option>Solicitação de visita</option>
 </select>
 
-<input type="text" id="nome" placeholder="Seu nome">
-<input type="text" id="bairro" placeholder="Seu bairro">
+<input type="text" name="nome" placeholder="Seu nome" required>
+<input type="text" name="bairro" placeholder="Seu bairro">
 
-<textarea id="mensagem" placeholder="Escreva sua mensagem"></textarea>
+<textarea name="mensagem" placeholder="Escreva sua mensagem" required></textarea>
 
-<button onclick="enviar()">Enviar mensagem</button>
+<button type="submit">Enviar mensagem</button>
+
+</form>
+
+<div id="msgSucesso" style="display:none; margin-top:15px;">
+  ✅ Mensagem enviada com sucesso!
+</div>
 
 <script>
+const form = document.querySelector("form");
+
+form.addEventListener("submit", function(event){
+  event.preventDefault();
+
+  fetch(form.action, {
+    method: "POST",
+    body: new FormData(form),
+    headers: {
+      'Accept': 'application/json'
+    }
+  }).then(() => {
+    form.reset();
+    document.getElementById("msgSucesso").style.display = "block";
+  });
+});
+</script>
+  
 function enviar(){
   let tipo = document.getElementById("tipo").value;
   let nome = document.getElementById("nome").value;
