@@ -23,7 +23,7 @@ body {
   height:100vh;
   background:linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('fundo.jpg');
   background-size:cover;
-  background-position:top center;
+  background-position:center;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -42,12 +42,17 @@ body {
 }
 
 .botao-entrar {
-  margin-top:25px;
+  margin-top:20px;
   background:#22c55e;
   padding:15px 30px;
   border-radius:30px;
   font-weight:600;
   cursor:pointer;
+  transition:0.2s;
+}
+
+.botao-entrar:active {
+  transform:scale(0.95);
 }
 
 /* MENU */
@@ -57,20 +62,19 @@ body {
   padding:20px;
   background:linear-gradient(135deg, #0f172a, #1e293b);
 }
-  
+
 /* HEADER */
 .header {
   display:flex;
   align-items:center;
   gap:10px;
-  margin-bottom:20px;
+  margin-bottom:25px;
 }
 
 .logo-topo {
   width:45px;
   height:45px;
   border-radius:10px;
-
 }
 
 /* GRID */
@@ -80,9 +84,6 @@ body {
   gap:15px;
 }
 
-.card {
-  width:100%;
-}
 /* CARDS */
 .card {
   background:rgba(255,255,255,0.06);
@@ -125,61 +126,61 @@ body {
 <!-- INÍCIO -->
 <div id="inicio">
   <div class="titulo">Gabinete do Povo</div>
-<div class="sub">Escolha como deseja acessar</div>
+  <div class="sub">Escolha como deseja acessar</div>
 
-<div class="botao-entrar" onclick="entrar()">
-  👥 Entrar como cidadão
-</div>
+  <div class="botao-entrar" onclick="entrar()">
+    👥 Entrar como cidadão
+  </div>
 
-<div class="botao-entrar" style="background:#1e293b;" onclick="abrirAdmin()">
-  🔒 Área do administrador
-</div>
+  <div class="botao-entrar" style="background:#1e293b;" onclick="abrirAdmin()">
+    🔒 Área do administrador
+  </div>
 </div>
 
 <!-- MENU -->
 <div id="menu">
-<div class="header">
-  <img src="logo.png" class="logo-topo">
-  <div>
-    <div style="font-weight:600;">Gabinete do Povo</div>
-    <div style="font-size:12px; color:#94a3b8;">Sua voz agora tem vez</div>
-  </div>
-</div>
 
-<div class="grid">
-
-  <div class="card" onclick="ir('acoes.html')">
-    <div class="material-icons icon">analytics</div>
-    <div class="texto">Ações do Mandato</div>
+  <div class="header">
+    <img src="logo.png" class="logo-topo">
+    <div>
+      <div style="font-weight:600;">Gabinete do Povo</div>
+      <div style="font-size:12px; color:#94a3b8;">Sua voz agora tem vez</div>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="material-icons icon">campaign</div>
-    <div class="texto">Notícias</div>
-  </div>
+  <div class="grid">
 
-  <div class="card">
-    <div class="material-icons icon">event</div>
-    <div class="texto">Sessões Ordinárias</div>
-  </div>
+    <div class="card" onclick="ir('acoes.html')">
+      <div class="material-icons icon">analytics</div>
+      <div class="texto">Ações do Mandato</div>
+    </div>
 
-  <div class="card">
-    <div class="material-icons icon">groups</div>
-    <div class="texto">Sessões Extraordinárias e Solenes</div>
-  </div>
+    <div class="card">
+      <div class="material-icons icon">campaign</div>
+      <div class="texto">Notícias</div>
+    </div>
 
-  <div class="card">
+    <div class="card">
+      <div class="material-icons icon">event</div>
+      <div class="texto">Sessões Ordinárias</div>
+    </div>
+
+    <div class="card">
+      <div class="material-icons icon">groups</div>
+      <div class="texto">Sessões Extraordinárias</div>
+    </div>
+
     <div class="card" onclick="ir('contato.html')">
-  <div class="material-icons icon">chat</div>
-  <div class="texto">Fale Conosco</div>
-</div>
-    
-  <div class="card" onclick="abrirRedes()">
-  <div class="material-icons icon">share</div>
-  <div class="texto">Seguir nas Redes</div>
-</div>
-    
-</div>
+      <div class="material-icons icon">chat</div>
+      <div class="texto">Sua Voz no Gabinete</div>
+    </div>
+
+    <div class="card" onclick="abrirRedes()">
+      <div class="material-icons icon">share</div>
+      <div class="texto">Redes Sociais</div>
+    </div>
+
+  </div>
 
 </div>
 
@@ -209,8 +210,9 @@ function abrirAdmin(){
 }
 
 </script>
-  
- <div id="modalRedes" style="
+
+<!-- MODAL REDES -->
+<div id="modalRedes" style="
 display:none;
 position:fixed;
 top:0;
@@ -230,7 +232,6 @@ z-index:999;
   text-align:center;
   width:85%;
   max-width:320px;
-  animation:fadeIn 0.3s ease;
   ">
 
     <h3 style="margin-bottom:20px;">Siga nas redes</h3>
@@ -248,7 +249,7 @@ z-index:999;
     font-weight:600;
     margin-bottom:12px;
     ">
-      <i class="fab fa-instagram" style="font-size:22px;"></i>
+      <i class="fab fa-instagram"></i>
       Instagram
     </a>
 
@@ -264,7 +265,7 @@ z-index:999;
     color:white;
     font-weight:600;
     ">
-      <i class="fab fa-facebook-f" style="font-size:22px;"></i>
+      <i class="fab fa-facebook-f"></i>
       Facebook
     </a>
 
@@ -280,5 +281,6 @@ z-index:999;
   </div>
 
 </div>
+
 </body>
 </html>
