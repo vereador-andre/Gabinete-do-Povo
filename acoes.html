@@ -51,37 +51,25 @@ h2 {
 
 <div class="grid">
 
-  <div class="card">
-    <div class="material-icons icon">place</div>
-    Indicações
-  </div>
-
-  <div class="card">
-    <div class="material-icons icon">description</div>
-    Requerimentos
-  </div>
-
-  <div class="card">
-    <div class="material-icons icon">gavel</div>
-    Projetos de Lei
-  </div>
-
-  <div class="card">
-    <div class="material-icons icon">construction</div>
-    Obras e melhorias
-  </div>
-
-  <div class="card">
-    <div class="material-icons icon">bar_chart</div>
-    Prestação de contas
-  </div>
-
-  <div class="card">
-    <div class="material-icons icon">campaign</div>
-    Solicitações atendidas
-  </div>
-
+  <div class="card" onclick="ir('indicacoes.html')">
+  <div class="material-icons icon">place</div>
+  Indicações
 </div>
 
+<div class="card" onclick="ir('requerimentos.html')">
+  <div class="material-icons icon">description</div>
+  Requerimentos
+</div>
+
+<div class="card" onclick="ir('projetos.html')">
+  <div class="material-icons icon">gavel</div>
+  Projetos de Lei
+</div>
+</div>
+<script>
+function ir(pagina){
+  window.location.href = pagina;
+}
+</script>
 </body>
 </html>
