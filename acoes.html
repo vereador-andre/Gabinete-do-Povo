@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html>
-  <div class="voltar" onclick="voltar()">⬅ Voltar</div>
+<html lang="pt-BR">
 <head>
-  <link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Ações do Mandato</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <style>
@@ -16,12 +17,13 @@ body {
   color:white;
   padding:20px;
 }
-  
+
+/* TOPO */
 .topo {
   display:flex;
   align-items:center;
   gap:10px;
-  margin-bottom:20px;
+  margin-bottom:25px;
 }
 
 .voltar {
@@ -30,24 +32,38 @@ body {
   border-radius:10px;
   cursor:pointer;
   font-size:18px;
+  transition:0.2s;
+}
+
+.voltar:active {
+  transform:scale(0.95);
 }
 
 .titulo-topo {
   font-size:18px;
   font-weight:600;
 }
-  
+
+/* GRID */
 .grid {
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(2, 1fr);
   gap:15px;
 }
 
+/* CARDS */
 .card {
   background:rgba(255,255,255,0.06);
   border-radius:20px;
   padding:25px;
   text-align:center;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.card:active {
+  transform:scale(0.95);
+  background:#22c55e;
 }
 
 .icon {
@@ -58,45 +74,56 @@ body {
 </head>
 
 <body>
+
+<!-- TOPO -->
 <div class="topo">
-  <div class="voltar" onclick="voltar()">
-    ←
-  </div>
-  <div class="titulo-topo">Título da Página</div>
+  <div class="voltar" onclick="voltar()">←</div>
+  <div class="titulo-topo">Ações do Mandato</div>
 </div>
-  
-<h2>Ações do Mandato</h2>
 
 <div class="grid">
 
   <div class="card" onclick="ir('indicacoes.html')">
-  <div class="material-icons icon">place</div>
-  Indicações
+    <div class="material-icons icon">place</div>
+    Indicações
+  </div>
+
+  <div class="card" onclick="ir('requerimentos.html')">
+    <div class="material-icons icon">description</div>
+    Requerimentos
+  </div>
+
+  <div class="card" onclick="ir('projetos.html')">
+    <div class="material-icons icon">gavel</div>
+    Projetos de Lei
+  </div>
+
+  <div class="card">
+    <div class="material-icons icon">construction</div>
+    Obras e Melhorias
+  </div>
+
+  <div class="card">
+    <div class="material-icons icon">campaign</div>
+    Solicitações Atendidas
+  </div>
+
+  <div class="card">
+    <div class="material-icons icon">bar_chart</div>
+    Prestação de Contas
+  </div>
+
 </div>
 
-<div class="card" onclick="ir('requerimentos.html')">
-  <div class="material-icons icon">description</div>
-  Requerimentos
-</div>
-
-<div class="card" onclick="ir('projetos.html')">
-  <div class="material-icons icon">gavel</div>
-  Projetos de Lei
-</div>
-</div>
 <script>
 function ir(pagina){
   window.location.href = pagina;
 }
-  <script>
+
 function voltar(){
   window.history.back();
 }
-  
 </script>
-  <script src="layout.js"></script>
-<script>
-criarTopo("Título da Página");
-</script>
+
 </body>
 </html>
