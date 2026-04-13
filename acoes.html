@@ -15,7 +15,27 @@ body {
   color:white;
   padding:20px;
 }
+  
+.topo {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
+}
 
+.voltar {
+  background:#1e293b;
+  padding:10px 15px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:18px;
+}
+
+.titulo-topo {
+  font-size:18px;
+  font-weight:600;
+}
+  
 .grid {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -37,7 +57,13 @@ body {
 </head>
 
 <body>
-
+<div class="topo">
+  <div class="voltar" onclick="voltar()">
+    ←
+  </div>
+  <div class="titulo-topo">Título da Página</div>
+</div>
+  
 <h2>Ações do Mandato</h2>
 
 <div class="grid">
