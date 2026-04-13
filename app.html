@@ -176,6 +176,7 @@ body {
 </div>
 
 <script>
+
 function entrar(){
   document.getElementById("inicio").style.display = "none";
   let menu = document.getElementById("menu");
@@ -186,15 +187,18 @@ function entrar(){
 function ir(pagina){
   window.location.href = pagina;
 }
-  function abrirRedes(){
+
+function abrirRedes(){
   document.getElementById("modalRedes").style.display = "flex";
 }
 
 function fecharRedes(){
   document.getElementById("modalRedes").style.display = "none";
 }
+
 </script>
-<div id="modalRedes" style="
+  
+  <div id="modalRedes" style="
 display:none;
 position:fixed;
 top:0;
