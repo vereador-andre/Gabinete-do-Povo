@@ -72,6 +72,8 @@ body {
   width:45px;
   height:45px;
   border-radius:10px;
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 }
 
 /* GRID */
@@ -198,44 +200,76 @@ function fecharRedes(){
 
 </script>
   
-  <div id="modalRedes" style="
+ <div id="modalRedes" style="
 display:none;
 position:fixed;
 top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.8);
+background:rgba(0,0,0,0.85);
 align-items:center;
 justify-content:center;
 z-index:999;
 ">
 
   <div style="
-  background:#1e293b;
-  padding:25px;
-  border-radius:15px;
+  background:#111827;
+  padding:30px 20px;
+  border-radius:20px;
   text-align:center;
-  width:80%;
-  max-width:300px;
+  width:85%;
+  max-width:320px;
+  animation:fadeIn 0.3s ease;
   ">
 
-    <h3>Seguir nas redes</h3>
+    <h3 style="margin-bottom:20px;">Siga nas redes</h3>
 
-    <a href="https://instagram.com/andre.de.dede" target="_blank" class="social" style="display:block; margin:10px 0;">
+    <a href="https://instagram.com/andre.de.dede" target="_blank" style="
+    display:flex;
+    align-items:center;
+    gap:12px;
+    justify-content:center;
+    background:linear-gradient(45deg,#f58529,#dd2a7b,#8134af);
+    padding:15px;
+    border-radius:12px;
+    text-decoration:none;
+    color:white;
+    font-weight:600;
+    margin-bottom:12px;
+    ">
+      <i class="fab fa-instagram" style="font-size:22px;"></i>
       Instagram
     </a>
 
-    <a href="https://facebook.com/" target="_blank" class="social" style="display:block; margin:10px 0;">
+    <a href="https://facebook.com/" target="_blank" style="
+    display:flex;
+    align-items:center;
+    gap:12px;
+    justify-content:center;
+    background:#1877f2;
+    padding:15px;
+    border-radius:12px;
+    text-decoration:none;
+    color:white;
+    font-weight:600;
+    ">
+      <i class="fab fa-facebook-f" style="font-size:22px;"></i>
       Facebook
     </a>
 
-    <div onclick="fecharRedes()" style="margin-top:15px; cursor:pointer; color:#94a3b8;">
+    <div onclick="fecharRedes()" style="
+    margin-top:20px;
+    font-size:13px;
+    color:#9ca3af;
+    cursor:pointer;
+    ">
       Fechar
     </div>
 
   </div>
 
+</div>
 </div>
 </body>
 </html>
