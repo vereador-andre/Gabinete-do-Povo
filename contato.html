@@ -12,7 +12,7 @@ body {
   padding:20px;
 }
 
-input, textarea {
+select, input, textarea {
   width:100%;
   padding:12px;
   margin-top:10px;
@@ -30,28 +30,52 @@ button {
   color:white;
   font-weight:bold;
 }
+
+.voltar {
+  margin-bottom:10px;
+  cursor:pointer;
+  color:#94a3b8;
+}
 </style>
 </head>
 
 <body>
 
+<div class="voltar" onclick="voltar()">⬅ Voltar</div>
+
 <h2>Fale com o Gabinete</h2>
 
+<select id="tipo">
+  <option>Sugestão</option>
+  <option>Crítica</option>
+  <option>Elogio</option>
+  <option>Reclamação</option>
+  <option>Pedido de ajuda</option>
+</select>
+
 <input type="text" id="nome" placeholder="Seu nome">
+<input type="text" id="bairro" placeholder="Seu bairro">
+
 <textarea id="mensagem" placeholder="Digite sua mensagem"></textarea>
 
 <button onclick="enviar()">Enviar</button>
 
 <script>
 function enviar(){
+  let tipo = document.getElementById("tipo").value;
   let nome = document.getElementById("nome").value;
+  let bairro = document.getElementById("bairro").value;
   let mensagem = document.getElementById("mensagem").value;
 
-  let texto = `Olá, sou ${nome}. ${mensagem}`;
-  
-  let url = "https://wa.me/5584998193637?text=" + encodeURIComponent(texto);
+  let texto = `Tipo: ${tipo}%0A Nome: ${nome}%0A Bairro: ${bairro}%0A Mensagem: ${mensagem}`;
+
+  let url = "https://wa.me/5584999999999?text=" + texto;
 
   window.open(url, "_blank");
+}
+
+function voltar(){
+  window.history.back();
 }
 </script>
 
