@@ -32,11 +32,6 @@ body {
   cursor:pointer;
 }
 
-.titulo-topo {
-  font-size:18px;
-  font-weight:600;
-}
-
 /* FORM */
 select, input, textarea {
   width:100%;
@@ -68,6 +63,16 @@ button {
 button:active {
   transform:scale(0.97);
 }
+
+/* SUCESSO */
+.sucesso {
+  display:none;
+  margin-top:15px;
+  background:#16a34a;
+  padding:12px;
+  border-radius:10px;
+  text-align:center;
+}
 </style>
 </head>
 
@@ -76,11 +81,11 @@ button:active {
 <!-- TOPO -->
 <div class="topo">
   <div class="voltar" onclick="voltar()">←</div>
-  <div class="titulo-topo">Sua Voz no Gabinete</div>
+  <div><b>Sua Voz no Gabinete</b></div>
 </div>
 
 <!-- FORM -->
-<form action="https://formspree.io/f/xjgjverp" method="POST">
+<form id="formContato">
 
 <select name="tipo">
   <option>Sugestão</option>
@@ -99,17 +104,22 @@ button:active {
 
 </form>
 
-<div id="msgSucesso" style="display:none; margin-top:15px;">
+<div class="sucesso" id="msgSucesso">
   ✅ Mensagem enviada com sucesso!
 </div>
 
+<!-- LOGO -->
+<div style="margin-top:40px; text-align:center;">
+  <img src="logo.png" style="width:100px; opacity:0.7;">
+</div>
+
 <script>
-const form = document.querySelector("form");
+const form = document.getElementById("formContato");
 
-form.addEventListener("submit", function(event){
-  event.preventDefault();
+form.addEventListener("submit", function(e){
+  e.preventDefault();
 
-  fetch(form.action, {
+  fetch("https://formspree.io/f/SEUCODIGO", {
     method: "POST",
     body: new FormData(form),
     headers: {
@@ -120,35 +130,11 @@ form.addEventListener("submit", function(event){
     document.getElementById("msgSucesso").style.display = "block";
   });
 });
-</script>
-  
-function enviar(){
-  let tipo = document.getElementById("tipo").value;
-  let nome = document.getElementById("nome").value;
-  let bairro = document.getElementById("bairro").value;
-  let mensagem = document.getElementById("mensagem").value;
-
-  let assunto = "Contato do App - Gabinete do Povo";
-
-  let corpo = `
-Tipo: ${tipo}
-Nome: ${nome}
-Bairro: ${bairro}
-Mensagem: ${mensagem}
-  `;
-
-  let mailto = `mailto:andrekelly.santos@hotmail.com?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
-
-  window.location.href = mailto;
-
-  setTimeout(() => {
-    alert("Mensagem enviada com sucesso!");
-  }, 500);
-}
 
 function voltar(){
   window.history.back();
 }
 </script>
+
 </body>
 </html>
