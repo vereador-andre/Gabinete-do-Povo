@@ -6,8 +6,8 @@
 
 <title>Gabinete do Povo</title>
 
-<!-- Fonte moderna -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <style>
 body {
@@ -15,14 +15,6 @@ body {
   font-family:'Poppins', sans-serif;
   background:#0f172a;
   color:white;
-  .fade-in {
-  animation:fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-  from {opacity:0; transform:translateY(10px);}
-  to {opacity:1; transform:translateY(0);}
-}
 }
 
 /* TELA INICIAL */
@@ -36,68 +28,50 @@ body {
   align-items:center;
   justify-content:center;
   text-align:center;
-  padding:20px;
-}
-  
-#inicio h1 {
-  font-size:28px;
-  font-weight:600;
-  margin-bottom:10px;
 }
 
-#inicio p {
-  font-size:16px;
+.titulo {
+  font-size:28px;
+  font-weight:600;
+}
+
+.sub {
+  font-size:14px;
   opacity:0.8;
 }
 
 .botao-entrar {
-  margin-top:20px;
-  background:#16a34a;
-  padding:15px 25px;
+  margin-top:25px;
+  background:#22c55e;
+  padding:15px 30px;
   border-radius:30px;
-  font-weight:bold;
+  font-weight:600;
   cursor:pointer;
-  box-shadow:0 4px 15px rgba(0,0,0,0.5);
 }
 
 /* MENU */
 #menu {
   display:none;
-  padding:20px;
   min-height:100vh;
-  background:linear-gradient(rgba(15,23,42,0.96), rgba(15,23,42,0.98)), url('logo.png');
+  padding:20px;
+  background:linear-gradient(rgba(15,23,42,0.95), rgba(15,23,42,0.98)), url('logo.png');
   background-repeat:no-repeat;
   background-position:center;
-  background-size:70%;
+  background-size:65%;
 }
+
 /* HEADER */
 .header {
-  <div class="header">
-
-  <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-    <img src="logo.png" style="width:40px; height:40px; border-radius:8px;">
-    <div>
-      <h2 style="margin:0; font-size:18px;">Gabinete do Povo</h2>
-      <p style="margin:0; font-size:12px; color:#94a3b8;">Vereador André de Dedé</p>
-    </div>
-  </div>
-
-  <p style="font-size:13px; color:#cbd5f5;">
-    Sua voz agora tem vez
-  </p>
-
-</div>
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
 }
 
-.header h2 {
-  margin:0;
-  font-weight:600;
-}
-
-.header p {
-  margin:0;
-  color:#94a3b8;
-  font-size:14px;
+.logo-topo {
+  width:45px;
+  height:45px;
+  border-radius:10px;
 }
 
 /* GRID */
@@ -107,54 +81,52 @@ body {
   gap:15px;
 }
 
-/* CARDS MODERNOS */
+/* CARDS */
 .card {
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(10px);
+  background:rgba(255,255,255,0.06);
   border-radius:20px;
-  padding:20px;
-  text-align:center;
-  cursor:pointer;
-  transition:0.3s;
-  border:1px solid rgba(255,255,255,0.1);
-}
-
-.card {
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(10px);
-  border-radius:20px;
-  padding:20px;
+  padding:25px;
   text-align:center;
   cursor:pointer;
   transition:0.2s;
-  border:1px solid rgba(255,255,255,0.1);
 }
 
 .card:active {
   transform:scale(0.95);
-  background:#16a34a;
+  background:#22c55e;
 }
+
 .icon {
-  font-size:28px;
+  font-size:40px;
   margin-bottom:10px;
 }
 
 .texto {
-  font-size:14px;
+  font-size:15px;
   font-weight:500;
+}
+
+/* ANIMAÇÃO */
+.fade-in {
+  animation:fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(10px);}
+  to {opacity:1; transform:translateY(0);}
 }
 </style>
 </head>
 
 <body>
 
-<!-- TELA INICIAL -->
+<!-- INÍCIO -->
 <div id="inicio">
-  <h1>Gabinete do Povo</h1>
-  <p>Transparência, participação e trabalho</p>
+  <div class="titulo">Gabinete do Povo</div>
+  <div class="sub">Vereador André de Dedé</div>
 
   <div class="botao-entrar" onclick="entrar()">
-    ENTRAR AGORA
+    Entrar no Gabinete
   </div>
 </div>
 
@@ -162,47 +134,32 @@ body {
 <div id="menu">
 
   <div class="header">
-    <h2 style="font-size:22px;">Gabinete do Povo</h2>
-<p style="font-size:14px;">Vereador André de Dedé</p>
-<p style="font-size:13px; margin-top:8px; color:#cbd5f5;">
-  Sua voz agora tem vez
-</p>
+    <img src="logo.png" class="logo-topo">
+    <div>
+      <div style="font-weight:600;">Gabinete do Povo</div>
+      <div style="font-size:12px; color:#94a3b8;">Sua voz agora tem vez</div>
+    </div>
   </div>
 
   <div class="grid">
 
     <div class="card" onclick="ir('acoes.html')">
-      <div class="icon">📊</div>
-      <div class="texto">Ações</div>
+      <div class="material-icons icon">analytics</div>
+      <div class="texto">Ações do Mandato</div>
     </div>
 
     <div class="card">
-      <div class="icon">📌</div>
-      <div class="texto">Indicações</div>
-    </div>
-
-    <div class="card">
-      <div class="icon">📄</div>
-      <div class="texto">Requerimentos</div>
-    </div>
-
-    <div class="card">
-      <div class="icon">⚖️</div>
-      <div class="texto">Projetos</div>
-    </div>
-
-    <div class="card">
-      <div class="icon">📰</div>
+      <div class="material-icons icon">campaign</div>
       <div class="texto">Notícias</div>
     </div>
 
     <div class="card">
-      <div class="icon">🎤</div>
+      <div class="material-icons icon">mic</div>
       <div class="texto">Sessões</div>
     </div>
 
     <div class="card">
-      <div class="icon">📞</div>
+      <div class="material-icons icon">chat</div>
       <div class="texto">Fale Conosco</div>
     </div>
 
@@ -213,16 +170,11 @@ body {
 <script>
 function entrar(){
   document.getElementById("inicio").style.display = "none";
-
   let menu = document.getElementById("menu");
   menu.style.display = "block";
   menu.classList.add("fade-in");
 }
 
-function ir(pagina){
-  window.location.href = pagina;
-}
-</script>
 function ir(pagina){
   window.location.href = pagina;
 }
