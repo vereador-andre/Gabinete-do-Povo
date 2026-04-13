@@ -167,11 +167,10 @@ body {
     <div class="texto">Fale Conosco</div>
   </div>
 
-  <div class="card">
-    <div class="material-icons icon">share</div>
-    <div class="texto">Seguir nas Redes</div>
-  </div>
-
+  <div class="card" onclick="abrirRedes()">
+  <div class="material-icons icon">share</div>
+  <div class="texto">Seguir nas Redes</div>
+</div>
 </div>
 
 </div>
@@ -187,7 +186,52 @@ function entrar(){
 function ir(pagina){
   window.location.href = pagina;
 }
-</script>
+  function abrirRedes(){
+  document.getElementById("modalRedes").style.display = "flex";
+}
 
+function fecharRedes(){
+  document.getElementById("modalRedes").style.display = "none";
+}
+</script>
+<div id="modalRedes" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+align-items:center;
+justify-content:center;
+z-index:999;
+">
+
+  <div style="
+  background:#1e293b;
+  padding:25px;
+  border-radius:15px;
+  text-align:center;
+  width:80%;
+  max-width:300px;
+  ">
+
+    <h3>Seguir nas redes</h3>
+
+    <a href="https://instagram.com/andre.de.dede" target="_blank" class="social" style="display:block; margin:10px 0;">
+      Instagram
+    </a>
+
+    <a href="https://facebook.com/" target="_blank" class="social" style="display:block; margin:10px 0;">
+      Facebook
+    </a>
+
+    <div onclick="fecharRedes()" style="margin-top:15px; cursor:pointer; color:#94a3b8;">
+      Fechar
+    </div>
+
+  </div>
+
+</div>
 </body>
 </html>
