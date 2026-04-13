@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ações do Mandato</title>
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+body {
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+  padding:20px;
+}
+
+h2 {
+  text-align:center;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+  margin-top:20px;
+}
+
+.card {
+  background:#1e293b;
+  padding:20px;
+  border-radius:15px;
+  text-align:center;
+  transition:0.2s;
+}
+
+.card:active {
+  transform:scale(0.95);
+}
+
+.icon {
+  font-size:30px;
+  margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Ações do Mandato</h2>
+
+<div class="grid">
+
+  <div class="card">
+    <div class="material-icons icon">place</div>
+    Indicações
+  </div>
+
+  <div class="card">
+    <div class="material-icons icon">description</div>
+    Requerimentos
+  </div>
+
+  <div class="card">
+    <div class="material-icons icon">gavel</div>
+    Projetos de Lei
+  </div>
+
+  <div class="card">
+    <div class="material-icons icon">construction</div>
+    Obras e melhorias
+  </div>
+
+  <div class="card">
+    <div class="material-icons icon">bar_chart</div>
+    Prestação de contas
+  </div>
+
+  <div class="card">
+    <div class="material-icons icon">campaign</div>
+    Solicitações atendidas
+  </div>
+
+</div>
+
+</body>
+</html>
