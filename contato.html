@@ -85,7 +85,7 @@ button:active {
   <option>Crítica</option>
   <option>Elogio</option>
   <option>Reclamação</option>
-  <option>Pedido de ajuda</option>
+  <option>Solicitação de visita</option>
 </select>
 
 <input type="text" id="nome" placeholder="Seu nome">
@@ -102,17 +102,27 @@ function enviar(){
   let bairro = document.getElementById("bairro").value;
   let mensagem = document.getElementById("mensagem").value;
 
-  let texto = `📌 Tipo: ${tipo}%0A👤 Nome: ${nome}%0A📍 Bairro: ${bairro}%0A💬 Mensagem: ${mensagem}`;
+  let assunto = "Contato do App - Gabinete do Povo";
 
-  let url = "https://wa.me/5584998193637?text=" + texto;
+  let corpo = `
+Tipo: ${tipo}
+Nome: ${nome}
+Bairro: ${bairro}
+Mensagem: ${mensagem}
+  `;
 
-  window.open(url, "_blank");
+  let mailto = `mailto:andrekelly.santos@hotmail.com?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
+
+  window.location.href = mailto;
+
+  setTimeout(() => {
+    alert("Mensagem enviada com sucesso!");
+  }, 500);
 }
 
 function voltar(){
   window.history.back();
 }
 </script>
-
 </body>
 </html>
