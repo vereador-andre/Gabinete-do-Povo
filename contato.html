@@ -1,51 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
-<title>Fale Conosco</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sua Voz no Gabinete</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
 body {
-  font-family:Arial;
+  margin:0;
+  font-family:'Poppins', sans-serif;
   background:#0f172a;
   color:white;
   padding:20px;
 }
 
-select, input, textarea {
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:8px;
-  border:none;
-}
-
-button {
-  margin-top:15px;
-  width:100%;
-  padding:12px;
-  background:#22c55e;
-  border:none;
-  border-radius:8px;
-  color:white;
-  font-weight:bold;
+/* TOPO */
+.topo {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
 }
 
 .voltar {
-  margin-bottom:10px;
+  background:#1e293b;
+  padding:10px 15px;
+  border-radius:10px;
   cursor:pointer;
-  color:#94a3b8;
+}
+
+.titulo-topo {
+  font-size:18px;
+  font-weight:600;
+}
+
+/* FORM */
+select, input, textarea {
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border-radius:12px;
+  border:none;
+  font-size:14px;
+}
+
+textarea {
+  min-height:120px;
+}
+
+/* BOTÃO */
+button {
+  margin-top:20px;
+  width:100%;
+  padding:14px;
+  background:#22c55e;
+  border:none;
+  border-radius:12px;
+  color:white;
+  font-weight:600;
+  font-size:15px;
+  cursor:pointer;
+}
+
+button:active {
+  transform:scale(0.97);
 }
 </style>
 </head>
 
 <body>
 
-<div class="voltar" onclick="voltar()">⬅ Voltar</div>
+<!-- TOPO -->
+<div class="topo">
+  <div class="voltar" onclick="voltar()">←</div>
+  <div class="titulo-topo">Sua Voz no Gabinete</div>
+</div>
 
-<h2>Fale com o Gabinete</h2>
-
+<!-- FORM -->
 <select id="tipo">
   <option>Sugestão</option>
   <option>Crítica</option>
@@ -57,9 +91,9 @@ button {
 <input type="text" id="nome" placeholder="Seu nome">
 <input type="text" id="bairro" placeholder="Seu bairro">
 
-<textarea id="mensagem" placeholder="Digite sua mensagem"></textarea>
+<textarea id="mensagem" placeholder="Escreva sua mensagem"></textarea>
 
-<button onclick="enviar()">Enviar</button>
+<button onclick="enviar()">Enviar mensagem</button>
 
 <script>
 function enviar(){
@@ -68,9 +102,9 @@ function enviar(){
   let bairro = document.getElementById("bairro").value;
   let mensagem = document.getElementById("mensagem").value;
 
-  let texto = `Tipo: ${tipo}%0A Nome: ${nome}%0A Bairro: ${bairro}%0A Mensagem: ${mensagem}`;
+  let texto = `📌 Tipo: ${tipo}%0A👤 Nome: ${nome}%0A📍 Bairro: ${bairro}%0A💬 Mensagem: ${mensagem}`;
 
-  let url = "https://wa.me/558498193637?text=" + texto;
+  let url = "https://wa.me/5584SEUNUMERO?text=" + texto;
 
   window.open(url, "_blank");
 }
@@ -79,9 +113,6 @@ function voltar(){
   window.history.back();
 }
 </script>
-<script src="layout.js"></script>
-<script>
-criarTopo("Título da Página");
-</script>
+
 </body>
 </html>
