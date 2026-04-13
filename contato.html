@@ -116,25 +116,33 @@ button:active {
 <script>
 const form = document.getElementById("formContato");
 
-form.addEventListener("submit", function(e){
+form.addEventListener("submit", async function(e){
   e.preventDefault();
 
-  fetch("https://formspree.io/f/xjgjverp", {
-    method: "POST",
-    body: new FormData(form),
-    headers: {
-      'Accept': 'application/json'
+  try {
+    let response = await fetch("https://formspree.io/f/xjgjverp", {
+      method: "POST",
+      body: new FormData(form),
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    if(response.ok){
+      form.reset();
+      document.getElementById("msgSucesso").style.display = "block";
+    } else {
+      alert("Erro ao enviar. Tente novamente.");
     }
-  }).then(() => {
-    form.reset();
-    document.getElementById("msgSucesso").style.display = "block";
-  });
+
+  } catch (error) {
+    alert("Erro de conexão. Verifique sua internet.");
+  }
 });
 
 function voltar(){
   window.history.back();
 }
 </script>
-
 </body>
 </html>
