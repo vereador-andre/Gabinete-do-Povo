@@ -15,6 +15,14 @@ body {
   font-family:'Poppins', sans-serif;
   background:#0f172a;
   color:white;
+  .fade-in {
+  animation:fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(10px);}
+  to {opacity:1; transform:translateY(0);}
+}
 }
 
 /* TELA INICIAL */
@@ -57,19 +65,27 @@ body {
   display:none;
   padding:20px;
   min-height:100vh;
-  background:linear-gradient(rgba(15,23,42,0.95), rgba(15,23,42,0.98)), url('logo.png');
+  background:linear-gradient(rgba(15,23,42,0.96), rgba(15,23,42,0.98)), url('logo.png');
   background-repeat:no-repeat;
-  background-position:center 150px;
-  background-size:200px;
+  background-position:center;
+  background-size:70%;
 }
 /* HEADER */
 .header {
   <div class="header">
-  <h2 style="font-size:22px;">Gabinete do Povo</h2>
-  <p style="font-size:14px; margin-top:5px;">Vereador André de Dedé</p>
-  <p style="margin-top:10px; font-size:13px; color:#cbd5f5;">
+
+  <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+    <img src="logo.png" style="width:40px; height:40px; border-radius:8px;">
+    <div>
+      <h2 style="margin:0; font-size:18px;">Gabinete do Povo</h2>
+      <p style="margin:0; font-size:12px; color:#94a3b8;">Vereador André de Dedé</p>
+    </div>
+  </div>
+
+  <p style="font-size:13px; color:#cbd5f5;">
     Sua voz agora tem vez
   </p>
+
 </div>
 }
 
@@ -103,11 +119,21 @@ body {
   border:1px solid rgba(255,255,255,0.1);
 }
 
-.card:hover {
-  transform:scale(1.05);
-  background:#16a34a;
+.card {
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(10px);
+  border-radius:20px;
+  padding:20px;
+  text-align:center;
+  cursor:pointer;
+  transition:0.2s;
+  border:1px solid rgba(255,255,255,0.1);
 }
 
+.card:active {
+  transform:scale(0.95);
+  background:#16a34a;
+}
 .icon {
   font-size:28px;
   margin-bottom:10px;
@@ -187,9 +213,16 @@ body {
 <script>
 function entrar(){
   document.getElementById("inicio").style.display = "none";
-  document.getElementById("menu").style.display = "block";
+
+  let menu = document.getElementById("menu");
+  menu.style.display = "block";
+  menu.classList.add("fade-in");
 }
 
+function ir(pagina){
+  window.location.href = pagina;
+}
+</script>
 function ir(pagina){
   window.location.href = pagina;
 }
