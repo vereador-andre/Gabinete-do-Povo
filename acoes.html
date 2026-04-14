@@ -3,22 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Ações do Mandato</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <style>
-body {margin:0;font-family:'Poppins';background:#0f172a;color:white;padding:20px;}
-.topo {display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.voltar {background:#1e293b;padding:10px 15px;border-radius:10px;cursor:pointer;}
-.feed {display:flex;flex-direction:column;gap:15px;}
-.post {background:rgba(255,255,255,0.05);border-radius:15px;overflow:hidden;}
-.post img {width:100%;}
-.post-content {padding:15px;}
-.post-title {font-weight:600;}
-.post-date {font-size:12px;color:#94a3b8;margin:5px 0;}
-.logo {text-align:center;margin-top:30px;}
-.logo img {width:90px;opacity:0.6;}
+body {
+  margin:0;
+  font-family:'Poppins', sans-serif;
+  background:#0f172a;
+  color:white;
+  padding:20px;
+}
+
+/* TOPO */
+.topo {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.voltar {
+  background:#1e293b;
+  padding:10px 15px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* GRID */
+.grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+  margin-top:20px;
+}
+
+/* CARDS */
+.card {
+  background:rgba(255,255,255,0.06);
+  border-radius:20px;
+  padding:30px;
+  text-align:center;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.card:active {
+  transform:scale(0.95);
+  background:#22c55e;
+}
+
+.icon {
+  font-size:45px;
+  margin-bottom:10px;
+}
+
+/* LOGO */
+.logo {
+  margin-top:40px;
+  text-align:center;
+}
+
+.logo img {
+  width:90px;
+  opacity:0.6;
+}
 </style>
 </head>
 
@@ -29,34 +81,42 @@ body {margin:0;font-family:'Poppins';background:#0f172a;color:white;padding:20px
   <b>Ações do Mandato</b>
 </div>
 
-<div class="feed" id="feed"></div>
+<div class="grid">
+
+  <div class="card" onclick="ir('indicacoes.html')">
+    <div class="material-icons icon">place</div>
+    Indicações
+  </div>
+
+  <div class="card" onclick="ir('requerimentos.html')">
+    <div class="material-icons icon">description</div>
+    Requerimentos
+  </div>
+
+  <div class="card" onclick="ir('projetos.html')">
+    <div class="material-icons icon">gavel</div>
+    Projetos de Lei
+  </div>
+
+  <div class="card" onclick="ir('acoes-atendidas.html')">
+    <div class="material-icons icon">task_alt</div>
+    Ações Atendidas
+  </div>
+
+</div>
 
 <div class="logo">
   <img src="logo.png">
 </div>
 
 <script>
-async function carregar(){
-  const res = await fetch("acoes.json");
-  const dados = await res.json();
-
-  const feed = document.getElementById("feed");
-
-  dados.reverse().forEach(item=>{
-    feed.innerHTML += `
-    <div class="post">
-      ${item.imagem ? `<img src="${item.imagem}">` : ``}
-      <div class="post-content">
-        <div class="post-title">${item.titulo}</div>
-        <div class="post-date">${item.data}</div>
-        <div>${item.texto}</div>
-      </div>
-    </div>`;
-  });
+function ir(pagina){
+  window.location.href = pagina;
 }
-carregar();
 
-function voltar(){ window.history.back(); }
+function voltar(){
+  window.history.back();
+}
 </script>
 
 </body>
