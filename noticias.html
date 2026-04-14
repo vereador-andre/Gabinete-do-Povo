@@ -92,7 +92,7 @@ body {
 </div>
 
 <!-- FEED -->
-<div class="feed">
+<div class="feed" id="feed"></div>
 
   <!-- POST 1 -->
   <div class="post">
@@ -126,10 +126,32 @@ body {
 </div>
 
 <script>
+async function carregarNoticias(){
+  const response = await fetch("noticias.json");
+  const noticias = await response.json();
+
+  const feed = document.getElementById("feed");
+
+  noticias.reverse().forEach(noticia => {
+    const post = `
+      <div class="post">
+        <img src="${noticia.imagem}">
+        <div class="post-content">
+          <div class="post-title">${noticia.titulo}</div>
+          <div class="post-date">${noticia.data}</div>
+          <div class="post-text">${noticia.texto}</div>
+        </div>
+      </div>
+    `;
+    feed.innerHTML += post;
+  });
+}
+
+carregarNoticias();
+
 function voltar(){
   window.history.back();
 }
 </script>
-
 </body>
 </html>
