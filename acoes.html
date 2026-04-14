@@ -3,117 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Ações do Mandato</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <style>
-body {
-  margin:0;
-  font-family:'Poppins', sans-serif;
-  background:#0f172a;
-  color:white;
-  padding:20px;
-}
-
-/* TOPO */
-.topo {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:25px;
-}
-
-.voltar {
-  background:#1e293b;
-  padding:10px 15px;
-  border-radius:10px;
-  cursor:pointer;
-  font-size:18px;
-  transition:0.2s;
-}
-
-.voltar:active {
-  transform:scale(0.95);
-}
-
-.titulo-topo {
-  font-size:18px;
-  font-weight:600;
-}
-
-/* GRID */
-.grid {
-  display:grid;
-  grid-template-columns:repeat(2, 1fr);
-  gap:15px;
-}
-  
-/* CARDS */
-.card {
-  background:rgba(255,255,255,0.06);
-  border-radius:20px;
-  padding:20px;
-  text-align:center;
-  cursor:pointer;
-  transition:0.2s;
-
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-
-  height:140px;
-}
-  
+body {margin:0;font-family:'Poppins';background:#0f172a;color:white;padding:20px;}
+.topo {display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.voltar {background:#1e293b;padding:10px 15px;border-radius:10px;cursor:pointer;}
+.feed {display:flex;flex-direction:column;gap:15px;}
+.post {background:rgba(255,255,255,0.05);border-radius:15px;overflow:hidden;}
+.post img {width:100%;}
+.post-content {padding:15px;}
+.post-title {font-weight:600;}
+.post-date {font-size:12px;color:#94a3b8;margin:5px 0;}
+.logo {text-align:center;margin-top:30px;}
+.logo img {width:90px;opacity:0.6;}
 </style>
 </head>
 
 <body>
 
-<!-- TOPO -->
 <div class="topo">
   <div class="voltar" onclick="voltar()">←</div>
-  <div class="titulo-topo">Ações do Mandato</div>
+  <b>Ações do Mandato</b>
 </div>
 
-<div class="grid">
+<div class="feed" id="feed"></div>
 
-  <div class="card" onclick="ir('indicacoes.html')">
-  <div class="material-icons icon">place</div>
-  Indicações
-</div>
-
-<div class="card" onclick="ir('requerimentos.html')">
-  <div class="material-icons icon">description</div>
-  Requerimentos
+<div class="logo">
+  <img src="logo.png">
 </div>
 
-<div class="card" onclick="ir('projetos.html')">
-  <div class="material-icons icon">gavel</div>
-  Projetos de Lei
-</div>
-
-<div class="card">
-  <div class="material-icons icon">check_circle</div>
-  Ações Atendidas
-</div>
-  
-</div>
-  
 <script>
-function ir(pagina){
-  window.location.href = pagina;
-}
+async function carregar(){
+  const res = await fetch("acoes.json");
+  const dados = await res.json();
 
-function voltar(){
-  window.history.back();
+  const feed = document.getElementById("feed");
+
+  dados.reverse().forEach(item=>{
+    feed.innerHTML += `
+    <div class="post">
+      ${item.imagem ? `<img src="${item.imagem}">` : ``}
+      <div class="post-content">
+        <div class="post-title">${item.titulo}</div>
+        <div class="post-date">${item.data}</div>
+        <div>${item.texto}</div>
+      </div>
+    </div>`;
+  });
 }
+carregar();
+
+function voltar(){ window.history.back(); }
 </script>
-<div style="margin-top:40px; text-align:center;">
-  <img src="logo.png" style="width:100px; opacity:0.7;">
-</div>
+
 </body>
 </html>
