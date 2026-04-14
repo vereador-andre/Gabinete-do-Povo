@@ -94,11 +94,20 @@ button:active {
 <!-- PAINEL -->
 <div id="painel">
 
-  <input id="titulo" placeholder="Título">
-  <input id="data" placeholder="Data">
-  <input id="imagem" placeholder="Imagem (ex: imagens/foto.jpg)">
-  <textarea id="texto" placeholder="Texto"></textarea>
+  <select id="tipo">
+  <option value="noticias">Notícias</option>
+  <option value="indicacoes">Indicações</option>
+  <option value="requerimentos">Requerimentos</option>
+  <option value="projetos">Projetos de Lei</option>
+  <option value="acoes">Ações Atendidas</option>
+  <option value="sessoes">Sessões</option>
+</select>
 
+<input id="titulo" placeholder="Título">
+<input id="data" placeholder="Data">
+<input id="imagem" placeholder="Imagem (opcional)">
+<textarea id="texto" placeholder="Descrição"></textarea>
+  
   <button onclick="gerar()">Gerar notícia</button>
 
   <textarea id="resultado" placeholder="Código pronto para copiar"></textarea>
@@ -127,6 +136,7 @@ function entrar(){
 }
 
 function gerar(){
+  let tipo = document.getElementById("tipo").value;
   let titulo = document.getElementById("titulo").value;
   let data = document.getElementById("data").value;
   let imagem = document.getElementById("imagem").value;
@@ -139,8 +149,12 @@ function gerar(){
   "imagem": "${imagem}"
 },`;
 
-  document.getElementById("resultado").value = json;
+  document.getElementById("resultado").value =
+`👉 Cole isso no arquivo: ${tipo}.json
+
+${json}`;
 }
+  
 </script>
 
 </body>
