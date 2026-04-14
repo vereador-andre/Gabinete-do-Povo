@@ -2,61 +2,119 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Área Administrativa</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-body{
-  font-family:Arial;
+body {
+  margin:0;
+  font-family:'Poppins', sans-serif;
   background:#0f172a;
   color:white;
   padding:20px;
 }
 
-input, textarea{
+/* TOPO */
+.topo {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.voltar {
+  background:#1e293b;
+  padding:10px 15px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* FORM */
+input, textarea {
   width:100%;
   margin-top:10px;
-  padding:10px;
-  border-radius:8px;
+  padding:12px;
+  border-radius:10px;
   border:none;
 }
 
-button{
+textarea {
+  min-height:100px;
+}
+
+/* BOTÃO */
+button {
   margin-top:15px;
-  padding:10px;
+  padding:12px;
   width:100%;
   background:#22c55e;
   border:none;
+  border-radius:12px;
   color:white;
-  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
 }
 
-#painel{display:none;}
+button:active {
+  transform:scale(0.97);
+}
+
+/* LOGIN */
+#painel { display:none; }
+
+/* LOGO */
+.logo-final {
+  margin-top:40px;
+  text-align:center;
+}
+
+.logo-final img {
+  width:100px;
+  opacity:0.7;
+}
 </style>
 </head>
 
 <body>
 
-<h2>Área Administrativa</h2>
+<div class="topo">
+  <div class="voltar" onclick="voltar()">←</div>
+  <div><b>Área Administrativa</b></div>
+</div>
 
+<!-- LOGIN -->
 <div id="login">
   <input type="password" id="senha" placeholder="Digite a senha">
   <button onclick="entrar()">Entrar</button>
 </div>
 
+<!-- PAINEL -->
 <div id="painel">
 
   <input id="titulo" placeholder="Título">
   <input id="data" placeholder="Data">
-  <input id="imagem" placeholder="Link da imagem (ou imagens/arquivo.jpg)">
+  <input id="imagem" placeholder="Imagem (ex: imagens/foto.jpg)">
   <textarea id="texto" placeholder="Texto"></textarea>
 
   <button onclick="gerar()">Gerar notícia</button>
 
-  <textarea id="resultado" placeholder="Aqui vai aparecer o código"></textarea>
+  <textarea id="resultado" placeholder="Código pronto para copiar"></textarea>
 
 </div>
 
+<!-- LOGO -->
+<div class="logo-final">
+  <img src="logo.png">
+</div>
+
 <script>
+function voltar(){
+  window.history.back();
+}
+
 function entrar(){
   let senha = document.getElementById("senha").value;
 
