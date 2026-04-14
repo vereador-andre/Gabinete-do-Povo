@@ -110,15 +110,27 @@ async function carregarNoticias(){
 
   noticias.reverse().forEach(noticia => {
     const post = `
-      <div class="post">
-        <img src="${noticia.imagem}">
-        <div class="post-content">
-          <div class="post-title">${noticia.titulo}</div>
-          <div class="post-date">${noticia.data}</div>
-          <div class="post-text">${noticia.texto}</div>
-        </div>
-      </div>
-    `;
+  <div class="post">
+    <img src="${noticia.imagem}">
+    <div class="post-content">
+      <div class="post-title">${noticia.titulo}</div>
+      <div class="post-date">${noticia.data}</div>
+      <div class="post-text">${noticia.texto}</div>
+
+      <button onclick="compartilhar('${noticia.titulo}')" style="
+        margin-top:10px;
+        background:#22c55e;
+        border:none;
+        padding:10px;
+        border-radius:10px;
+        color:white;
+        width:100%;
+      ">
+        Compartilhar
+      </button>
+    </div>
+  </div>
+`;
     feed.innerHTML += post;
   });
 }
@@ -129,5 +141,12 @@ function voltar(){
   window.history.back();
 }
 </script>
+  function compartilhar(titulo){
+  let texto = `Veja essa ação do Gabinete do Povo: ${titulo}`;
+
+  let url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+
+  window.open(url, "_blank");
+}
 </body>
 </html>
