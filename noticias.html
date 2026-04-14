@@ -140,13 +140,14 @@ carregarNoticias();
 function voltar(){
   window.history.back();
 }
-</script>
-  function compartilhar(titulo){
+function compartilhar(titulo){
   let texto = `Veja essa ação do Gabinete do Povo: ${titulo}`;
 
   let url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
 
   window.open(url, "_blank");
 }
+
+</script>
 </body>
 </html>
