@@ -132,7 +132,7 @@ body {
     👥 Entrar como cidadão
   </div>
 
-  <div class="botao-entrar" style="background:#1e293b;" onclick="abrirAdmin()">
+  <div class="botao-entrar" style="background:#1e293b;" onclick="ir('admin.html')">
     🔒 Área do administrador
   </div>
 </div>
@@ -156,10 +156,10 @@ body {
     </div>
 
     <div class="card" onclick="ir('noticias.html')">
-  <div class="material-icons icon">campaign</div>
-  <div class="texto">Notícias</div>
-</div>
-    
+      <div class="material-icons icon">campaign</div>
+      <div class="texto">Notícias</div>
+    </div>
+
     <div class="card">
       <div class="material-icons icon">event</div>
       <div class="texto">Sessões Ordinárias</div>
@@ -183,34 +183,6 @@ body {
   </div>
 
 </div>
-
-<script>
-
-function entrar(){
-  document.getElementById("inicio").style.display = "none";
-  let menu = document.getElementById("menu");
-  menu.style.display = "block";
-  menu.classList.add("fade-in");
-}
-
-function ir(pagina){
-  window.location.href = pagina;
-}
-
-function abrirRedes(){
-  document.getElementById("modalRedes").style.display = "flex";
-}
-
-function fecharRedes(){
-  document.getElementById("modalRedes").style.display = "none";
-}
-
-<div class="botao-entrar" style="background:#1e293b;" onclick="ir('admin.html')">
-  🔒 Área do administrador
-</div>
-}
-
-</script>
 
 <!-- MODAL REDES -->
 <div id="modalRedes" style="
@@ -282,6 +254,30 @@ z-index:999;
   </div>
 
 </div>
+
+<!-- SCRIPT CORRETO -->
+<script>
+
+function entrar(){
+  document.getElementById("inicio").style.display = "none";
+  let menu = document.getElementById("menu");
+  menu.style.display = "block";
+  menu.classList.add("fade-in");
+}
+
+function ir(pagina){
+  window.location.href = pagina;
+}
+
+function abrirRedes(){
+  document.getElementById("modalRedes").style.display = "flex";
+}
+
+function fecharRedes(){
+  document.getElementById("modalRedes").style.display = "none";
+}
+
+</script>
 
 </body>
 </html>
