@@ -256,6 +256,7 @@ z-index:999;
 </div>
 
 <script>
+  
 function entrar(){
   document.getElementById("inicio").style.display = "none";
   let menu = document.getElementById("menu");
@@ -274,6 +275,20 @@ function abrirRedes(){
 function fecharRedes(){
   document.getElementById("modalRedes").style.display = "none";
 }
+  async function verificarNovidade(){
+  const res = await fetch("config.json");
+  const dados = await res.json();
+
+  let ultima = localStorage.getItem("ultimaAtualizacao");
+
+  if(ultima !== dados.ultimaAtualizacao){
+    alert("📢 Tem novidade no gabinete!");
+    localStorage.setItem("ultimaAtualizacao", dados.ultimaAtualizacao);
+  }
+}
+
+verificarNovidade();
+  
 </script>
 
 </body>
