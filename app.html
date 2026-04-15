@@ -60,7 +60,7 @@ body {
   display:none;
   min-height:100vh;
   padding:20px;
-  background:white;
+  background:linear-gradient(to bottom, #ffffff 70%, #dcfce7);
   color:#0f172a;
 }
   
@@ -87,25 +87,27 @@ body {
 
 /* CARDS */
 .card {
-  background:#f1f5f9;
-  border-radius:20px;
+  background:white;
+  border-radius:22px;
   padding:25px;
   text-align:center;
   cursor:pointer;
-  transition:0.2s;
-  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+  transition:0.25s;
+  box-shadow:0 6px 20px rgba(0,0,0,0.10);
+  border:2px solid transparent;
 }
-  
+
 .card:active {
   transform:scale(0.95);
-  background:#22c55e;
+  border:2px solid #22c55e;
 }
-
+  
 .icon {
-  font-size:40px;
+  font-size:42px;
   margin-bottom:10px;
+  color:#22c55e;
 }
-
+  
 .texto {
   font-size:15px;
   font-weight:500;
@@ -113,6 +115,11 @@ body {
 
 .texto {
   color:#0f172a;
+}
+  
+.card:hover {
+  transform:translateY(-5px);
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
 }
   
 /* ANIMAÇÃO */
@@ -179,7 +186,9 @@ Escolha como deseja acessar
   <div class="header">
     <img src="logo.png" class="logo-topo">
     <div>
-      <div style="font-weight:600;">Gabinete do Povo</div>
+      <div style="font-weight:700; font-size:18px; color:#16a34a;">
+Gabinete do Povo
+</div>
       <div style="font-size:12px; color:#475569;">Transparência e Responsabilidade</div>
     </div>
   </div>
