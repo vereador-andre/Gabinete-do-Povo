@@ -114,6 +114,27 @@ body {
   animation:fadeIn 0.5s ease-in;
 }
 
+.boas-vindas {
+  margin-top:10px;
+  font-size:15px;
+  max-width:280px;
+  line-height:1.4;
+  opacity:0;
+  transform:translateY(10px);
+  animation:fadeEntrada 1s ease forwards;
+}
+
+.boas-vindas b {
+  font-size:17px;
+  color:#22c55e;
+}
+
+@keyframes fadeEntrada {
+  to {
+    opacity:1;
+    transform:translateY(0);
+  }
+}
 @keyframes fadeIn {
   from {opacity:0; transform:translateY(10px);}
   to {opacity:1; transform:translateY(0);}
