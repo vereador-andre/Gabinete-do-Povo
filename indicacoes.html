@@ -3,60 +3,125 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Indicações</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-body {margin:0;font-family:'Poppins';background:#0f172a;color:white;padding:20px;}
-.topo {display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.voltar {background:#1e293b;padding:10px 15px;border-radius:10px;cursor:pointer;}
-.feed {display:flex;flex-direction:column;gap:15px;}
-.post {background:rgba(255,255,255,0.05);border-radius:15px;overflow:hidden;}
-.post img {width:100%;}
-.post-content {padding:15px;}
-.post-title {font-weight:600;}
-.post-date {font-size:12px;color:#94a3b8;margin:5px 0;}
-.logo {text-align:center;margin-top:30px;}
-.logo img {width:90px;opacity:0.6;}
+
+/* BASE */
+body {
+  margin:0;
+  font-family:'Poppins', sans-serif;
+  background:linear-gradient(to bottom, #ffffff 70%, #dcfce7);
+  color:#0f172a;
+  padding:20px;
+}
+
+/* TOPO */
+.topo {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:25px;
+}
+
+.logo-topo {
+  width:60px;
+}
+
+.titulo-topo {
+  font-size:16px;
+  font-weight:600;
+}
+
+/* VOLTAR */
+.voltar {
+  background:#1e3a8a;
+  color:white;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* LISTA */
+.lista {
+  margin-top:10px;
+}
+
+.item {
+  background:white;
+  border-radius:15px;
+  padding:15px;
+  margin-bottom:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+.item b {
+  display:block;
+  margin-bottom:5px;
+}
+
+.data {
+  font-size:12px;
+  color:#64748b;
+  margin-bottom:8px;
+}
+
+/* LOGO FINAL */
+.logo-final {
+  margin-top:40px;
+  text-align:center;
+}
+
+.logo-final img {
+  width:120px;
+  opacity:0.9;
+}
+
 </style>
 </head>
 
 <body>
 
+<!-- TOPO -->
 <div class="topo">
   <div class="voltar" onclick="voltar()">←</div>
-  <b>Indicações</b>
+  <img src="logo.png" class="logo-topo">
+  <div class="titulo-topo">Indicações</div>
 </div>
 
-<div class="feed" id="feed"></div>
+<!-- LISTA -->
+<div class="lista" id="lista"></div>
 
-<div class="logo">
+<!-- LOGO -->
+<div class="logo-final">
   <img src="logo.png">
 </div>
 
 <script>
-async function carregar(){
-  const res = await fetch("indicacoes.json");
-  const dados = await res.json();
 
-  const feed = document.getElementById("feed");
+fetch("indicacoes.json")
+.then(res => res.json())
+.then(dados => {
+  let lista = document.getElementById("lista");
 
-  dados.reverse().forEach(item=>{
-    feed.innerHTML += `
-    <div class="post">
-      ${item.imagem ? `<img src="${item.imagem}">` : ``}
-      <div class="post-content">
-        <div class="post-title">${item.titulo}</div>
-        <div class="post-date">${item.data}</div>
-        <div>${item.texto}</div>
+  dados.slice().reverse().forEach(item=>{
+    lista.innerHTML += `
+      <div class="item">
+        <b>${item.titulo}</b>
+        <div class="data">${item.data}</div>
+        ${item.texto}
       </div>
-    </div>`;
+    `;
   });
-}
-carregar();
+});
 
-function voltar(){ window.history.back(); }
+function voltar(){
+  window.history.back();
+}
+
 </script>
 
 </body>
