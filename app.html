@@ -63,7 +63,7 @@ body {
   background:linear-gradient(to bottom, #ffffff 70%, #dcfce7);
   color:#0f172a;
 }
-  
+
 /* HEADER */
 .header {
   display:flex;
@@ -73,11 +73,11 @@ body {
 }
 
 .logo-topo {
-  width:60px;
-  height:60px;
+  width:70px;
+  height:auto;
   object-fit:contain;
 }
-  
+
 /* GRID */
 .grid {
   display:grid;
@@ -101,28 +101,25 @@ body {
   transform:scale(0.95);
   border:2px solid #22c55e;
 }
-  
-.icon {
-  font-size:42px;
-  margin-bottom:10px;
-  color:#1e3a8a; /* azul escuro */
-}
-  
-.texto {
-  font-size:15px;
-  font-weight:500;
-}
 
-.texto {
-  color:#0f172a;
-}
-  
 .card:hover {
   transform:translateY(-5px);
   box-shadow:0 10px 25px rgba(0,0,0,0.15);
 }
-  
-/* ANIMAÇÃO */
+
+.icon {
+  font-size:42px;
+  margin-bottom:10px;
+  color:#1e3a8a;
+}
+
+.texto {
+  font-size:15px;
+  font-weight:500;
+  color:#0f172a;
+}
+
+/* ANIMAÇÕES */
 .fade-in {
   animation:fadeIn 0.5s ease-in;
 }
@@ -148,6 +145,7 @@ body {
     transform:translateY(0);
   }
 }
+
 @keyframes fadeIn {
   from {opacity:0; transform:translateY(10px);}
   to {opacity:1; transform:translateY(0);}
@@ -161,16 +159,15 @@ body {
 <div id="inicio">
   <div class="titulo">Gabinete do Povo</div>
 
-<div class="boas-vindas">
-  
-Bem-vindo ao Gabinete do Povo<br>
-<b>Vereador André de Dedé</b>
-</div>
+  <div class="boas-vindas">
+    Bem-vindo ao Gabinete do Povo<br>
+    <b>Vereador André de Dedé</b>
+  </div>
 
-<div class="sub" style="margin-top:10px;">
-Escolha como deseja acessar
-</div>
-  
+  <div class="sub" style="margin-top:10px;">
+    Escolha como deseja acessar
+  </div>
+
   <div class="botao-entrar" onclick="entrar()">
     👥 Entrar como cidadão
   </div>
@@ -184,12 +181,14 @@ Escolha como deseja acessar
 <div id="menu">
 
   <div class="header">
-    <img src="logo.png" style="width:120px; opacity:0.8;"> class="logo-topo">
+    <img src="logo.png" class="logo-topo">
     <div>
       <div style="font-weight:700; font-size:18px; color:#16a34a;">
-Gabinete do Povo
-</div>
-      <div style="font-size:12px; color:#475569;">Transparência e Responsabilidade</div>
+        Gabinete do Povo
+      </div>
+      <div style="font-size:12px; color:#475569;">
+        Transparência e Responsabilidade
+      </div>
     </div>
   </div>
 
@@ -226,10 +225,12 @@ Gabinete do Povo
     </div>
 
   </div>
-<div style="text-align:center; margin-top:30px;">
-  <img src="logo.png" style="width:90px; opacity:0.6;">
-</div>
-  
+
+  <!-- LOGO FINAL -->
+  <div style="text-align:center; margin-top:40px;">
+    <img src="logo.png" style="width:130px; opacity:0.95;">
+  </div>
+
 </div>
 
 <!-- MODAL REDES -->
@@ -304,7 +305,7 @@ z-index:999;
 </div>
 
 <script>
-  
+
 function entrar(){
   document.getElementById("inicio").style.display = "none";
   let menu = document.getElementById("menu");
@@ -323,20 +324,23 @@ function abrirRedes(){
 function fecharRedes(){
   document.getElementById("modalRedes").style.display = "none";
 }
-  async function verificarNovidade(){
-  const res = await fetch("config.json");
-  const dados = await res.json();
 
-  let ultima = localStorage.getItem("ultimaAtualizacao");
+async function verificarNovidade(){
+  try{
+    const res = await fetch("config.json");
+    const dados = await res.json();
 
-  if(ultima !== dados.ultimaAtualizacao){
-    alert("📢 Tem novidade no gabinete!");
-    localStorage.setItem("ultimaAtualizacao", dados.ultimaAtualizacao);
-  }
+    let ultima = localStorage.getItem("ultimaAtualizacao");
+
+    if(ultima !== dados.ultimaAtualizacao){
+      alert("📢 Tem novidade no gabinete!");
+      localStorage.setItem("ultimaAtualizacao", dados.ultimaAtualizacao);
+    }
+  }catch(e){}
 }
 
 verificarNovidade();
-  
+
 </script>
 
 </body>
