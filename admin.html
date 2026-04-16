@@ -4,20 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Área Administrativa</title>
+<title>Administrador</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
+
 body {
   margin:0;
   font-family:'Poppins', sans-serif;
-  background:#0f172a;
-  color:white;
+  background:linear-gradient(to bottom, #ffffff 70%, #dcfce7);
+  color:#0f172a;
   padding:20px;
 }
 
-/* TOPO */
 .topo {
   display:flex;
   align-items:center;
@@ -26,31 +26,31 @@ body {
 }
 
 .voltar {
-  background:#1e293b;
-  padding:10px 15px;
+  background:#1e3a8a;
+  color:white;
+  padding:10px 14px;
   border-radius:10px;
   cursor:pointer;
 }
 
-/* FORM */
-input, textarea {
+select, input, textarea {
   width:100%;
-  margin-top:10px;
-  padding:12px;
-  border-radius:10px;
-  border:none;
+  padding:14px;
+  margin-top:12px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  font-size:14px;
 }
 
 textarea {
-  min-height:100px;
+  min-height:120px;
 }
 
-/* BOTÃO */
 button {
-  margin-top:15px;
-  padding:12px;
+  margin-top:20px;
   width:100%;
-  background:#22c55e;
+  padding:14px;
+  background:#1e3a8a;
   border:none;
   border-radius:12px;
   color:white;
@@ -58,23 +58,35 @@ button {
   cursor:pointer;
 }
 
-button:active {
-  transform:scale(0.97);
+.sucesso {
+  display:none;
+  margin-top:15px;
+  background:#16a34a;
+  padding:12px;
+  border-radius:10px;
+  color:white;
+  text-align:center;
 }
 
-/* LOGIN */
-#painel { display:none; }
+pre {
+  background:#111827;
+  color:#22c55e;
+  padding:15px;
+  border-radius:10px;
+  margin-top:15px;
+  font-size:12px;
+  overflow:auto;
+}
 
-/* LOGO */
 .logo-final {
   margin-top:40px;
   text-align:center;
 }
 
 .logo-final img {
-  width:100px;
-  opacity:0.7;
+  width:120px;
 }
+
 </style>
 </head>
 
@@ -82,80 +94,54 @@ button:active {
 
 <div class="topo">
   <div class="voltar" onclick="voltar()">←</div>
-  <div><b>Área Administrativa</b></div>
+  <b>Painel do Administrador</b>
 </div>
 
-<!-- LOGIN -->
-<div id="login">
-  <input type="password" id="senha" placeholder="Digite a senha">
-  <button onclick="entrar()">Entrar</button>
-</div>
-
-<!-- PAINEL -->
-<div id="painel">
-
-  <select id="tipo">
-  <option value="noticias">Notícias</option>
-  <option value="indicacoes">Indicações</option>
-  <option value="requerimentos">Requerimentos</option>
-  <option value="projetos">Projetos de Lei</option>
-  <option value="acoes">Ações Atendidas</option>
-  <option value="sessoes-ordinarias">Sessões Ordinárias</option>
-  <option value="sessoes-extraordinarias">Sessões Extraordinárias</option>
+<select id="tipo">
+  <option value="indicacoes">Indicação</option>
+  <option value="requerimentos">Requerimento</option>
+  <option value="projetos">Projeto de Lei</option>
+  <option value="acoes-atendidas">Ação Atendida</option>
 </select>
-  
-<input id="titulo" placeholder="Título">
-<input id="data" placeholder="Data">
-<input id="imagem" placeholder="Imagem (opcional)">
+
+<input type="text" id="titulo" placeholder="Título">
+<input type="text" id="data" placeholder="Data (ex: 15/04/2026)">
 <textarea id="texto" placeholder="Descrição"></textarea>
-  
-  <button onclick="gerar()">Gerar notícia</button>
 
-  <textarea id="resultado" placeholder="Código pronto para copiar"></textarea>
+<button onclick="gerar()">Gerar Conteúdo</button>
 
+<div class="sucesso" id="ok">
+  ✅ Conteúdo gerado! Copie e cole no JSON correspondente.
 </div>
 
-<!-- LOGO -->
+<pre id="saida"></pre>
+
 <div class="logo-final">
   <img src="logo.png">
 </div>
 
 <script>
-function voltar(){
-  window.history.back();
-}
-
-function entrar(){
-  let senha = document.getElementById("senha").value;
-
-  if(senha === "123456"){
-    document.getElementById("login").style.display = "none";
-    document.getElementById("painel").style.display = "block";
-  } else {
-    alert("Senha incorreta");
-  }
-}
 
 function gerar(){
   let tipo = document.getElementById("tipo").value;
   let titulo = document.getElementById("titulo").value;
   let data = document.getElementById("data").value;
-  let imagem = document.getElementById("imagem").value;
   let texto = document.getElementById("texto").value;
 
-  let json = `{
-  "titulo": "${titulo}",
-  "data": "${data}",
-  "texto": "${texto}",
-  "imagem": "${imagem}"
-},`;
+  let json = {
+    titulo: titulo,
+    data: data,
+    texto: texto
+  };
 
-  document.getElementById("resultado").value =
-`👉 Cole isso no arquivo: ${tipo}.json
-
-${json}`;
+  document.getElementById("saida").innerText = JSON.stringify(json, null, 2);
+  document.getElementById("ok").style.display = "block";
 }
-  
+
+function voltar(){
+  window.history.back();
+}
+
 </script>
 
 </body>
