@@ -15,34 +15,34 @@
 html, body {
   margin:0;
   padding:0;
-  overflow:hidden;
   font-family:'Poppins', sans-serif;
-  background:#0f172a;
-  color:white;
 }
 
 /* TELA INICIAL */
 #inicio {
-  height:100dvh;
-  overflow:hidden;
+  height:100vh;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   text-align:center;
-  background:linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('fundo.jpg');
+
+  background:linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url('fundo.jpg');
   background-size:cover;
   background-position:center;
+  background-repeat:no-repeat;
 }
 
 .titulo {
-  font-size:28px;
+  font-size:26px;
   font-weight:600;
+  color:white;
 }
 
 .sub {
   font-size:14px;
-  opacity:0.8;
+  color:white;
+  opacity:0.9;
 }
 
 .botao-entrar {
@@ -52,7 +52,7 @@ html, body {
   border-radius:30px;
   font-weight:600;
   cursor:pointer;
-  transition:0.2s;
+  color:white;
 }
 
 .botao-entrar:active {
@@ -62,7 +62,7 @@ html, body {
 /* MENU */
 #menu {
   display:none;
-  min-height:100dvh;
+  min-height:100vh;
   padding:20px;
   background:linear-gradient(to bottom, #ffffff 70%, #dcfce7);
   color:#0f172a;
@@ -77,7 +77,7 @@ html, body {
 }
 
 .logo-topo {
-  width:60px;
+  width:65px;
 }
 
 /* GRID */
@@ -94,12 +94,11 @@ html, body {
   padding:25px;
   text-align:center;
   cursor:pointer;
-  transition:0.2s;
   box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
 .card:active {
-  transform:scale(0.95);
+  transform:scale(0.97);
 }
 
 .icon {
@@ -125,7 +124,7 @@ html, body {
 
 /* ANIMAÇÃO */
 .fade-in {
-  animation:fadeIn 0.5s ease-in;
+  animation:fadeIn 0.4s ease-in;
 }
 
 @keyframes fadeIn {
