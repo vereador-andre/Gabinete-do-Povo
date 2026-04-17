@@ -109,6 +109,7 @@ button {
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
 <script>
 
@@ -123,6 +124,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const storage = firebase.storage();
 
 /* SALVAR */
 function salvar(){
@@ -132,32 +134,37 @@ function salvar(){
   let data = document.getElementById("data").value;
   let texto = document.getElementById("texto").value;
 
-  let fileInput = document.getElementById("imagemFile");
+  let file = document.getElementById("imagemFile").files[0];
   let link = document.getElementById("imagemLink").value;
 
-  let imagemFinal = link;
-
-  // Se tiver arquivo → converte em base64
-  if(fileInput.files.length > 0){
-    let reader = new FileReader();
-
-    reader.onload = function(e){
-
-      imagemFinal = e.target.result;
-
-      salvarFirestore(tipo, titulo, data, texto, imagemFinal);
-    };
-
-    reader.readAsDataURL(fileInput.files[0]);
-
+  if(file){
+    uploadImagem(file, tipo, titulo, data, texto);
   } else {
-
-    salvarFirestore(tipo, titulo, data, texto, imagemFinal);
-
+    salvarFirestore(tipo, titulo, data, texto, link);
   }
 }
 
-/* SALVAR NO FIREBASE */
+/* UPLOAD IMAGEM */
+function uploadImagem(file, tipo, titulo, data, texto){
+
+  let nomeArquivo = Date.now() + "_" + file.name;
+
+  let ref = storage.ref("imagens/" + nomeArquivo);
+
+  ref.put(file).then(snapshot => {
+
+    snapshot.ref.getDownloadURL().then(url => {
+
+      salvarFirestore(tipo, titulo, data, texto, url);
+
+    });
+
+  }).catch(() => {
+    alert("Erro ao enviar imagem");
+  });
+}
+
+/* SALVAR NO FIRESTORE */
 function salvarFirestore(tipo, titulo, data, texto, imagem){
 
   db.collection(tipo).add({
@@ -174,7 +181,6 @@ function salvarFirestore(tipo, titulo, data, texto, imagem){
     alert("Erro ao salvar");
     console.log(error);
   });
-
 }
 
 /* VOLTAR */
