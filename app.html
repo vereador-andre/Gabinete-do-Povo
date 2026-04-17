@@ -320,21 +320,16 @@ function fecharRedes(){
   document.getElementById("modalRedes").style.display = "none";
 }
 
-async function verificarNovidade(){
-  try{
-    const res = await fetch("config.json");
-    const dados = await res.json();
+/* 🔐 ADMIN COM SENHA */
+function abrirAdmin(){
+  let senha = prompt("Digite a senha de administrador:");
 
-    let ultima = localStorage.getItem("ultimaAtualizacao");
-
-    if(ultima !== dados.ultimaAtualizacao){
-      alert("📢 Tem novidade no gabinete!");
-      localStorage.setItem("ultimaAtualizacao", dados.ultimaAtualizacao);
-    }
-  }catch(e){}
+  if(senha === "1234"){ // você pode trocar depois
+    window.location.href = "admin.html";
+  } else if (senha !== null) {
+    alert("Senha incorreta!");
+  }
 }
-
-verificarNovidade();
 
 </script>
 
