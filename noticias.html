@@ -101,52 +101,83 @@ body {
   <img src="logo.png">
 </div>
 
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
-async function carregarNoticias(){
-  const response = await fetch("noticias.json");
-  const noticias = await response.json();
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
+  authDomain: "gabinete-do-povo.firebaseapp.com",
+  projectId: "gabinete-do-povo",
+  storageBucket: "gabinete-do-povo.firebasestorage.app",
+  messagingSenderId: "450444313568",
+  appId: "1:450444313568:web:e12ba742d940dc23e52185"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+/* CARREGAR NOTÍCIAS DO FIREBASE */
+function carregarNoticias(){
 
   const feed = document.getElementById("feed");
 
-  noticias.reverse().forEach(noticia => {
-    const post = `
-  <div class="post">
-    <img src="${noticia.imagem}">
-    <div class="post-content">
-      <div class="post-title">${noticia.titulo}</div>
-      <div class="post-date">${noticia.data}</div>
-      <div class="post-text">${noticia.texto}</div>
+  db.collection("noticias")
+  .orderBy("criadoEm", "desc")
+  .get()
+  .then(snapshot => {
 
-      <button onclick="compartilhar('${noticia.titulo}')" style="
-        margin-top:10px;
-        background:#22c55e;
-        border:none;
-        padding:10px;
-        border-radius:10px;
-        color:white;
-        width:100%;
-      ">
-        Compartilhar
-      </button>
-    </div>
-  </div>
-`;
-    feed.innerHTML += post;
+    snapshot.forEach(doc => {
+
+      let noticia = doc.data();
+
+      const post = `
+        <div class="post">
+          <img src="${noticia.imagem || 'https://via.placeholder.com/400x200'}">
+          <div class="post-content">
+            <div class="post-title">${noticia.titulo}</div>
+            <div class="post-date">${noticia.data}</div>
+            <div class="post-text">${noticia.texto}</div>
+
+            <button onclick="compartilhar('${noticia.titulo}')" style="
+              margin-top:10px;
+              background:#22c55e;
+              border:none;
+              padding:10px;
+              border-radius:10px;
+              color:white;
+              width:100%;
+            ">
+              Compartilhar
+            </button>
+          </div>
+        </div>
+      `;
+
+      feed.innerHTML += post;
+
+    });
+
   });
+
 }
 
-carregarNoticias();
-
+/* VOLTAR */
 function voltar(){
   window.history.back();
 }
+
+/* COMPARTILHAR */
 function compartilhar(titulo){
   let texto = `Veja essa ação do Gabinete do Povo: ${titulo}`;
-
   let url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
-
   window.open(url, "_blank");
 }
+
+/* INICIAR */
+carregarNoticias();
 
 </script>
 </body>
