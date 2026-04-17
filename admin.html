@@ -67,6 +67,35 @@ button {
   width:130px;
 }
 
+/* LISTA ADMIN */
+.item-admin {
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  margin-top:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+.item-admin button {
+  margin-top:10px;
+  margin-right:5px;
+  padding:8px 10px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  width:auto;
+}
+
+.btn-editar {
+  background:#f59e0b;
+  color:white;
+}
+
+.btn-excluir {
+  background:#ef4444;
+  color:white;
+}
+
 </style>
 </head>
 
@@ -78,25 +107,21 @@ button {
 </div>
 
 <select id="tipo">
-  <option value="indicacoes">Indicação</option>
-  <option value="requerimentos">Requerimento</option>
-  <option value="projetos">Projeto de Lei</option>
-  <option value="acoes-atendidas">Ação Atendida</option>
   <option value="noticias">Notícia</option>
-  <option value="sessoes-ordinarias">Sessão Ordinária</option>
-  <option value="sessoes-extraordinarias">Sessão Extraordinária</option>
 </select>
 
 <input type="text" id="titulo" placeholder="Título">
-
 <input type="date" id="data">
-
 <textarea id="texto" placeholder="Descrição"></textarea>
-
-<!-- 🔗 LINK (AGORA PRINCIPAL) -->
-<input type="text" id="imagemLink" placeholder="Cole link de imagem ou vídeo (YouTube)">
+<input type="text" id="imagemLink" placeholder="Link de imagem ou vídeo">
 
 <button onclick="salvar()">Salvar no sistema</button>
+
+<hr style="margin:30px 0">
+
+<h3>📋 Gerenciar Notícias</h3>
+
+<div id="listaAdmin"></div>
 
 <div class="logo">
   <img src="logo.png">
@@ -120,10 +145,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* SALVAR */
+let editandoID = null;
+
+/* SALVAR / EDITAR */
 function salvar(){
 
-  let tipo = document.getElementById("tipo").value;
   let titulo = document.getElementById("titulo").value;
   let data = document.getElementById("data").value;
   let texto = document.getElementById("texto").value;
@@ -134,21 +160,94 @@ function salvar(){
     return;
   }
 
-  db.collection(tipo).add({
+  let dados = {
     titulo: titulo,
     data: data,
     texto: texto,
     imagem: link || "",
     criadoEm: new Date()
-  })
-  .then(() => {
-    alert("Salvo com sucesso!");
-    limparCampos();
-  })
-  .catch((error) => {
-    alert("Erro ao salvar: " + error.message);
-    console.log(error);
+  };
+
+  if(editandoID){
+
+    db.collection("noticias").doc(editandoID).update(dados)
+    .then(() => {
+      alert("Atualizado!");
+      editandoID = null;
+      limparCampos();
+      carregarLista();
+    });
+
+  } else {
+
+    db.collection("noticias").add(dados)
+    .then(() => {
+      alert("Salvo com sucesso!");
+      limparCampos();
+      carregarLista();
+    });
+
+  }
+
+}
+
+/* LISTAR */
+function carregarLista(){
+
+  const lista = document.getElementById("listaAdmin");
+  lista.innerHTML = "";
+
+  db.collection("noticias")
+  .orderBy("criadoEm", "desc")
+  .get()
+  .then(snapshot => {
+
+    snapshot.forEach(doc => {
+
+      let n = doc.data();
+
+      lista.innerHTML += `
+        <div class="item-admin">
+          <b>${n.titulo}</b><br>
+          <small>${n.data}</small>
+
+          <div>
+            <button class="btn-editar" onclick="editar('${doc.id}', '${n.titulo}', '${n.data}', \`${n.texto}\`, '${n.imagem}')">Editar</button>
+            <button class="btn-excluir" onclick="excluir('${doc.id}')">Excluir</button>
+          </div>
+        </div>
+      `;
+
+    });
+
   });
+
+}
+
+/* EDITAR */
+function editar(id, titulo, data, texto, imagem){
+
+  document.getElementById("titulo").value = titulo;
+  document.getElementById("data").value = data;
+  document.getElementById("texto").value = texto;
+  document.getElementById("imagemLink").value = imagem;
+
+  editandoID = id;
+
+}
+
+/* EXCLUIR */
+function excluir(id){
+
+  if(confirm("Deseja excluir?")){
+
+    db.collection("noticias").doc(id).delete()
+    .then(() => {
+      alert("Excluído!");
+      carregarLista();
+    });
+
+  }
 
 }
 
@@ -164,6 +263,9 @@ function limparCampos(){
 function voltar(){
   window.location.href = "app.html";
 }
+
+/* INICIAR */
+carregarLista();
 
 </script>
 
