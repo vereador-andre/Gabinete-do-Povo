@@ -89,16 +89,13 @@ button {
 
 <input type="text" id="titulo" placeholder="Título">
 
-<!-- DATA COM CALENDÁRIO -->
+<!-- 📅 DATA COM CALENDÁRIO -->
 <input type="date" id="data">
 
 <textarea id="texto" placeholder="Descrição"></textarea>
 
-<!-- IMAGEM -->
-<input type="text" id="imagem" placeholder="Link da imagem (opcional)">
-
-<!-- VÍDEO -->
-<input type="text" id="video" placeholder="Link do vídeo (YouTube opcional)">
+<!-- 🖼️ IMAGEM OU VÍDEO -->
+<input type="text" id="midia" placeholder="Link da imagem ou vídeo (YouTube, etc)">
 
 <button onclick="salvar()">Salvar no sistema</button>
 
@@ -130,15 +127,13 @@ function salvar(){
   let titulo = document.getElementById("titulo").value;
   let data = document.getElementById("data").value;
   let texto = document.getElementById("texto").value;
-  let imagem = document.getElementById("imagem").value;
-  let video = document.getElementById("video").value;
+  let midia = document.getElementById("midia").value;
 
   db.collection(tipo).add({
-    titulo: titulo,
-    data: data,
-    texto: texto,
-    imagem: imagem,
-    video: video,
+    titulo,
+    data,
+    texto,
+    midia,
     criadoEm: new Date()
   })
   .then(() => {
