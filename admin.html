@@ -94,8 +94,11 @@ button {
 
 <textarea id="texto" placeholder="Descrição"></textarea>
 
-<!-- 🖼️ IMAGEM OU VÍDEO -->
-<input type="text" id="midia" placeholder="Link da imagem ou vídeo (YouTube, etc)">
+<!-- 📷 UPLOAD DE IMAGEM -->
+<input type="file" id="imagemFile" accept="image/*">
+
+<!-- 🔗 LINK DE IMAGEM OU VÍDEO -->
+<input type="text" id="imagemLink" placeholder="Ou cole link de imagem/vídeo">
 
 <button onclick="salvar()">Salvar no sistema</button>
 
@@ -121,19 +124,47 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+/* SALVAR */
 function salvar(){
 
   let tipo = document.getElementById("tipo").value;
   let titulo = document.getElementById("titulo").value;
   let data = document.getElementById("data").value;
   let texto = document.getElementById("texto").value;
-  let midia = document.getElementById("midia").value;
+
+  let fileInput = document.getElementById("imagemFile");
+  let link = document.getElementById("imagemLink").value;
+
+  let imagemFinal = link;
+
+  // Se tiver arquivo → converte em base64
+  if(fileInput.files.length > 0){
+    let reader = new FileReader();
+
+    reader.onload = function(e){
+
+      imagemFinal = e.target.result;
+
+      salvarFirestore(tipo, titulo, data, texto, imagemFinal);
+    };
+
+    reader.readAsDataURL(fileInput.files[0]);
+
+  } else {
+
+    salvarFirestore(tipo, titulo, data, texto, imagemFinal);
+
+  }
+}
+
+/* SALVAR NO FIREBASE */
+function salvarFirestore(tipo, titulo, data, texto, imagem){
 
   db.collection(tipo).add({
-    titulo,
-    data,
-    texto,
-    midia,
+    titulo: titulo,
+    data: data,
+    texto: texto,
+    imagem: imagem || "",
     criadoEm: new Date()
   })
   .then(() => {
@@ -143,8 +174,10 @@ function salvar(){
     alert("Erro ao salvar");
     console.log(error);
   });
+
 }
 
+/* VOLTAR */
 function voltar(){
   window.location.href = "app.html";
 }
