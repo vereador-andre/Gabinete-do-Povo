@@ -18,7 +18,6 @@ body {
   padding:20px;
 }
 
-/* TOPO */
 .topo {
   display:flex;
   align-items:center;
@@ -34,7 +33,6 @@ body {
   cursor:pointer;
 }
 
-/* FORM */
 select, input, textarea {
   width:100%;
   padding:14px;
@@ -48,7 +46,6 @@ textarea {
   min-height:120px;
 }
 
-/* BOTÃO */
 button {
   margin-top:20px;
   width:100%;
@@ -61,11 +58,6 @@ button {
   cursor:pointer;
 }
 
-button:active {
-  transform:scale(0.97);
-}
-
-/* LOGO */
 .logo {
   margin-top:40px;
   text-align:center;
@@ -96,8 +88,17 @@ button:active {
 </select>
 
 <input type="text" id="titulo" placeholder="Título">
-<input type="text" id="data" placeholder="Data (ex: 15/04/2026)">
+
+<!-- DATA COM CALENDÁRIO -->
+<input type="date" id="data">
+
 <textarea id="texto" placeholder="Descrição"></textarea>
+
+<!-- IMAGEM -->
+<input type="text" id="imagem" placeholder="Link da imagem (opcional)">
+
+<!-- VÍDEO -->
+<input type="text" id="video" placeholder="Link do vídeo (YouTube opcional)">
 
 <button onclick="salvar()">Salvar no sistema</button>
 
@@ -123,18 +124,21 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* SALVAR */
 function salvar(){
 
   let tipo = document.getElementById("tipo").value;
   let titulo = document.getElementById("titulo").value;
   let data = document.getElementById("data").value;
   let texto = document.getElementById("texto").value;
+  let imagem = document.getElementById("imagem").value;
+  let video = document.getElementById("video").value;
 
   db.collection(tipo).add({
     titulo: titulo,
     data: data,
     texto: texto,
+    imagem: imagem,
+    video: video,
     criadoEm: new Date()
   })
   .then(() => {
@@ -146,7 +150,6 @@ function salvar(){
   });
 }
 
-/* VOLTAR */
 function voltar(){
   window.location.href = "app.html";
 }
