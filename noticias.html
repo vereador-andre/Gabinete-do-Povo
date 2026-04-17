@@ -12,8 +12,7 @@
 body {
   margin:0;
   font-family:'Poppins', sans-serif;
-  background:#0f172a;
-  color:white;
+  background:#f1f5f9;
 }
 
 /* TOPO */
@@ -21,33 +20,39 @@ body {
   display:flex;
   align-items:center;
   gap:10px;
-  padding:20px;
+  padding:15px;
+  background:white;
+  border-bottom:1px solid #e2e8f0;
 }
 
 .voltar {
-  background:#1e293b;
-  padding:10px 15px;
-  border-radius:10px;
+  background:#1e3a8a;
+  color:white;
+  padding:8px 12px;
+  border-radius:8px;
   cursor:pointer;
 }
 
 /* FEED */
 .feed {
-  padding:0 15px 30px;
+  padding:10px;
 }
 
+/* POST */
 .post {
-  background:#1e293b;
-  border-radius:20px;
+  background:white;
+  border-radius:16px;
   margin-bottom:20px;
   overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* IMAGEM */
-.post img {
+/* MIDIA */
+.post img, .post iframe {
   width:100%;
-  height:200px;
+  height:220px;
   object-fit:cover;
+  border:none;
 }
 
 /* CONTEÚDO */
@@ -57,12 +62,13 @@ body {
 
 .post-title {
   font-weight:600;
+  font-size:16px;
   margin-bottom:5px;
 }
 
 .post-date {
   font-size:12px;
-  color:#94a3b8;
+  color:#64748b;
   margin-bottom:10px;
 }
 
@@ -70,40 +76,56 @@ body {
   font-size:14px;
 }
 
+/* BOTÕES */
+.acoes {
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+.btn {
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:500;
+}
+
+.btn-like {
+  background:#e2e8f0;
+}
+
+.btn-share {
+  background:#22c55e;
+  color:white;
+}
+
 /* LOGO */
 .logo {
   text-align:center;
-  margin-top:20px;
+  margin:20px 0;
 }
 
 .logo img {
-  width:90px;
-  opacity:0.6;
+  width:100px;
+  opacity:0.7;
 }
 </style>
 </head>
 
 <body>
 
-<!-- TOPO -->
 <div class="topo">
   <div class="voltar" onclick="voltar()">←</div>
-  <div><b>Notícias</b></div>
+  <b>Notícias</b>
 </div>
 
-<!-- FEED -->
 <div class="feed" id="feed"></div>
 
-</div>
-
-<!-- LOGO -->
 <div class="logo">
   <img src="logo.png">
 </div>
-
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -115,7 +137,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
   authDomain: "gabinete-do-povo.firebaseapp.com",
   projectId: "gabinete-do-povo",
-  storageBucket: "gabinete-do-povo.firebasestorage.app",
+  storageBucket: "gabinete-do-povo.appspot.com",
   messagingSenderId: "450444313568",
   appId: "1:450444313568:web:e12ba742d940dc23e52185"
 };
@@ -126,6 +148,7 @@ const db = firebase.firestore();
 function carregarNoticias(){
 
   const feed = document.getElementById("feed");
+  feed.innerHTML = "";
 
   db.collection("noticias")
   .orderBy("criadoEm", "desc")
@@ -134,30 +157,20 @@ function carregarNoticias(){
 
     snapshot.forEach(doc => {
 
-      let noticia = doc.data();
-
+      let n = doc.data();
       let midia = "";
 
-      // 🎥 Se for vídeo do YouTube
-      if(noticia.imagem && noticia.imagem.includes("youtube")){
-        
-        let videoId = noticia.imagem.split("v=")[1];
-
-        midia = `
-          <iframe width="100%" height="200"
-          src="https://www.youtube.com/embed/${videoId}"
-          frameborder="0" allowfullscreen></iframe>
-        `;
-
-      } 
-      // 📷 Se for imagem
-      else if(noticia.imagem){
-
-        midia = `<img src="${noticia.imagem}">`;
-
-      } 
-      // ❌ Sem mídia
-      else {
+      // 🎥 YouTube
+      if(n.imagem && n.imagem.includes("youtube")){
+        let id = n.imagem.split("v=")[1];
+        midia = `<iframe src="https://www.youtube.com/embed/${id}"></iframe>`;
+      }
+      // 📷 imagem
+      else if(n.imagem){
+        midia = `<img src="${n.imagem}">`;
+      }
+      // padrão
+      else{
         midia = `<img src="https://via.placeholder.com/400x200">`;
       }
 
@@ -165,21 +178,14 @@ function carregarNoticias(){
         <div class="post">
           ${midia}
           <div class="post-content">
-            <div class="post-title">${noticia.titulo}</div>
-            <div class="post-date">${noticia.data}</div>
-            <div class="post-text">${noticia.texto}</div>
+            <div class="post-title">${n.titulo}</div>
+            <div class="post-date">${n.data}</div>
+            <div class="post-text">${n.texto}</div>
 
-            <button onclick="compartilhar('${noticia.titulo}')" style="
-              margin-top:10px;
-              background:#22c55e;
-              border:none;
-              padding:10px;
-              border-radius:10px;
-              color:white;
-              width:100%;
-            ">
-              Compartilhar
-            </button>
+            <div class="acoes">
+              <button class="btn btn-like" onclick="curtir(this)">👍 Curtir</button>
+              <button class="btn btn-share" onclick="compartilhar('${n.titulo}')">Compartilhar</button>
+            </div>
           </div>
         </div>
       `;
@@ -192,18 +198,25 @@ function carregarNoticias(){
 
 }
 
-function voltar(){
-  window.history.back();
+function curtir(btn){
+  btn.innerText = "✔ Curtido";
+  btn.style.background = "#22c55e";
+  btn.style.color = "white";
 }
 
 function compartilhar(titulo){
-  let texto = `Veja essa ação do Gabinete do Povo: ${titulo}`;
+  let texto = `Veja isso: ${titulo}`;
   let url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
   window.open(url, "_blank");
+}
+
+function voltar(){
+  window.history.back();
 }
 
 carregarNoticias();
 
 </script>
+
 </body>
 </html>
