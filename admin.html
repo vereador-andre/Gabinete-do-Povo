@@ -89,16 +89,12 @@ button {
 
 <input type="text" id="titulo" placeholder="Título">
 
-<!-- 📅 DATA COM CALENDÁRIO -->
 <input type="date" id="data">
 
 <textarea id="texto" placeholder="Descrição"></textarea>
 
-<!-- 📷 UPLOAD DE IMAGEM -->
-<input type="file" id="imagemFile" accept="image/*">
-
-<!-- 🔗 LINK DE IMAGEM OU VÍDEO -->
-<input type="text" id="imagemLink" placeholder="Ou cole link de imagem/vídeo">
+<!-- 🔗 LINK (AGORA PRINCIPAL) -->
+<input type="text" id="imagemLink" placeholder="Cole link de imagem ou vídeo (YouTube)">
 
 <button onclick="salvar()">Salvar no sistema</button>
 
@@ -109,7 +105,6 @@ button {
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
 <script>
 
@@ -124,7 +119,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const storage = firebase.storage();
 
 /* SALVAR */
 function salvar(){
@@ -133,54 +127,37 @@ function salvar(){
   let titulo = document.getElementById("titulo").value;
   let data = document.getElementById("data").value;
   let texto = document.getElementById("texto").value;
-
-  let file = document.getElementById("imagemFile").files[0];
   let link = document.getElementById("imagemLink").value;
 
-  if(file){
-    uploadImagem(file, tipo, titulo, data, texto);
-  } else {
-    salvarFirestore(tipo, titulo, data, texto, link);
+  if(!titulo || !data){
+    alert("Preencha título e data");
+    return;
   }
-}
-
-/* UPLOAD IMAGEM */
-function uploadImagem(file, tipo, titulo, data, texto){
-
-  let nomeArquivo = Date.now() + "_" + file.name;
-
-  let ref = storage.ref("imagens/" + nomeArquivo);
-
-  ref.put(file).then(snapshot => {
-
-    snapshot.ref.getDownloadURL().then(url => {
-
-      salvarFirestore(tipo, titulo, data, texto, url);
-
-    });
-
-  }).catch(() => {
-    alert("Erro ao enviar imagem");
-  });
-}
-
-/* SALVAR NO FIRESTORE */
-function salvarFirestore(tipo, titulo, data, texto, imagem){
 
   db.collection(tipo).add({
     titulo: titulo,
     data: data,
     texto: texto,
-    imagem: imagem || "",
+    imagem: link || "",
     criadoEm: new Date()
   })
   .then(() => {
     alert("Salvo com sucesso!");
+    limparCampos();
   })
   .catch((error) => {
-    alert("Erro ao salvar");
+    alert("Erro ao salvar: " + error.message);
     console.log(error);
   });
+
+}
+
+/* LIMPAR */
+function limparCampos(){
+  document.getElementById("titulo").value = "";
+  document.getElementById("data").value = "";
+  document.getElementById("texto").value = "";
+  document.getElementById("imagemLink").value = "";
 }
 
 /* VOLTAR */
