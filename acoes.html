@@ -18,7 +18,7 @@ body {
   color:#0f172a;
 }
 
-/* HEADER PADRÃO */
+/* HEADER */
 .header {
   display:flex;
   align-items:center;
@@ -35,7 +35,6 @@ body {
   gap:6px;
   cursor:pointer;
   font-weight:600;
-  color:#0f172a;
 }
 
 /* TÍTULO */
@@ -45,35 +44,38 @@ body {
   color:#16a34a;
 }
 
-/* CONTAINER */
-.container {
+/* GRID IGUAL MENU */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:15px;
   padding:20px;
 }
 
-/* CARD */
+/* CARD PADRÃO */
 .card {
   background:white;
-  padding:18px;
-  border-radius:15px;
-  margin-bottom:15px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.05);
+  border-radius:20px;
+  padding:25px;
+  text-align:center;
   cursor:pointer;
   transition:0.2s;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
 .card:active {
-  transform:scale(0.97);
+  transform:scale(0.95);
 }
 
-.titulo {
-  font-weight:600;
+.icon {
+  font-size:40px;
+  margin-bottom:10px;
+  color:#1e3a8a;
+}
+
+.texto {
   font-size:15px;
-}
-
-.descricao {
-  font-size:13px;
-  color:#64748b;
-  margin-top:5px;
+  font-weight:500;
 }
 
 </style>
@@ -97,27 +99,27 @@ body {
 
 </div>
 
-<!-- CONTEÚDO -->
-<div class="container">
+<!-- GRID DE OPÇÕES -->
+<div class="grid">
 
   <div class="card" onclick="ir('indicacoes.html')">
-    <div class="titulo">Indicações</div>
-    <div class="descricao">Solicitações oficiais feitas pelo mandato</div>
+    <span class="material-icons icon">edit_note</span>
+    <div class="texto">Indicações</div>
   </div>
 
   <div class="card" onclick="ir('requerimentos.html')">
-    <div class="titulo">Requerimentos</div>
-    <div class="descricao">Pedidos formais enviados à gestão pública</div>
+    <span class="material-icons icon">description</span>
+    <div class="texto">Requerimentos</div>
   </div>
 
   <div class="card" onclick="ir('projetos.html')">
-    <div class="titulo">Projetos de Lei</div>
-    <div class="descricao">Projetos apresentados pelo vereador</div>
+    <span class="material-icons icon">gavel</span>
+    <div class="texto">Projetos de Lei</div>
   </div>
 
-  <div class="card" onclick="ir('obras.html')">
-    <div class="titulo">Obras e Ações</div>
-    <div class="descricao">Acompanhamento das ações executadas</div>
+  <div class="card" onclick="ir('acoes-realizadas.html')">
+    <span class="material-icons icon">check_circle</span>
+    <div class="texto">Ações Realizadas</div>
   </div>
 
 </div>
