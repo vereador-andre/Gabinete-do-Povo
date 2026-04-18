@@ -274,9 +274,12 @@ function limparCampos(){
 
 /* VOLTAR */
 function voltar(){
-  window.location.href = "app.html";
+  if(history.length > 1){
+    window.history.back();
+  } else {
+    window.location.href = "app.html";
+  }
 }
-
 /* INICIAR */
 carregarLista();
 
