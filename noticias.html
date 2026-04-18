@@ -211,9 +211,12 @@ function compartilhar(titulo){
 }
 
 function voltar(){
-  window.history.back();
+  if(history.length > 1){
+    window.history.back();
+  } else {
+    window.location.href = "app.html";
+  }
 }
-
 carregarNoticias();
 
 </script>
