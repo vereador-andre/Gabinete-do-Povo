@@ -22,27 +22,35 @@ body {
 .header {
   display:flex;
   align-items:center;
-  gap:10px;
+  justify-content:space-between;
   padding:15px 20px;
   background:white;
-  box-shadow:0 2px 10px rgba(0,0,0,0.05);
+  border-bottom:1px solid #e5e7eb;
 }
 
 /* BOTÃO VOLTAR */
 .voltar {
   display:flex;
   align-items:center;
-  gap:5px;
-  font-weight:600;
+  gap:6px;
   cursor:pointer;
+  font-weight:600;
+  color:#0f172a;
 }
 
-/* CONTEÚDO */
+/* TÍTULO */
+.titulo-pagina {
+  font-size:18px;
+  font-weight:700;
+  color:#16a34a;
+}
+
+/* CONTAINER */
 .container {
   padding:20px;
 }
 
-/* CARD AÇÃO */
+/* CARD */
 .card {
   background:white;
   padding:15px;
@@ -75,14 +83,19 @@ body {
 <!-- HEADER -->
 <div class="header">
 
+  <!-- VOLTAR -->
   <div class="voltar" onclick="voltar()">
     <span class="material-icons">arrow_back</span>
     Voltar
   </div>
 
-  <div style="font-weight:600; margin-left:10px;">
+  <!-- TÍTULO -->
+  <div class="titulo-pagina">
     Ações do Mandato
   </div>
+
+  <!-- ESPAÇO -->
+  <div style="width:60px;"></div>
 
 </div>
 
@@ -110,8 +123,7 @@ body {
 <script>
 
 function voltar(){
-  window.location.href = "index.html"; 
-  // ou o nome do seu arquivo principal
+  window.location.href = "index.html";
 }
 
 </script>
