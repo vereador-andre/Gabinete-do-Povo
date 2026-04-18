@@ -18,7 +18,7 @@ body {
   color:#0f172a;
 }
 
-/* HEADER */
+/* HEADER PADRÃO */
 .header {
   display:flex;
   align-items:center;
@@ -28,7 +28,7 @@ body {
   border-bottom:1px solid #e5e7eb;
 }
 
-/* BOTÃO VOLTAR */
+/* VOLTAR */
 .voltar {
   display:flex;
   align-items:center;
@@ -53,26 +53,27 @@ body {
 /* CARD */
 .card {
   background:white;
-  padding:15px;
+  padding:18px;
   border-radius:15px;
   margin-bottom:15px;
   box-shadow:0 2px 10px rgba(0,0,0,0.05);
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.card:active {
+  transform:scale(0.97);
 }
 
 .titulo {
   font-weight:600;
-  margin-bottom:5px;
-}
-
-.data {
-  font-size:12px;
-  color:#64748b;
+  font-size:15px;
 }
 
 .descricao {
-  font-size:14px;
-  margin-top:8px;
-  color:#334155;
+  font-size:13px;
+  color:#64748b;
+  margin-top:5px;
 }
 
 </style>
@@ -80,37 +81,33 @@ body {
 
 <body>
 
-<!-- HEADER -->
+<!-- HEADER PADRÃO -->
 <div class="header">
 
-  <!-- VOLTAR -->
   <div class="voltar" onclick="voltar()">
     <span class="material-icons">arrow_back</span>
     Voltar
   </div>
 
-  <!-- TÍTULO -->
   <div class="titulo-pagina">
     Ações do Mandato
   </div>
 
-  <!-- ESPAÇO -->
   <div style="width:60px;"></div>
 
 </div>
 
 <!-- CONTEÚDO -->
-<!-- CONTEÚDO -->
 <div class="container">
 
   <div class="card" onclick="ir('indicacoes.html')">
     <div class="titulo">Indicações</div>
-    <div class="descricao">Solicitações e pedidos oficiais do mandato</div>
+    <div class="descricao">Solicitações oficiais feitas pelo mandato</div>
   </div>
 
   <div class="card" onclick="ir('requerimentos.html')">
     <div class="titulo">Requerimentos</div>
-    <div class="descricao">Documentos oficiais enviados à gestão</div>
+    <div class="descricao">Pedidos formais enviados à gestão pública</div>
   </div>
 
   <div class="card" onclick="ir('projetos.html')">
@@ -120,19 +117,21 @@ body {
 
   <div class="card" onclick="ir('obras.html')">
     <div class="titulo">Obras e Ações</div>
-    <div class="descricao">Acompanhamento das ações realizadas</div>
+    <div class="descricao">Acompanhamento das ações executadas</div>
   </div>
 
 </div>
-  
+
 <script>
 
 function voltar(){
   window.location.href = "index.html";
 }
+
 function ir(pagina){
   window.location.href = pagina;
 }
+
 </script>
 
 </body>
