@@ -10,74 +10,78 @@
 
 <style>
 
-/* BASE */
 body {
   margin:0;
   font-family:'Poppins', sans-serif;
-  background:linear-gradient(to bottom, #ffffff 70%, #dcfce7);
-  color:#0f172a;
+  background:#0f172a;
+  color:white;
   padding:20px;
 }
 
-/* TOPO */
 .topo {
   display:flex;
   align-items:center;
   gap:10px;
-  margin-bottom:25px;
+  margin-bottom:20px;
 }
 
-.logo-topo {
-  width:60px;
-}
-
-.titulo-topo {
-  font-size:16px;
-  font-weight:600;
-}
-
-/* VOLTAR */
 .voltar {
-  background:#1e3a8a;
-  color:white;
-  padding:10px 14px;
+  background:#1e293b;
+  padding:10px 15px;
   border-radius:10px;
   cursor:pointer;
 }
 
-/* LISTA */
-.lista {
-  margin-top:10px;
+.feed {
+  margin-top:20px;
 }
 
-.item {
-  background:white;
+.post {
+  background:#1e293b;
   border-radius:15px;
   padding:15px;
-  margin-bottom:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom:15px;
 }
 
-.item b {
-  display:block;
+.post-title {
+  font-weight:600;
   margin-bottom:5px;
 }
 
-.data {
+.post-date {
   font-size:12px;
-  color:#64748b;
-  margin-bottom:8px;
+  color:#94a3b8;
+  margin-bottom:10px;
 }
 
-/* LOGO FINAL */
-.logo-final {
-  margin-top:40px;
+.post-text {
+  font-size:14px;
+}
+
+/* MÍDIA */
+.post img {
+  width:100%;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+
+iframe {
+  width:100%;
+  height:200px;
+  border:none;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+
+/* LOGO */
+.logo {
   text-align:center;
+  margin-top:30px;
 }
 
-.logo-final img {
-  width:120px;
-  opacity:0.9;
+.logo img {
+  width:100px;
+  opacity:0.8;
 }
 
 </style>
@@ -85,38 +89,87 @@ body {
 
 <body>
 
-<!-- TOPO -->
 <div class="topo">
   <div class="voltar" onclick="voltar()">←</div>
-  <img src="logo.png" class="logo-topo">
-  <div class="titulo-topo">Indicações</div>
+  <b>Indicações</b>
 </div>
 
-<!-- LISTA -->
-<div class="lista" id="lista"></div>
+<div class="feed" id="feed"></div>
 
-<!-- LOGO -->
-<div class="logo-final">
+<div class="logo">
   <img src="logo.png">
 </div>
 
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
 
-fetch("indicacoes.json")
-.then(res => res.json())
-.then(dados => {
-  let lista = document.getElementById("lista");
+const firebaseConfig = {
+  apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
+  authDomain: "gabinete-do-povo.firebaseapp.com",
+  projectId: "gabinete-do-povo",
+  storageBucket: "gabinete-do-povo.appspot.com",
+  messagingSenderId: "450444313568",
+  appId: "1:450444313568:web:e12ba742d940dc23e52185"
+};
 
-  dados.slice().reverse().forEach(item=>{
-    lista.innerHTML += `
-      <div class="item">
-        <b>${item.titulo}</b>
-        <div class="data">${item.data}</div>
-        ${item.texto}
-      </div>
-    `;
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+/* YOUTUBE */
+function extrairYouTubeID(url){
+  try{
+    let regExp = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/;
+    let match = url.match(regExp);
+    return match ? match[1] : null;
+  }catch{
+    return null;
+  }
+}
+
+/* CARREGAR */
+function carregar(){
+
+  const feed = document.getElementById("feed");
+
+  db.collection("indicacoes")
+  .orderBy("criadoEm", "desc")
+  .get()
+  .then(snapshot => {
+
+    snapshot.forEach(doc => {
+
+      let n = doc.data();
+
+      let midia = "";
+
+      let videoID = extrairYouTubeID(n.imagem);
+
+      if(videoID){
+        midia = `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
+      }
+      else if(n.imagem){
+        midia = `<img src="${n.imagem}">`;
+      }
+
+      feed.innerHTML += `
+        <div class="post">
+          ${midia}
+          <div class="post-title">${n.titulo}</div>
+          <div class="post-date">${n.data}</div>
+          <div class="post-text">${n.texto}</div>
+        </div>
+      `;
+
+    });
+
   });
-});
+
+}
+
+carregar();
 
 function voltar(){
   window.history.back();
