@@ -106,8 +106,14 @@ button {
   <b>Painel do Administrador</b>
 </div>
 
-<select id="tipo">
-  <option value="noticias">Notícia</option>
+<select id="tipo" onchange="carregarLista()">
+  <option value="indicacoes">Indicações</option>
+  <option value="requerimentos">Requerimentos</option>
+  <option value="projetos">Projetos de Lei</option>
+  <option value="acoes-atendidas">Ações Atendidas</option>
+  <option value="noticias">Notícias</option>
+  <option value="sessoes-ordinarias">Sessões Ordinárias</option>
+  <option value="sessoes-extraordinarias">Sessões Extraordinárias</option>
 </select>
 
 <input type="text" id="titulo" placeholder="Título">
@@ -119,7 +125,7 @@ button {
 
 <hr style="margin:30px 0">
 
-<h3>📋 Gerenciar Notícias</h3>
+<h3 id="tituloLista">📋 Gerenciar</h3>
 
 <div id="listaAdmin"></div>
 
@@ -147,9 +153,10 @@ const db = firebase.firestore();
 
 let editandoID = null;
 
-/* SALVAR / EDITAR */
+/* SALVAR */
 function salvar(){
 
+  let tipo = document.getElementById("tipo").value;
   let titulo = document.getElementById("titulo").value;
   let data = document.getElementById("data").value;
   let texto = document.getElementById("texto").value;
@@ -161,16 +168,16 @@ function salvar(){
   }
 
   let dados = {
-    titulo: titulo,
-    data: data,
-    texto: texto,
+    titulo,
+    data,
+    texto,
     imagem: link || "",
     criadoEm: new Date()
   };
 
   if(editandoID){
 
-    db.collection("noticias").doc(editandoID).update(dados)
+    db.collection(tipo).doc(editandoID).update(dados)
     .then(() => {
       alert("Atualizado!");
       editandoID = null;
@@ -180,7 +187,7 @@ function salvar(){
 
   } else {
 
-    db.collection("noticias").add(dados)
+    db.collection(tipo).add(dados)
     .then(() => {
       alert("Salvo com sucesso!");
       limparCampos();
@@ -194,10 +201,14 @@ function salvar(){
 /* LISTAR */
 function carregarLista(){
 
+  let tipo = document.getElementById("tipo").value;
+
+  document.getElementById("tituloLista").innerText = "📋 Gerenciar " + tipo.replace("-", " ");
+
   const lista = document.getElementById("listaAdmin");
   lista.innerHTML = "";
 
-  db.collection("noticias")
+  db.collection(tipo)
   .orderBy("criadoEm", "desc")
   .get()
   .then(snapshot => {
@@ -239,9 +250,11 @@ function editar(id, titulo, data, texto, imagem){
 /* EXCLUIR */
 function excluir(id){
 
+  let tipo = document.getElementById("tipo").value;
+
   if(confirm("Deseja excluir?")){
 
-    db.collection("noticias").doc(id).delete()
+    db.collection(tipo).doc(id).delete()
     .then(() => {
       alert("Excluído!");
       carregarLista();
