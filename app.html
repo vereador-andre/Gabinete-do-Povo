@@ -174,7 +174,23 @@ body {
 
 <!-- MENU -->
 <div id="menu">
+<!-- BOTÃO VOLTAR -->
+<div onclick="voltarInicio()" style="
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:15px;
+  cursor:pointer;
+  color:#0f172a;
+  font-weight:600;
+">
 
+  <span class="material-icons" style="font-size:22px;">
+    arrow_back
+  </span>
+
+  Voltar
+</div>
   <div class="header">
     <img src="logo.png" class="logo-topo">
     <div>
@@ -330,7 +346,10 @@ function abrirAdmin(){
     alert("Senha incorreta!");
   }
 }
-
+function voltarInicio(){
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("inicio").style.display = "flex";
+}
 </script>
 
 </body>
