@@ -32,10 +32,6 @@ body {
   cursor:pointer;
 }
 
-.feed {
-  margin-top:20px;
-}
-
 .post {
   background:#1e293b;
   border-radius:15px;
@@ -43,37 +39,27 @@ body {
   margin-bottom:15px;
 }
 
-.post-title {
-  font-weight:600;
-  margin-bottom:5px;
-}
-
-.post-date {
-  font-size:12px;
-  color:#94a3b8;
-  margin-bottom:10px;
-}
-
-.post-text {
-  font-size:14px;
-}
-
-/* MÍDIA */
-.post img {
+.post img, iframe {
   width:100%;
   border-radius:10px;
   margin-bottom:10px;
 }
 
 iframe {
-  width:100%;
   height:200px;
   border:none;
-  border-radius:10px;
-  margin-bottom:10px;
 }
 
-/* LOGO */
+.post-title {
+  font-weight:600;
+}
+
+.post-date {
+  font-size:12px;
+  color:#94a3b8;
+  margin-bottom:8px;
+}
+
 .logo {
   text-align:center;
   margin-top:30px;
@@ -81,7 +67,6 @@ iframe {
 
 .logo img {
   width:100px;
-  opacity:0.8;
 }
 
 </style>
@@ -94,7 +79,7 @@ iframe {
   <b>Indicações</b>
 </div>
 
-<div class="feed" id="feed"></div>
+<div id="feed"></div>
 
 <div class="logo">
   <img src="logo.png">
@@ -110,32 +95,51 @@ const firebaseConfig = {
   apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
   authDomain: "gabinete-do-povo.firebaseapp.com",
   projectId: "gabinete-do-povo",
-  storageBucket: "gabinete-do-povo.appspot.com",
-  messagingSenderId: "450444313568",
-  appId: "1:450444313568:web:e12ba742d940dc23e52185"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* YOUTUBE */
-function extrairYouTubeID(url){
-  try{
-    let regExp = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/;
-    let match = url.match(regExp);
-    return match ? match[1] : null;
-  }catch{
-    return null;
-  }
+/* 🔥 DETECTAR YOUTUBE */
+function getYouTubeID(url){
+  if(!url) return null;
+
+  let regExp = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/;
+  let match = url.match(regExp);
+  return match ? match[1] : null;
 }
 
-/* CARREGAR */
+/* 🔥 VALIDAR IMAGEM */
+function isImagem(url){
+  return url.match(/\.(jpeg|jpg|png|webp|gif)$/i);
+}
+
+/* 🔥 RENDER MIDIA */
+function renderMidia(url){
+
+  if(!url) return "";
+
+  let yt = getYouTubeID(url);
+
+  if(yt){
+    return `<iframe src="https://www.youtube.com/embed/${yt}" allowfullscreen></iframe>`;
+  }
+
+  if(isImagem(url)){
+    return `<img src="${url}" onerror="this.style.display='none'">`;
+  }
+
+  return `<div style="font-size:12px;opacity:0.7;">Mídia inválida</div>`;
+}
+
+/* 🔥 CARREGAR */
 function carregar(){
 
   const feed = document.getElementById("feed");
+  feed.innerHTML = "";
 
   db.collection("indicacoes")
-  .orderBy("criadoEm", "desc")
+  .orderBy("criadoEm","desc")
   .get()
   .then(snapshot => {
 
@@ -143,23 +147,12 @@ function carregar(){
 
       let n = doc.data();
 
-      let midia = "";
-
-      let videoID = extrairYouTubeID(n.imagem);
-
-      if(videoID){
-        midia = `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
-      }
-      else if(n.imagem){
-        midia = `<img src="${n.imagem}">`;
-      }
-
       feed.innerHTML += `
         <div class="post">
-          ${midia}
+          ${renderMidia(n.imagem)}
           <div class="post-title">${n.titulo}</div>
           <div class="post-date">${n.data}</div>
-          <div class="post-text">${n.texto}</div>
+          <div>${n.texto}</div>
         </div>
       `;
 
