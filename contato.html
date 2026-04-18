@@ -141,7 +141,11 @@ form.addEventListener("submit", async function(e){
 });
 
 function voltar(){
-  window.history.back();
+  if(history.length > 1){
+    window.history.back();
+  } else {
+    window.location.href = "app.html";
+  }
 }
 </script>
 </body>
