@@ -11,80 +11,60 @@
 
 <style>
 
-/* BASE */
 body {
   margin:0;
   font-family:'Poppins', sans-serif;
-  background:linear-gradient(to bottom, #ffffff 70%, #dcfce7);
+  background:#f1f5f9;
   color:#0f172a;
-  padding:20px;
 }
 
-/* TOPO */
-.topo {
+/* HEADER */
+.header {
   display:flex;
   align-items:center;
   gap:10px;
-  margin-bottom:25px;
-}
-
-.logo-topo {
-  width:60px;
-}
-
-.titulo-topo {
-  font-size:16px;
-  font-weight:600;
+  padding:15px 20px;
+  background:white;
+  box-shadow:0 2px 10px rgba(0,0,0,0.05);
 }
 
 /* BOTÃO VOLTAR */
 .voltar {
-  background:#1e3a8a;
-  color:white;
-  padding:10px 14px;
-  border-radius:10px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-weight:600;
   cursor:pointer;
 }
 
-/* GRID */
-.grid {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:15px;
-  margin-top:10px;
+/* CONTEÚDO */
+.container {
+  padding:20px;
 }
 
-/* CARDS */
+/* CARD AÇÃO */
 .card {
   background:white;
-  border-radius:20px;
-  padding:30px 20px;
-  text-align:center;
-  box-shadow:0 6px 20px rgba(0,0,0,0.10);
-  cursor:pointer;
-  transition:0.2s;
+  padding:15px;
+  border-radius:15px;
+  margin-bottom:15px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.05);
 }
 
-.card:active {
-  transform:scale(0.95);
+.titulo {
+  font-weight:600;
+  margin-bottom:5px;
 }
 
-/* ÍCONES */
-.icon {
-  font-size:45px;
-  margin-bottom:10px;
-  color:#1e3a8a;
+.data {
+  font-size:12px;
+  color:#64748b;
 }
 
-/* LOGO FINAL */
-.logo-final {
-  margin-top:40px;
-  text-align:center;
-}
-
-.logo-final img {
-  width:120px;
-  opacity:0.9;
+.descricao {
+  font-size:14px;
+  margin-top:8px;
+  color:#334155;
 }
 
 </style>
@@ -92,59 +72,48 @@ body {
 
 <body>
 
-<!-- TOPO PADRÃO -->
-<div class="topo">
-  <div class="voltar" onclick="voltar()">←</div>
+<!-- HEADER -->
+<div class="header">
 
-  <img src="logo.png" class="logo-topo">
-
-  <div class="titulo-topo">
-    Gabinete do Povo
-  </div>
-</div>
-
-<!-- GRID -->
-<div class="grid">
-
-  <div class="card" onclick="ir('indicacoes.html')">
-    <div class="material-icons icon">place</div>
-    Indicações
+  <div class="voltar" onclick="voltar()">
+    <span class="material-icons">arrow_back</span>
+    Voltar
   </div>
 
-  <div class="card" onclick="ir('requerimentos.html')">
-    <div class="material-icons icon">description</div>
-    Requerimentos
-  </div>
-
-  <div class="card" onclick="ir('projetos.html')">
-    <div class="material-icons icon">gavel</div>
-    Projetos de Lei
-  </div>
-
-  <div class="card" onclick="ir('acoes-atendidas.html')">
-    <div class="material-icons icon">task_alt</div>
-    Ações Atendidas
+  <div style="font-weight:600; margin-left:10px;">
+    Ações do Mandato
   </div>
 
 </div>
 
-<!-- LOGO FINAL -->
-<div class="logo-final">
-  <img src="logo.png">
+<!-- CONTEÚDO -->
+<div class="container">
+
+  <div class="card">
+    <div class="titulo">Reforma de escola municipal</div>
+    <div class="data">Publicado em 17/04/2026</div>
+    <div class="descricao">
+      Acompanhamento e cobrança da reforma estrutural da Escola Municipal da comunidade X.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="titulo">Iluminação pública</div>
+    <div class="data">Publicado em 10/04/2026</div>
+    <div class="descricao">
+      Solicitação e execução de melhorias na iluminação de ruas do bairro Y.
+    </div>
+  </div>
+
 </div>
 
 <script>
-function ir(pagina){
-  window.location.href = pagina;
-}
 
 function voltar(){
-  if(history.length > 1){
-    window.history.back();
-  } else {
-    window.location.href = "app.html";
-  }
+  window.location.href = "index.html"; 
+  // ou o nome do seu arquivo principal
 }
+
 </script>
 
 </body>
