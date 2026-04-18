@@ -3,22 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sessões Ordinárias</title>
+
+<title>Projetos de Lei</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-body {margin:0;font-family:'Poppins';background:#0f172a;color:white;padding:20px;}
-.topo {display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.voltar {background:#1e293b;padding:10px 15px;border-radius:10px;cursor:pointer;}
-.feed {display:flex;flex-direction:column;gap:15px;}
-.post {background:rgba(255,255,255,0.05);border-radius:15px;overflow:hidden;}
-.post img {width:100%;}
-.post-content {padding:15px;}
-.post-title {font-weight:600;}
-.post-date {font-size:12px;color:#94a3b8;margin:5px 0;}
-.logo {text-align:center;margin-top:30px;}
-.logo img {width:90px;opacity:0.6;}
+body {
+  margin:0;
+  font-family:'Poppins', sans-serif;
+  background:#0f172a;
+  color:white;
+  padding:20px;
+}
+.topo {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
+}
+.voltar {
+  background:#1e293b;
+  padding:10px 15px;
+  border-radius:10px;
+  cursor:pointer;
+}
+.post {
+  background:#1e293b;
+  border-radius:15px;
+  padding:15px;
+  margin-bottom:15px;
+}
+.post img, iframe {
+  width:100%;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+iframe { height:200px; border:none; }
+.post-title { font-weight:600; }
+.post-date { font-size:12px; color:#94a3b8; margin-bottom:8px; }
+.logo { text-align:center; margin-top:30px; }
+.logo img { width:100px; }
 </style>
 </head>
 
@@ -26,36 +51,65 @@ body {margin:0;font-family:'Poppins';background:#0f172a;color:white;padding:20px
 
 <div class="topo">
   <div class="voltar" onclick="voltar()">←</div>
-  <b>Sessões Ordinárias</b>
+  <b>Projetos de Lei</b>
 </div>
 
-<div class="feed" id="feed"></div>
+<div id="feed"></div>
 
 <div class="logo">
   <img src="logo.png">
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
-async function carregar(){
-  const res = await fetch("sessoes-ordinarias.json");
-  const dados = await res.json();
+const firebaseConfig = {
+  apiKey:"AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
+  authDomain:"gabinete-do-povo.firebaseapp.com",
+  projectId:"gabinete-do-povo"
+};
 
-  const feed = document.getElementById("feed");
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-  dados.reverse().forEach(item=>{
-    feed.innerHTML += `
-    <div class="post">
-      ${item.imagem ? `<img src="${item.imagem}">` : ``}
-      <div class="post-content">
-        <div class="post-title">${item.titulo}</div>
-        <div class="post-date">${item.data}</div>
-        <div>${item.texto}</div>
-      </div>
-    </div>`;
+function getYouTubeID(url){
+  let regExp=/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/;
+  let match=url?.match(regExp);
+  return match?match[1]:null;
+}
+
+function isImagem(url){
+  return url?.match(/\.(jpeg|jpg|png|webp|gif)$/i);
+}
+
+function renderMidia(url){
+  if(!url) return "";
+  let yt=getYouTubeID(url);
+  if(yt) return `<iframe src="https://www.youtube.com/embed/${yt}" allowfullscreen></iframe>`;
+  if(isImagem(url)) return `<img src="${url}" onerror="this.style.display='none'">`;
+  return "";
+}
+
+function carregar(){
+  let feed=document.getElementById("feed");
+  db.collection("sessoes-ordinarias").orderBy("criadoEm","desc").get()
+  .then(snap=>{
+    snap.forEach(doc=>{
+      let n=doc.data();
+      feed.innerHTML+=`
+        <div class="post">
+          ${renderMidia(n.imagem)}
+          <div class="post-title">${n.titulo}</div>
+          <div class="post-date">${n.data}</div>
+          <div>${n.texto}</div>
+        </div>
+      `;
+    });
   });
 }
-carregar();
 
+carregar();
 function voltar(){ window.history.back(); }
 </script>
 
