@@ -7,88 +7,132 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; }
-        .topo { background:#1e3a8a; color:white; padding:20px; text-align:center; border-radius:0 0 25px 25px; }
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 30px; }
         
-        /* Abas para filtrar */
-        .abas { display: flex; gap: 10px; padding: 20px; justify-content: center; }
-        .aba-btn { 
-            padding: 10px 20px; border-radius: 20px; border: none; background: white; 
-            color: #1e3a8a; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .aba-btn.ativa { background: #1e3a8a; color: white; }
+        /* Topo Fixo */
+        .header { background:#1e3a8a; color:white; padding:20px; text-align:center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .header h2 { margin:0; font-size: 18px; }
 
-        .lista-videos { padding: 0 20px 20px; }
-        .video-card { background: white; border-radius: 15px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:none; }
-        .info { padding: 15px; }
-        .info h3 { margin: 0; font-size: 16px; color: #1e3a8a; }
-        .info p { margin: 5px 0 0; font-size: 12px; color: #64748b; }
+        /* Seletor de Abas Estilo App */
+        .tab-container { display: flex; background: white; padding: 10px; margin: 15px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .tab-btn { 
+            flex: 1; padding: 12px; border: none; background: transparent; 
+            color: #64748b; font-weight: 600; cursor: pointer; border-radius: 10px;
+            transition: 0.3s; font-size: 14px;
+        }
+        .tab-btn.active { background: #1e3a8a; color: white; }
+
+        /* Lista de Vídeos */
+        .lista-videos { padding: 0 15px; min-height: 300px; }
+        .video-card { background: white; border-radius: 20px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); animation: fadeIn 0.4s ease-in; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        .video-info { padding: 15px; }
+        .video-info h3 { margin: 0; font-size: 15px; color: #1e3a8a; line-height: 1.4; }
+        .video-info .meta { display: flex; align-items: center; gap: 5px; margin-top: 8px; color: #94a3b8; font-size: 12px; }
+
+        /* Loading Spinner */
+        .loader { text-align: center; padding: 40px; color: #1e3a8a; }
     </style>
 </head>
 <body>
 
-<div class="topo">
-    <h2 style="margin:0">Sessões da Câmara</h2>
+<div class="header">
+    <div style="position: absolute; left: 15px; top: 20px;" onclick="location.href='index.html'"><i class="material-icons">arrow_back</i></div>
+    <h2>Sessões da Câmara</h2>
 </div>
 
-<div class="abas">
-    <button class="aba-btn ativa" onclick="carregarSessoes('ordinaria', this)">Ordinárias</button>
-    <button class="aba-btn" onclick="carregarSessoes('extraordinaria', this)">Extraordinárias</button>
+<div class="tab-container">
+    <button class="tab-btn active" id="btn-ordinaria" onclick="switchTab('ordinaria')">Ordinárias</button>
+    <button class="tab-btn" id="btn-extraordinaria" onclick="switchTab('extraordinaria')">Extraordinárias</button>
 </div>
 
-<div class="lista-videos" id="containerSessoes">
+<div class="lista-videos" id="listaSessoes">
     </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
-    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    // Configuração do seu Firebase
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
+        authDomain: "gabinete-do-povo.firebaseapp.com", 
+        projectId: "gabinete-do-povo" 
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function carregarSessoes(tipo, btn) {
-        // Estilo dos botões
-        document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativa'));
-        btn.classList.add('ativa');
+    // Função para extrair o ID do vídeo do YouTube de qualquer formato de link
+    function getYoutubeID(url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
 
-        const container = document.getElementById("containerSessoes");
-        container.innerHTML = "<p style='text-align:center'>Carregando sessões...</p>";
+    async function switchTab(tipo) {
+        // Atualiza visual dos botões
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('btn-' + tipo).classList.add('active');
 
-        db.collection("sessoes")
-          .where("tipo", "==", tipo)
-          .orderBy("criadoEm", "desc")
-          .get()
-          .then(snapshot => {
+        const container = document.getElementById("listaSessoes");
+        container.innerHTML = '<div class="loader"><i class="material-icons" style="font-size:40px; animation: spin 1s linear infinite;">sync</i><p>Buscando sessões...</p></div>';
+
+        try {
+            // Busca no Firebase filtrando pelo campo "tipo" que criamos no cad-sessao
+            const snapshot = await db.collection("sessoes")
+                .where("tipo", "==", tipo)
+                .orderBy("criadoEm", "desc")
+                .get();
+
             container.innerHTML = "";
-            if(snapshot.empty) {
-                container.innerHTML = "<p style='text-align:center; color:#64748b;'>Nenhuma sessão encontrada.</p>";
+
+            if (snapshot.empty) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:50px; color:#94a3b8;">
+                        <i class="material-icons" style="font-size:48px;">videocam_off</i>
+                        <p>Nenhuma sessão ${tipo} encontrada.</p>
+                    </div>`;
                 return;
             }
+
             snapshot.forEach(doc => {
-                let s = doc.data();
-                // Converte link do Youtube para formato embed
-                let videoID = s.link.split('v=')[1] || s.link.split('/').pop();
-                let embedLink = `https://www.youtube.com/embed/${videoID}`;
+                const s = doc.data();
+                const videoId = getYoutubeID(s.link);
+                const embedUrl = `https://www.youtube.com/embed/${videoId}`;
 
                 container.innerHTML += `
                     <div class="video-card">
-                        <div class="video-container">
-                            <iframe src="${embedLink}" allowfullscreen></iframe>
+                        <div class="video-wrapper">
+                            <iframe src="${embedUrl}" allowfullscreen></iframe>
                         </div>
-                        <div class="info">
+                        <div class="video-info">
                             <h3>${s.titulo}</h3>
-                            <p>${s.data}</p>
+                            <div class="meta">
+                                <i class="material-icons" style="font-size:14px;">calendar_today</i>
+                                <span>${s.data}</span>
+                            </div>
                         </div>
                     </div>
                 `;
             });
-        });
+        } catch (error) {
+            console.error(error);
+            container.innerHTML = "<p style='text-align:center; color:red;'>Erro ao carregar vídeos.</p>";
+        }
     }
 
-    // Inicia carregando as Ordinárias
-    carregarSessoes('ordinaria', document.querySelector('.aba-btn.ativa'));
+    // CSS extra para o ícone girando
+    const style = document.createElement('style');
+    style.innerHTML = "@keyframes spin { 100% { transform:rotate(360deg); } }";
+    document.head.appendChild(style);
+
+    // Carrega as Ordinárias por padrão ao abrir
+    switchTab('ordinaria');
 </script>
 
 </body>
