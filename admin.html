@@ -3,99 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Painel do Administrador</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
+  body { margin:0; font-family:'Poppins', sans-serif; background:linear-gradient(to bottom, #ffffff 70%, #dcfce7); color:#0f172a; padding:20px; }
+  .topo { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+  .voltar { background:#1e3a8a; color:white; padding:10px 14px; border-radius:10px; cursor:pointer; }
+  select, input, textarea { width:100%; padding:14px; margin-top:12px; border-radius:12px; border:1px solid #ccc; font-size:14px; box-sizing: border-box; }
+  textarea { min-height:120px; }
+  button { margin-top:20px; width:100%; padding:14px; background:#1e3a8a; border:none; border-radius:12px; color:white; font-weight:600; cursor:pointer; }
+  .logo { margin-top:40px; text-align:center; }
+  .logo img { width:130px; }
 
-body {
-  margin:0;
-  font-family:'Poppins', sans-serif;
-  background:linear-gradient(to bottom, #ffffff 70%, #dcfce7);
-  color:#0f172a;
-  padding:20px;
-}
-
-.topo {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:20px;
-}
-
-.voltar {
-  background:#1e3a8a;
-  color:white;
-  padding:10px 14px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-select, input, textarea {
-  width:100%;
-  padding:14px;
-  margin-top:12px;
-  border-radius:12px;
-  border:1px solid #ccc;
-  font-size:14px;
-}
-
-textarea {
-  min-height:120px;
-}
-
-button {
-  margin-top:20px;
-  width:100%;
-  padding:14px;
-  background:#1e3a8a;
-  border:none;
-  border-radius:12px;
-  color:white;
-  font-weight:600;
-  cursor:pointer;
-}
-
-.logo {
-  margin-top:40px;
-  text-align:center;
-}
-
-.logo img {
-  width:130px;
-}
-
-/* LISTA ADMIN */
-.item-admin {
-  background:white;
-  padding:15px;
-  border-radius:12px;
-  margin-top:10px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.05);
-}
-
-.item-admin button {
-  margin-top:10px;
-  margin-right:5px;
-  padding:8px 10px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  width:auto;
-}
-
-.btn-editar {
-  background:#f59e0b;
-  color:white;
-}
-
-.btn-excluir {
-  background:#ef4444;
-  color:white;
-}
-
+  /* LISTA ADMIN */
+  .item-admin { background:white; padding:15px; border-radius:12px; margin-top:10px; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+  .item-admin button { margin-top:10px; margin-right:5px; padding:8px 10px; border:none; border-radius:8px; cursor:pointer; width:auto; }
+  .btn-editar { background:#f59e0b; color:white; }
+  .btn-excluir { background:#ef4444; color:white; }
+  
+  /* ESTILO PARA MENSAGENS */
+  .tag-tipo { font-size: 10px; background: #e2e8f0; padding: 3px 8px; border-radius: 5px; text-transform: uppercase; font-weight: bold; }
 </style>
 </head>
 
@@ -106,7 +34,7 @@ button {
   <b>Painel do Administrador</b>
 </div>
 
-<select id="tipo" onchange="carregarLista()">
+<select id="tipo" onchange="alternarInterface()">
   <option value="indicacoes">Indicações</option>
   <option value="requerimentos">Requerimentos</option>
   <option value="projetos">Projetos de Lei</option>
@@ -114,31 +42,27 @@ button {
   <option value="noticias">Notícias</option>
   <option value="sessoes-ordinarias">Sessões Ordinárias</option>
   <option value="sessoes-extraordinarias">Sessões Extraordinárias</option>
+  <option value="mensagens_contato">📩 Mensagens Recebidas</option>
 </select>
 
-<input type="text" id="titulo" placeholder="Título">
-<input type="date" id="data">
-<textarea id="texto" placeholder="Descrição"></textarea>
-<input type="text" id="imagemLink" placeholder="Link de imagem ou vídeo">
-
-<button onclick="salvar()">Salvar no sistema</button>
-
-<hr style="margin:30px 0">
-
-<h3 id="tituloLista">📋 Gerenciar</h3>
-
-<div id="listaAdmin"></div>
-
-<div class="logo">
-  <img src="logo.png">
+<div id="containerCadastro">
+  <input type="text" id="titulo" placeholder="Título">
+  <input type="date" id="data">
+  <textarea id="texto" placeholder="Descrição"></textarea>
+  <input type="text" id="imagemLink" placeholder="Link de imagem ou vídeo">
+  <button onclick="salvar()">Salvar no sistema</button>
 </div>
 
-<!-- FIREBASE -->
+<hr style="margin:30px 0">
+<h3 id="tituloLista">📋 Gerenciar</h3>
+<div id="listaAdmin"></div>
+
+<div class="logo"><img src="logo.png"></div>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
-
 const firebaseConfig = {
   apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
   authDomain: "gabinete-do-povo.firebaseapp.com",
@@ -150,121 +74,106 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-
 let editandoID = null;
 
-/* SALVAR */
-function salvar(){
+// Função para esconder formulário se for "mensagens"
+function alternarInterface() {
+  const tipo = document.getElementById("tipo").value;
+  const container = document.getElementById("containerCadastro");
+  
+  if(tipo === "mensagens_contato") {
+    container.style.display = "none";
+  } else {
+    container.style.display = "block";
+  }
+  carregarLista();
+}
 
+function salvar(){
   let tipo = document.getElementById("tipo").value;
   let titulo = document.getElementById("titulo").value;
   let data = document.getElementById("data").value;
   let texto = document.getElementById("texto").value;
   let link = document.getElementById("imagemLink").value;
 
-  if(!titulo || !data){
-    alert("Preencha título e data");
-    return;
-  }
+  if(!titulo || !data){ alert("Preencha título e data"); return; }
 
-  let dados = {
-    titulo,
-    data,
-    texto,
-    imagem: link || "",
-    criadoEm: new Date()
-  };
+  let dados = { titulo, data, texto, imagem: link || "", criadoEm: new Date() };
 
   if(editandoID){
-
-    db.collection(tipo).doc(editandoID).update(dados)
-    .then(() => {
+    db.collection(tipo).doc(editandoID).update(dados).then(() => {
       alert("Atualizado!");
       editandoID = null;
       limparCampos();
       carregarLista();
     });
-
   } else {
-
-    db.collection(tipo).add(dados)
-    .then(() => {
+    db.collection(tipo).add(dados).then(() => {
       alert("Salvo com sucesso!");
       limparCampos();
       carregarLista();
     });
-
   }
-
 }
 
-/* LISTAR */
 function carregarLista(){
-
   let tipo = document.getElementById("tipo").value;
-
-  document.getElementById("tituloLista").innerText = "📋 Gerenciar " + tipo.replace("-", " ");
-
+  document.getElementById("tituloLista").innerText = "📋 Gerenciar " + tipo.replace("_", " ");
   const lista = document.getElementById("listaAdmin");
-  lista.innerHTML = "";
+  lista.innerHTML = "Carregando...";
 
-  db.collection(tipo)
-  .orderBy("criadoEm", "desc")
-  .get()
+  db.collection(tipo).orderBy(tipo === "mensagens_contato" ? "dataEnvio" : "criadoEm", "desc").get()
   .then(snapshot => {
-
+    lista.innerHTML = "";
     snapshot.forEach(doc => {
-
       let n = doc.data();
-
-      lista.innerHTML += `
-        <div class="item-admin">
-          <b>${n.titulo}</b><br>
-          <small>${n.data}</small>
-
-          <div>
-            <button class="btn-editar" onclick="editar('${doc.id}', '${n.titulo}', '${n.data}', \`${n.texto}\`, '${n.imagem}')">Editar</button>
-            <button class="btn-excluir" onclick="excluir('${doc.id}')">Excluir</button>
-          </div>
-        </div>
-      `;
-
+      
+      if(tipo === "mensagens_contato") {
+        // Layout para Mensagens
+        lista.innerHTML += `
+          <div class="item-admin">
+            <span class="tag-tipo">${n.tipo}</span><br>
+            <b>${n.nome}</b> (${n.bairro})<br>
+            <p style="font-size:13px; margin:5px 0;">${n.mensagem}</p>
+            <small>${n.dataEnvio ? n.dataEnvio.toDate().toLocaleString() : ''}</small>
+            <div>
+              <button class="btn-excluir" onclick="excluir('${doc.id}')">Apagar Mensagem</button>
+            </div>
+          </div>`;
+      } else {
+        // Layout para Postagens normais
+        lista.innerHTML += `
+          <div class="item-admin">
+            <b>${n.titulo}</b><br><small>${n.data}</small>
+            <div>
+              <button class="btn-editar" onclick="editar('${doc.id}', '${n.titulo}', '${n.data}', \`${n.texto}\`, '${n.imagem}')">Editar</button>
+              <button class="btn-excluir" onclick="excluir('${doc.id}')">Excluir</button>
+            </div>
+          </div>`;
+      }
     });
-
   });
-
 }
 
-/* EDITAR */
 function editar(id, titulo, data, texto, imagem){
-
   document.getElementById("titulo").value = titulo;
   document.getElementById("data").value = data;
   document.getElementById("texto").value = texto;
   document.getElementById("imagemLink").value = imagem;
-
   editandoID = id;
-
+  window.scrollTo(0,0);
 }
 
-/* EXCLUIR */
 function excluir(id){
-
   let tipo = document.getElementById("tipo").value;
-
-  if(confirm("Deseja excluir?")){
-
-    db.collection(tipo).doc(id).delete()
-    .then(() => {
-      alert("Excluído!");
+  if(confirm("Deseja realmente excluir este item?")){
+    db.collection(tipo).doc(id).delete().then(() => {
+      alert("Removido!");
       carregarLista();
     });
-
   }
-
 }
 
-/* LIMPAR */
 function limparCampos(){
   document.getElementById("titulo").value = "";
   document.getElementById("data").value = "";
@@ -272,18 +181,11 @@ function limparCampos(){
   document.getElementById("imagemLink").value = "";
 }
 
-/* VOLTAR */
 function voltar(){
-  if(history.length > 1){
-    window.history.back();
-  } else {
-    window.location.href = "app.html";
-  }
+  window.location.href = "index.html";
 }
-/* INICIAR */
+
 carregarLista();
-
 </script>
-
 </body>
 </html>
