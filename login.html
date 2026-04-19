@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Gabinete do Povo</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; font-family:'Poppins', sans-serif; background:#0f172a; height:100vh; display:flex; align-items:center; justify-content:center; }
+  .login-card { background:white; padding:30px; border-radius:20px; width:90%; max-width:350px; box-shadow:0 10px 25px rgba(0,0,0,0.3); text-align:center; }
+  input { width:100%; padding:14px; margin-top:12px; border-radius:10px; border:1px solid #ddd; box-sizing:border-box; }
+  button { width:100%; padding:14px; margin-top:20px; border-radius:10px; border:none; background:#1e3a8a; color:white; font-weight:600; cursor:pointer; }
+  .erro { color:#ef4444; font-size:12px; margin-top:10px; display:none; }
+</style>
+</head>
+<body>
+
+<div class="login-card">
+  <img src="logo.png" style="width:80px; margin-bottom:10px;">
+  <h2 style="margin-bottom:20px; color:#1e3a8a;">Acesso Restrito</h2>
+  <input type="email" id="email" placeholder="E-mail">
+  <input type="password" id="password" placeholder="Senha">
+  <div id="msgErro" class="erro">Usuário ou senha inválidos.</div>
+  <button onclick="entrar()">Entrar no Painel</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
+  authDomain: "gabinete-do-povo.firebaseapp.com",
+  projectId: "gabinete-do-povo",
+};
+firebase.initializeApp(firebaseConfig);
+
+function entrar() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const erro = document.getElementById("msgErro");
+
+  firebase.auth().signInWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+    // Login sucesso -> Vai para o Admin
+    window.location.href = "admin.html";
+  })
+  .catch((error) => {
+    erro.style.display = "block";
+  });
+}
+</script>
+</body>
+</html>
