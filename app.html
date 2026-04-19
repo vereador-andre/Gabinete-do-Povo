@@ -9,7 +9,7 @@
     <style>
         body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 30px; }
         
-        /* Topo com a Foto Circular */
+        /* Topo com a Foto e Textos */
         .topo-perfil { 
             background: #1e3a8a; 
             padding: 40px 20px; 
@@ -18,23 +18,42 @@
             color: white;
         }
         .foto-perfil {
-            width: 100px;
-            height: 100px;
+            width: 110px; /* Aumentado levemente */
+            height: 110px;
             border-radius: 50%;
             border: 4px solid white;
             object-fit: cover;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .topo-perfil h2 { margin: 5px 0; font-size: 20px; }
-        .topo-perfil p { margin: 0; font-size: 14px; opacity: 0.8; }
+        .topo-perfil h2 { 
+            margin: 0; 
+            font-size: 24px; /* Nome maior */
+            font-weight: 600;
+        }
+        .topo-perfil .cargo { 
+            margin: 0; 
+            font-size: 16px; 
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        .topo-perfil .frase-efeito { 
+            margin-top: 10px; 
+            font-size: 13px; 
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #22c55e; /* Verde para destaque */
+        }
 
         /* Grade de Ícones */
         .grid-menu {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            padding: 25px;
+            gap: 15px;
+            padding: 20px;
         }
         .menu-item {
             background: white;
@@ -49,32 +68,54 @@
             transition: 0.3s;
         }
         .menu-item:active { transform: scale(0.95); }
-        .menu-item i { font-size: 40px; margin-bottom: 10px; color: #1e3a8a; }
-        .menu-item span { font-size: 14px; font-weight: 600; text-align: center; }
+        .menu-item i { font-size: 38px; margin-bottom: 10px; color: #1e3a8a; }
+        .menu-item span { font-size: 13px; font-weight: 600; text-align: center; }
 
-        /* Botão Admin lá embaixo */
+        /* Acesso Administrativo */
         .btn-admin-acesso {
-            margin: 20px;
-            padding: 15px;
+            margin: 20px 20px 10px;
+            padding: 12px;
             background: #e2e8f0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #475569;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        /* Sair do Aplicativo */
+        .btn-sair-app {
+            margin: 0 20px;
+            padding: 15px;
+            background: white;
             border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            color: #475569;
+            color: #ef4444; /* Vermelho */
             text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1);
         }
     </style>
 </head>
 <body>
 
     <div class="topo-perfil">
-        <img src="foto.jpg" alt="Vereador André de Dedé" class="foto-perfil">
+        <img src="fundofoto.jpg" alt="Vereador André de Dedé" class="foto-perfil">
+        
         <h2>André de Dedé</h2>
-        <p>Vereador</p>
+        <p class="cargo">Vereador</p>
+        
+        <div class="frase-efeito">
+            <i class="material-icons" style="font-size: 16px;">bolt</i>
+            Gabinete do Povo em Ação
+        </div>
     </div>
 
     <div class="grid-menu">
@@ -110,13 +151,14 @@
     </div>
 
     <a href="login.html" class="btn-admin-acesso">
-        <i class="material-icons" style="font-size: 18px;">lock</i>
+        <i class="material-icons">lock</i>
         Acesso Administrativo
     </a>
 
-    <div style="text-align: center; margin-top: 10px;">
-        <a href="index.html" style="color: #94a3b8; text-decoration: none; font-size: 12px;">Voltar para Início</a>
-    </div>
+    <a href="index.html" class="btn-sair-app">
+        <i class="material-icons">power_settings_new</i>
+        Sair do Aplicativo
+    </a>
 
 </body>
 </html>
