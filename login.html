@@ -12,12 +12,8 @@
         .login-card i { font-size: 50px; color: #1e3a8a; margin-bottom: 10px; }
         h2 { margin: 0 0 10px; font-size: 22px; }
         p { font-size: 14px; color: #64748b; margin-bottom: 30px; }
-        
         input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; box-sizing: border-box; font-family: inherit; }
-        
-        .btn-entrar { width: 100%; background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        .btn-entrar:active { transform: scale(0.98); }
-        
+        .btn-entrar { width: 100%; background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; }
         .btn-voltar { display: block; margin-top: 20px; color: #94a3b8; text-decoration: none; font-size: 13px; }
     </style>
 </head>
@@ -26,43 +22,56 @@
 <div class="login-card">
     <i class="material-icons">lock</i>
     <h2>Área Restrita</h2>
-    <p>Acesso exclusivo para gestão do gabinete.</p>
-
-    <input type="password" id="senha" placeholder="Digite a senha de acesso">
-    <button class="btn-entrar" onclick="verificar()">Entrar no Painel</button>
-    
+    <p>Acesso exclusivo para gestão.</p>
+    <input type="password" id="senha" placeholder="Digite a senha">
+    <button class="btn-entrar" id="btnEntrar" onclick="verificar()">Entrar no Painel</button>
     <a href="index.html" class="btn-voltar">Voltar para o início</a>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
+    // Sua configuração do Firebase
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
+        authDomain: "gabinete-do-povo.firebaseapp.com", 
+        projectId: "gabinete-do-povo" 
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     async function verificar() {
-    const senhaDigitada = document.getElementById("senha").value;
-    
-    try {
-        // Busca a senha atualizada no banco de dados
-        const doc = await db.collection("configuracoes").doc("acesso").get();
+        const btn = document.getElementById("btnEntrar");
+        const senhaDigitada = document.getElementById("senha").value;
         
-        if (doc.exists) {
-            const senhaCorreta = doc.data().senha;
+        btn.innerText = "Verificando...";
+        btn.disabled = true;
+
+        try {
+            const doc = await db.collection("configuracoes").doc("acesso").get();
+            
+            let senhaCorreta = "1234"; // Senha padrão inicial caso o banco esteja vazio
+
+            if (doc.exists) {
+                senhaCorreta = doc.data().senha;
+            }
+
             if(senhaDigitada === senhaCorreta) { 
                 localStorage.setItem("logado", "true");
                 window.location.href = "admin.html";
             } else {
                 alert("Senha incorreta!");
+                btn.innerText = "Entrar no Painel";
+                btn.disabled = false;
             }
-        } else {
-            // Se for a primeira vez e não houver senha no banco, use a padrão
-            if(senhaDigitada === "1234") {
-                localStorage.setItem("logado", "true");
-                window.location.href = "admin.html";
-            } else {
-                alert("Senha padrão é 1234. Altere-a no painel.");
-            }
+        } catch (error) {
+            console.error(error);
+            alert("Erro de conexão. Verifique sua internet.");
+            btn.innerText = "Entrar no Painel";
+            btn.disabled = false;
         }
-    } catch (error) {
-        alert("Erro ao conectar ao banco de dados.");
     }
-}
 </script>
 
 </body>
