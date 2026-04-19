@@ -1,0 +1,19 @@
+<script>
+        // ... (configuração do firebase igual) ...
+        function salvar() {
+            const t = document.getElementById("titulo").value;
+            const d = document.getElementById("data").value;
+            const tx = document.getElementById("texto").value;
+
+            // AQUI SALVA NA COLEÇÃO "requerimentos"
+            db.collection("requerimentos").add({
+                titulo: t,
+                data: d,
+                texto: tx,
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert("Requerimento postado!");
+                history.back();
+            });
+        }
+    </script>
