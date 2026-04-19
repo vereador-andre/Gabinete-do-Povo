@@ -6,21 +6,13 @@
     <title>Gabinete do Povo - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            font-family: 'Poppins', sans-serif;
-            overflow: hidden;
-        }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: 'Poppins', sans-serif; }
 
-        /* FUNDO COM IMAGEM */
         .bg-fundo {
             background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('fundo.jpg');
             background-size: cover;
             background-position: center;
-            height: 100%;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -28,48 +20,30 @@
             text-align: center;
             color: white;
             padding: 20px;
+            box-sizing: border-box;
         }
 
-        .logo-home {
-            width: 150px;
-            margin-bottom: 20px;
-        }
+        .logo-home { width: 120px; margin-bottom: 15px; }
+        h1 { font-size: 26px; margin: 0; }
+        p { font-size: 16px; margin-bottom: 40px; opacity: 0.9; }
 
-        h1 { font-weight: 600; font-size: 24px; margin-bottom: 5px; }
-        p { font-weight: 300; font-size: 16px; margin-bottom: 40px; opacity: 0.9; }
-
-        .btn-container {
-            width: 100%;
-            max-width: 300px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+        .btn-container { width: 100%; max-width: 280px; display: flex; flex-direction: column; gap: 15px; }
 
         .btn-opcao {
-            padding: 15px;
+            padding: 16px;
             border-radius: 12px;
             border: none;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.3s;
             text-decoration: none;
+            text-align: center;
+            transition: 0.3s;
         }
 
-        .btn-cidadao {
-            background: #22c55e;
-            color: white;
-        }
-
-        .btn-admin {
-            background: white;
-            color: #1e3a8a;
-        }
-
-        .btn-opcao:active {
-            transform: scale(0.95);
-        }
+        .btn-cidadao { background: #22c55e; color: white; }
+        .btn-admin { background: white; color: #1e3a8a; }
+        .btn-opcao:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -77,11 +51,10 @@
     <div class="bg-fundo">
         <img src="logo.png" alt="Logo" class="logo-home">
         <h1>Gabinete do Povo</h1>
-        <p>André de Dedé</p>
+        <p>Vereador André de Dedé</p>
 
         <div class="btn-container">
-            <a href="app.html" class="btn-opcao btn-cidadao">Acessar como Cidadão</a>
-            
+            <a href="app.html" class="btn-opcao btn-cidadao">Entrar como Cidadão</a>
             <a href="login.html" class="btn-opcao btn-admin">Área do Administrador</a>
         </div>
     </div>
