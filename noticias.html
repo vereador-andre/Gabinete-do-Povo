@@ -3,114 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Notícias</title>
-
+<title>Notícias - Gabinete do Povo</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-body {
-  margin:0;
-  font-family:'Poppins', sans-serif;
-  background:#f1f5f9;
-}
-
-/* TOPO */
-.topo {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:15px;
-  background:white;
-  border-bottom:1px solid #e2e8f0;
-}
-
-.voltar {
-  background:#1e3a8a;
-  color:white;
-  padding:8px 12px;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-/* FEED */
-.feed {
-  padding:10px;
-}
-
-/* POST */
-.post {
-  background:white;
-  border-radius:16px;
-  margin-bottom:20px;
-  overflow:hidden;
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
-}
-
-/* MIDIA */
-.post img, .post iframe {
-  width:100%;
-  height:220px;
-  object-fit:cover;
-  border:none;
-}
-
-/* CONTEÚDO */
-.post-content {
-  padding:15px;
-}
-
-.post-title {
-  font-weight:600;
-  font-size:16px;
-  margin-bottom:5px;
-}
-
-.post-date {
-  font-size:12px;
-  color:#64748b;
-  margin-bottom:10px;
-}
-
-.post-text {
-  font-size:14px;
-}
-
-/* BOTÕES */
-.acoes {
-  display:flex;
-  gap:10px;
-  margin-top:10px;
-}
-
-.btn {
-  flex:1;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:500;
-}
-
-.btn-like {
-  background:#e2e8f0;
-}
-
-.btn-share {
-  background:#22c55e;
-  color:white;
-}
-
-/* LOGO */
-.logo {
-  text-align:center;
-  margin:20px 0;
-}
-
-.logo img {
-  width:100px;
-  opacity:0.7;
-}
+  body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; color:#0f172a; }
+  .topo { display:flex; align-items:center; gap:10px; padding:15px; background:white; border-bottom:1px solid #e2e8f0; position: sticky; top: 0; z-index: 100; }
+  .voltar { background:#1e3a8a; color:white; padding:8px 12px; border-radius:8px; cursor:pointer; font-size: 18px; line-height: 1; }
+  .feed { padding:15px; }
+  .post { background:white; border-radius:16px; margin-bottom:20px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+  .post img, .post iframe { width:100%; height:220px; object-fit:cover; border:none; display: block; }
+  .post-content { padding:15px; }
+  .post-title { font-weight:600; font-size:17px; margin-bottom:5px; color: #1e293b; }
+  .post-date { font-size:12px; color:#64748b; margin-bottom:10px; display: flex; align-items: center; gap: 5px; }
+  .post-text { font-size:14px; line-height: 1.6; color: #334155; }
+  .acoes { display:flex; gap:10px; margin-top:15px; }
+  .btn { flex:1; padding:12px; border:none; border-radius:10px; cursor:pointer; font-weight:600; font-size: 13px; transition: 0.2s; }
+  .btn-like { background:#f1f5f9; color: #475569; }
+  .btn-share { background:#22c55e; color:white; }
+  .btn:active { transform: scale(0.95); }
+  .logo { text-align:center; margin:20px 0; opacity: 0.6; }
+  .logo img { width:100px; }
+  #loader { text-align: center; padding: 40px; color: #64748b; }
 </style>
 </head>
 
@@ -118,70 +32,65 @@ body {
 
 <div class="topo">
   <div class="voltar" onclick="voltar()">←</div>
-  <b>Notícias</b>
+  <b>Notícias do Mandato</b>
 </div>
 
+<div id="loader">Carregando notícias...</div>
 <div class="feed" id="feed"></div>
 
-<div class="logo">
-  <img src="logo.png">
-</div>
+<div class="logo"><img src="logo.png"></div>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
-
 const firebaseConfig = {
   apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
   authDomain: "gabinete-do-povo.firebaseapp.com",
   projectId: "gabinete-do-povo",
-  storageBucket: "gabinete-do-povo.appspot.com",
-  messagingSenderId: "450444313568",
-  appId: "1:450444313568:web:e12ba742d940dc23e52185"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// 🛠️ Função robusta para pegar ID do YouTube (suporta links curtos e longos)
+function getYouTubeID(url) {
+  if(!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
 function carregarNoticias(){
-
   const feed = document.getElementById("feed");
-  feed.innerHTML = "";
+  const loader = document.getElementById("loader");
 
-  db.collection("noticias")
-  .orderBy("criadoEm", "desc")
-  .get()
+  db.collection("noticias").orderBy("criadoEm", "desc").get()
   .then(snapshot => {
+    loader.style.display = "none";
+    feed.innerHTML = "";
 
     snapshot.forEach(doc => {
-
       let n = doc.data();
       let midia = "";
+      let ytId = getYouTubeID(n.imagem);
 
-      // 🎥 YouTube
-      if(n.imagem && n.imagem.includes("youtube")){
-        let id = n.imagem.split("v=")[1];
-        midia = `<iframe src="https://www.youtube.com/embed/${id}"></iframe>`;
-      }
-      // 📷 imagem
-      else if(n.imagem){
-        midia = `<img src="${n.imagem}">`;
-      }
-      // padrão
-      else{
-        midia = `<img src="https://via.placeholder.com/400x200">`;
+      if(ytId){
+        midia = `<iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe>`;
+      } else if(n.imagem && n.imagem.trim() !== ""){
+        midia = `<img src="${n.imagem}" onerror="this.src='https://via.placeholder.com/400x220?text=Notícia'">`;
       }
 
-      const post = `
+      // Tratamento de quebra de linha no texto
+      let textoComQuebra = n.texto ? n.texto.replace(/\n/g, '<br>') : "";
+
+      feed.innerHTML += `
         <div class="post">
           ${midia}
           <div class="post-content">
             <div class="post-title">${n.titulo}</div>
-            <div class="post-date">${n.data}</div>
-            <div class="post-text">${n.texto}</div>
-
+            <div class="post-date">📅 ${n.data}</div>
+            <div class="post-text">${textoComQuebra}</div>
             <div class="acoes">
               <button class="btn btn-like" onclick="curtir(this)">👍 Curtir</button>
               <button class="btn btn-share" onclick="compartilhar('${n.titulo}')">Compartilhar</button>
@@ -189,37 +98,27 @@ function carregarNoticias(){
           </div>
         </div>
       `;
-
-      feed.innerHTML += post;
-
     });
-
   });
-
 }
 
 function curtir(btn){
-  btn.innerText = "✔ Curtido";
+  btn.innerHTML = "✔ Curtido";
   btn.style.background = "#22c55e";
   btn.style.color = "white";
 }
 
 function compartilhar(titulo){
-  let texto = `Veja isso: ${titulo}`;
-  let url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+  const texto = `Confira esta notícia do Vereador André de Dedé: ${titulo}`;
+  const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
   window.open(url, "_blank");
 }
 
 function voltar(){
-  if(history.length > 1){
-    window.history.back();
-  } else {
-    window.location.href = "app.html";
-  }
+  window.location.href = "index.html"; 
 }
+
 carregarNoticias();
-
 </script>
-
 </body>
 </html>
