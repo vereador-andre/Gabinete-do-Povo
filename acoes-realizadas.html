@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ações Realizadas</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+  body { margin:0; font-family:'Poppins', sans-serif; background:#0f172a; color:white; padding:20px; }
+  .topo { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+  .voltar { background:#1e293b; padding:10px 15px; border-radius:10px; cursor:pointer; display:flex; align-items:center; }
+  .post { background:#1e293b; border-radius:15px; padding:15px; margin-bottom:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+  .post img, iframe { width:100%; border-radius:10px; margin-bottom:10px; display: block; }
+  iframe { height:200px; border:none; }
+  .post-title { font-weight:600; font-size:18px; color:#22c55e; margin-bottom: 5px; }
+  .post-date { font-size:12px; color:#94a3b8; margin-bottom:10px; }
+  .post-texto { font-size: 14px; line-height: 1.6; color: #e2e8f0; }
+  .logo { text-align:center; margin-top:30px; opacity: 0.5; }
+  .logo img { width:80px; }
+  #loader { text-align: center; margin-top: 50px; color: #94a3b8; }
+</style>
+</head>
+
+<body>
+
+<div class="topo">
+  <div class="voltar" onclick="voltar()">
+    <span class="material-icons" style="font-size:20px; margin-right:5px;">arrow_back</span>
+    Voltar
+  </div>
+  <b>Ações Realizadas</b>
+</div>
+
+<div id="loader">Buscando informações...</div>
+<div id="feed"></div>
+
+<div class="logo"><img src="logo.png"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
+  authDomain: "gabinete-do-povo.firebaseapp.com",
+  projectId: "gabinete-do-povo",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function getYouTubeID(url){
+  if(!url) return null;
+  let regExp = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/;
+  let match = url.match(regExp);
+  return match ? match[1] : null;
+}
+
+function isImagem(url){
+  return url && url.match(/\.(jpeg|jpg|png|webp|gif)$/i);
+}
+
+function renderMidia(url){
+  if(!url || url.trim() === "") return "";
+  let yt = getYouTubeID(url);
+  if(yt) return `<iframe src="https://www.youtube.com/embed/${yt}" allowfullscreen></iframe>`;
+  if(isImagem(url)) return `<img src="${url}" onerror="this.style.display='none'">`;
+  return "";
+}
+
+function carregar(){
+  const feed = document.getElementById("feed");
+  const loader = document.getElementById("loader");
+
+  // ATENÇÃO: Aqui usamos "acoes-atendidas" para bater com seu Admin
+  db.collection("acoes-atendidas").orderBy("criadoEm","desc").get()
+  .then(snapshot => {
+    loader.style.display = "none";
+    if(snapshot.empty) {
+      feed.innerHTML = "<p style='text-align:center; opacity:0.6;'>Nenhuma ação registrada ainda.</p>";
+      return;
+    }
+
+    snapshot.forEach(doc => {
+      let n = doc.data();
+      let textoFormatado = n.texto ? n.texto.replace(/\n/g, '<br>') : "";
+
+      feed.innerHTML += `
+        <div class="post">
+          ${renderMidia(n.imagem)}
+          <div class="post-title">${n.titulo}</div>
+          <div class="post-date">📅 ${n.data}</div>
+          <div class="post-texto">${textoFormatado}</div>
+        </div>
+      `;
+    });
+  }).catch(err => {
+    loader.innerText = "Erro ao carregar dados.";
+    console.error(err);
+  });
+}
+
+function voltar(){
+  window.location.href = "acoes.html";
+}
+
+carregar();
+</script>
+</body>
+</html>
