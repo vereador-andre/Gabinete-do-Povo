@@ -5,12 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gabinete do Povo - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: 'Poppins', sans-serif; }
+        /* Ajuste para travar a rolagem e ocupar toda a tela */
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            height: 100vh; 
+            width: 100%; 
+            font-family: 'Poppins', sans-serif; 
+            overflow: hidden; /* Remove a rolagem */
+        }
         
         .bg-fundo {
-            /* Certifique-se que o arquivo fundo.jpg existe na pasta */
-            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('fundo.jpg');
+            background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('fundo.jpg');
             background-size: cover;
             background-position: center;
             height: 100vh;
@@ -24,13 +32,44 @@
             box-sizing: border-box;
         }
 
-        .logo-home { width: 130px; margin-bottom: 20px; }
-        h1 { font-size: 26px; margin: 0; font-weight: 600; }
-        p { font-size: 16px; margin-top: 5px; margin-bottom: 40px; opacity: 0.9; }
+        /* Títulos com a nova hierarquia */
+        h1 { 
+            font-size: 32px; /* Maior */
+            margin: 0; 
+            font-weight: 600; 
+            letter-spacing: 1px;
+        }
 
-        .btn-container { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 15px; }
+        .frase { 
+            font-size: 18px; /* Menor que o título */
+            margin: 5px 0; 
+            font-weight: 300; 
+            opacity: 0.9;
+        }
+
+        .vereador { 
+            font-size: 14px; /* Menor que a frase */
+            margin-top: 2px;
+            margin-bottom: 40px; 
+            font-weight: 400; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #22c55e; /* Destaque em verde no nome */
+        }
+
+        .btn-container { 
+            width: 100%; 
+            max-width: 320px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
 
         .btn-opcao {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Espaço entre ícone e texto */
             padding: 18px;
             border-radius: 15px;
             border: none;
@@ -42,22 +81,39 @@
             transition: 0.3s;
         }
 
-        .btn-cidadao { background: #22c55e; color: white; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); }
-        .btn-admin { background: white; color: #1e3a8a; }
+        .btn-cidadao { 
+            background: #22c55e; 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); 
+        }
+
+        .btn-admin { 
+            background: white; 
+            color: #1e3a8a; 
+        }
         
         .btn-opcao:active { transform: scale(0.95); }
+        
+        .btn-opcao i { font-size: 20px; }
     </style>
 </head>
 <body>
 
     <div class="bg-fundo">
-        <img src="logo.png" alt="Logo" class="logo-home">
         <h1>Gabinete do Povo</h1>
-        <p>André de Dedé</p>
+        <div class="frase">Transparência e Responsabilidade</div>
+        <div class="vereador">Vereador André de Dedé</div>
 
         <div class="btn-container">
-            <a href="app.html" class="btn-opcao btn-cidadao">Entrar como Cidadão</a>
-            <a href="login.html" class="btn-opcao btn-admin">Área do Administrador</a>
+            <a href="app.html" class="btn-opcao btn-cidadao">
+                <i class="material-icons">person</i>
+                Entrar como Cidadão
+            </a>
+            
+            <a href="login.html" class="btn-opcao btn-admin">
+                <i class="material-icons">admin_panel_settings</i>
+                Área do Administrador
+            </a>
         </div>
     </div>
 
