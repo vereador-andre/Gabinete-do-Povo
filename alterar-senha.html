@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alterar Senha</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { font-family: sans-serif; background: #f1f5f9; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { width: 100%; background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="color:#1e3a8a">Nova Senha</h2>
+        <input type="text" id="novaSenha" placeholder="Digite a nova senha">
+        <button onclick="atualizarSenha()">Salvar Nova Senha</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function atualizarSenha() {
+            const nova = document.getElementById("novaSenha").value;
+            if(nova.length < 4) return alert("Use uma senha mais forte!");
+
+            db.collection("configuracoes").doc("acesso").update({
+                senha: nova
+            }).then(() => {
+                alert("Senha alterada com sucesso!");
+                history.back();
+            });
+        }
+    </script>
+</body>
+</html>
