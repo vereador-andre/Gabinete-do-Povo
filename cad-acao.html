@@ -26,13 +26,13 @@
     <div class="form">
         <div class="card">
             <label>Título da Ação</label>
-            <input type="text" id="titulo" placeholder="Ex: Limpeza do bairro...">
+            <input type="text" id="titulo" placeholder="Ex: Reforma da Unidade de Saúde">
             <label>Data</label>
             <input type="date" id="data">
             <label>Link da Imagem ou Vídeo</label>
             <input type="text" id="imagem" placeholder="https://...">
-            <label>Descrição da Ação</label>
-            <textarea id="texto" placeholder="Escreva o conteúdo..."></textarea>
+            <label>Relatório da Ação</label>
+            <textarea id="texto" placeholder="Descreva os resultados da ação..."></textarea>
             <button class="btn-salvar" id="btnSalvar" onclick="salvar()">Publicar Ação</button>
         </div>
     </div>
@@ -50,7 +50,7 @@
             if(!t || !d || !tx) return alert("Preencha Título, Data e Texto.");
             const dataBR = d.split('-').reverse().join('/');
             db.collection("acoes-atendidas").add({ titulo: t, data: dataBR, imagem: i, texto: tx, criadoEm: firebase.firestore.FieldValue.serverTimestamp() })
-            .then(() => { alert("Postado!"); history.back(); });
+            .then(() => { alert("Ação registrada!"); history.back(); });
         }
     </script>
 </body>
