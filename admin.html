@@ -29,11 +29,15 @@
 
 <body>
 
-<div class="topo">
-  <div class="voltar" onclick="voltar()">←</div>
-  <b>Painel do Administrador</b>
+<div class="topo" style="justify-content: space-between;">
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <div class="voltar" onclick="voltar()">←</div>
+    <b>Painel do Administrador</b>
+  </div>
+  
+  <button onclick="logout()" style="background:#ef4444; width:auto; padding:8px 15px; margin:0; font-size: 13px;">Sair</button>
 </div>
-
+  
 <select id="tipo" onchange="alternarInterface()">
   <option value="indicacoes">Indicações</option>
   <option value="requerimentos">Requerimentos</option>
@@ -63,6 +67,20 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
+  // 🔒 VERIFICAÇÃO DE SEGURANÇA
+firebase.auth().onAuthStateChanged((user) => {
+  if (!user) {
+    // Se não tiver usuário logado, chuta para a página de login
+    window.location.href = "login.html";
+  }
+});
+
+// Adicione também uma função de Sair para sua segurança
+function logout() {
+  firebase.auth().signOut().then(() => {
+    window.location.href = "login.html";
+  });
+}
 const firebaseConfig = {
   apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
   authDomain: "gabinete-do-povo.firebaseapp.com",
