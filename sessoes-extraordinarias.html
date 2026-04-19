@@ -1,94 +1,62 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sessões Extraordinárias</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-<style>
-  body { margin:0; font-family:'Poppins', sans-serif; background:#fff1f2; color:#881337; padding:20px; }
-  .topo { display:flex; align-items:center; gap:10px; margin-bottom:20px; position: sticky; top: 0; background: #fff1f2; padding: 10px 0; z-index: 100; }
-  .voltar { background:#be123c; color: white; padding:10px 15px; border-radius:10px; cursor:pointer; display: flex; align-items: center; }
-  .post { background:white; border-radius:15px; padding:15px; margin-bottom:20px; box-shadow: 0 4px 12px rgba(190,18,60,0.1); border-top: 5px solid #be123c; color: #1e293b; }
-  .post iframe, .post img { width:100%; border-radius:10px; margin-bottom:12px; display: block; border: none; height: 200px; }
-  .post-title { font-weight:600; font-size: 17px; color: #9f1239; margin-bottom: 5px; }
-  .post-date { font-size:12px; color:#64748b; margin-bottom:10px; }
-  .post-text { font-size:14px; line-height: 1.5; }
-  .logo { text-align:center; margin-top:30px; opacity: 0.5; }
-  .logo img { width:90px; }
-  #loader { text-align: center; padding: 30px; color: #be123c; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessões Extraordinárias</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; }
+        .topo { background:#1e3a8a; color:white; padding:20px; text-align:center; border-radius:0 0 25px 25px; }
+        .lista-videos { padding: 20px; }
+        .video-card { background: white; border-radius: 15px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:none; }
+        .info { padding: 15px; }
+        .info h3 { margin: 0; font-size: 16px; color: #1e3a8a; }
+        .info p { margin: 5px 0 0; font-size: 12px; color: #64748b; }
+        .btn-voltar { color: white; text-decoration: none; font-size: 14px; display: block; margin-top: 10px; }
+    </style>
 </head>
-
 <body>
 
 <div class="topo">
-  <div class="voltar" onclick="voltar()">
-    <span class="material-icons" style="font-size: 20px; margin-right: 5px;">arrow_back</span>
-    Voltar
-  </div>
-  <b>Sessões Extraordinárias</b>
+    <h2 style="margin:0">Sessões Extraordinárias</h2>
+    <a href="index.html" class="btn-voltar">← Voltar ao Início</a>
 </div>
 
-<div id="loader">Carregando sessões...</div>
-<div id="feed"></div>
-
-<div class="logo"><img src="logo.png"></div>
+<div class="lista-videos" id="listaExtraordinarias">
+    <p style="text-align:center">Carregando sessões...</p>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
-  authDomain: "gabinete-do-povo.firebaseapp.com",
-  projectId: "gabinete-do-povo",
-};
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-function getYouTubeID(url) {
-  if(!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
-}
-
-function carregar(){
-  const feed = document.getElementById("feed");
-  const loader = document.getElementById("loader");
-
-  db.collection("sessoes-extraordinarias").orderBy("criadoEm","desc").get()
-  .then(snapshot => {
-    loader.style.display = "none";
-    feed.innerHTML = "";
-    if(snapshot.empty) {
-      feed.innerHTML = "<p style='text-align:center; opacity:0.5;'>Nenhuma sessão extraordinária encontrada.</p>";
-      return;
-    }
-    snapshot.forEach(doc => {
-      let n = doc.data();
-      let ytId = getYouTubeID(n.imagem);
-      let midia = ytId ? `<iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe>` : 
-                  (n.imagem ? `<img src="${n.imagem}" onerror="this.style.display='none'">` : "");
-
-      feed.innerHTML += `
-        <div class="post">
-          ${midia}
-          <div class="post-title">${n.titulo}</div>
-          <div class="post-date">📅 ${n.data}</div>
-          <div class="post-text">${n.texto ? n.texto.replace(/\n/g, '<br>') : ""}</div>
-        </div>
-      `;
+    db.collection("sessoes")
+      .where("tipo", "==", "extraordinaria")
+      .orderBy("criadoEm", "desc")
+      .get()
+      .then(snapshot => {
+        const container = document.getElementById("listaExtraordinarias");
+        container.innerHTML = "";
+        if(snapshot.empty) {
+            container.innerHTML = "<p style='text-align:center'>Nenhuma sessão registrada.</p>";
+            return;
+        }
+        snapshot.forEach(doc => {
+            let s = doc.data();
+            let videoID = s.link.includes('v=') ? s.link.split('v=')[1].split('&')[0] : s.link.split('/').pop();
+            container.innerHTML += `
+                <div class="video-card">
+                    <div class="video-container"><iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe></div>
+                    <div class="info"><h3>${s.titulo}</h3><p>${s.data}</p></div>
+                </div>`;
+        });
     });
-  });
-}
-
-function voltar(){ window.location.href = "index.html"; }
-carregar();
 </script>
 </body>
 </html>
