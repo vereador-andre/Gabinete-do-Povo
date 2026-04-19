@@ -1,0 +1,12 @@
+<script>
+    function salvar() {
+        const t = document.getElementById("titulo").value;
+        const d = document.getElementById("data").value;
+        const i = document.getElementById("imagem").value;
+        const tx = document.getElementById("texto").value;
+        db.collection("acoes-atendidas").add({ 
+            titulo:t, data:d, imagem:i, texto:tx, 
+            criadoEm: firebase.firestore.FieldValue.serverTimestamp() 
+        }).then(() => { alert("Ação registrada!"); history.back(); });
+    }
+</script>
