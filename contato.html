@@ -1,152 +1,111 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Sua Voz no Gabinete</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
-<style>
-body {
-  margin:0;
-  font-family:'Poppins', sans-serif;
-  background:#0f172a;
-  color:white;
-  padding:20px;
-}
-
-/* TOPO */
-.topo {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:20px;
-}
-
-.voltar {
-  background:#1e293b;
-  padding:10px 15px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-/* FORM */
-select, input, textarea {
-  width:100%;
-  padding:14px;
-  margin-top:12px;
-  border-radius:12px;
-  border:none;
-  font-size:14px;
-}
-
-textarea {
-  min-height:120px;
-}
-
-/* BOTÃO */
-button {
-  margin-top:20px;
-  width:100%;
-  padding:14px;
-  background:#22c55e;
-  border:none;
-  border-radius:12px;
-  color:white;
-  font-weight:600;
-  font-size:15px;
-  cursor:pointer;
-}
-
-button:active {
-  transform:scale(0.97);
-}
-
-/* SUCESSO */
-.sucesso {
-  display:none;
-  margin-top:15px;
-  background:#16a34a;
-  padding:12px;
-  border-radius:10px;
-  text-align:center;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sua Voz no Gabinete</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { margin:0; font-family:'Poppins', sans-serif; background:#0f172a; color:white; padding:20px; }
+        .topo { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+        .voltar { background:#1e293b; padding:10px 15px; border-radius:10px; cursor:pointer; }
+        select, input, textarea { width:100%; padding:14px; margin-top:12px; border-radius:12px; border:none; font-size:14px; }
+        textarea { min-height:120px; }
+        button { margin-top:20px; width:100%; padding:14px; background:#22c55e; border:none; border-radius:12px; color:white; font-weight:600; font-size:15px; cursor:pointer; }
+        button:active { transform:scale(0.97); }
+        .sucesso { display:none; margin-top:15px; background:#16a34a; padding:12px; border-radius:10px; text-align:center; }
+    </style>
 </head>
-
 <body>
 
-<!-- TOPO -->
 <div class="topo">
-  <div class="voltar" onclick="voltar()">←</div>
-  <div><b>Sua Voz no Gabinete</b></div>
+    <div class="voltar" onclick="voltar()">←</div>
+    <div><b>Sua Voz no Gabinete</b></div>
 </div>
 
-<!-- FORM -->
 <form id="formContato">
+    <select name="tipo" id="tipo">
+        <option>Sugestão</option>
+        <option>Crítica</option>
+        <option>Elogio</option>
+        <option>Reclamação</option>
+        <option>Solicitação de visita</option>
+    </select>
 
-<select name="tipo">
-  <option>Sugestão</option>
-  <option>Crítica</option>
-  <option>Elogio</option>
-  <option>Reclamação</option>
-  <option>Solicitação de visita</option>
-</select>
+    <input type="text" id="nome" placeholder="Seu nome" required>
+    <input type="text" id="bairro" placeholder="Seu bairro">
+    <textarea id="mensagem" placeholder="Escreva sua mensagem" required></textarea>
 
-<input type="text" name="nome" placeholder="Seu nome" required>
-<input type="text" name="bairro" placeholder="Seu bairro">
-
-<textarea name="mensagem" placeholder="Escreva sua mensagem" required></textarea>
-
-<button type="submit">Enviar mensagem</button>
-
+    <button type="submit" id="btnEnviar">Enviar mensagem</button>
 </form>
 
 <div class="sucesso" id="msgSucesso">
-  ✅ Mensagem enviada com sucesso!
+    ✅ Mensagem enviada com sucesso!
 </div>
 
-<!-- LOGO -->
 <div style="margin-top:40px; text-align:center;">
-  <img src="logo.png" style="width:100px; opacity:0.7;">
+    <img src="logo.png" style="width:100px; opacity:0.7;">
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
-const form = document.getElementById("formContato");
+    // Configuração do seu Firebase (Mantenha igual aos outros arquivos)
+    const firebaseConfig = {
+        apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
+        authDomain: "gabinete-do-povo.firebaseapp.com",
+        projectId: "gabinete-do-povo",
+    };
 
-form.addEventListener("submit", async function(e){
-  e.preventDefault();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  try {
-    let response = await fetch("https://formspree.io/f/xjgjverp", {
-      method: "POST",
-      body: new FormData(form),
-      headers: {
-        'Accept': 'application/json'
-      }
+    const form = document.getElementById("formContato");
+
+    // 2. NOVA LÓGICA DE ENVIO PARA O FIREBASE
+    form.addEventListener("submit", async function(e){
+        e.preventDefault();
+
+        // Pegando os valores dos campos
+        const dados = {
+            tipo: document.getElementById("tipo").value,
+            nome: document.getElementById("nome").value,
+            bairro: document.getElementById("bairro").value,
+            mensagem: document.getElementById("mensagem").value,
+            lido: false,
+            dataEnvio: new Date()
+        };
+
+        const btn = document.getElementById("btnEnviar");
+        btn.innerText = "Enviando...";
+        btn.disabled = true;
+
+        try {
+            // Salvando na coleção "mensagens_contato"
+            await db.collection("mensagens_contato").add(dados);
+            
+            form.reset();
+            document.getElementById("msgSucesso").style.display = "block";
+            btn.innerText = "Enviar mensagem";
+            btn.disabled = false;
+
+            // Esconde a mensagem de sucesso após 5 segundos
+            setTimeout(() => { 
+                document.getElementById("msgSucesso").style.display = "none"; 
+            }, 5000);
+
+        } catch (error) {
+            console.error("Erro:", error);
+            alert("Erro ao enviar mensagem. Verifique a conexão.");
+            btn.innerText = "Enviar mensagem";
+            btn.disabled = false;
+        }
     });
 
-    if(response.ok){
-      form.reset();
-      document.getElementById("msgSucesso").style.display = "block";
-    } else {
-      alert("Erro ao enviar. Tente novamente.");
+    function voltar(){
+        window.location.href = "index.html";
     }
-
-  } catch (error) {
-    alert("Erro de conexão. Verifique sua internet.");
-  }
-});
-
-function voltar(){
-  if(history.length > 1){
-    window.history.back();
-  } else {
-    window.location.href = "app.html";
-  }
-}
 </script>
 </body>
 </html>
