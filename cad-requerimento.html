@@ -1,19 +1,64 @@
-<script>
-        // ... (configuração do firebase igual) ...
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postar Requerimento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 30px; }
+        .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; border-radius:0 0 25px 25px; }
+        .btn-voltar { cursor:pointer; background:rgba(255,255,255,0.2); border-radius:10px; padding:8px; display:flex; }
+        .form { padding:20px; }
+        .card { background:white; padding:20px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05); }
+        label { display:block; font-size:12px; font-weight:600; color:#64748b; margin:15px 0 5px; }
+        input, textarea { width:100%; padding:12px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc; font-family:inherit; box-sizing:border-box; }
+        textarea { height:150px; }
+        .btn-salvar { width:100%; background:#1e3a8a; color:white; border:none; padding:15px; border-radius:12px; font-weight:600; margin-top:20px; cursor:pointer; }
+    </style>
+</head>
+<body>
+    <div class="topo">
+        <div class="btn-voltar" onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+        <div style="font-weight:600">Postar Requerimento</div>
+    </div>
+    <div class="form">
+        <div class="card">
+            <label>Título do Requerimento</label>
+            <input type="text" id="titulo" placeholder="Ex: Requerimento nº 012/2023">
+            <label>Data</label>
+            <input type="text" id="data" placeholder="Ex: 26/10/2023">
+            <label>Descrição do Requerimento</label>
+            <textarea id="texto"></textarea>
+            <button class="btn-salvar" onclick="salvar()">Salvar Requerimento</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         function salvar() {
             const t = document.getElementById("titulo").value;
             const d = document.getElementById("data").value;
             const tx = document.getElementById("texto").value;
 
-            // AQUI SALVA NA COLEÇÃO "requerimentos"
+            if(!t || !tx) return alert("Preencha o título e a descrição!");
+
             db.collection("requerimentos").add({
                 titulo: t,
                 data: d,
                 texto: tx,
                 criadoEm: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                alert("Requerimento postado!");
+                alert("Requerimento postado com sucesso!");
                 history.back();
             });
         }
     </script>
+</body>
+</html>
