@@ -8,7 +8,7 @@
 
 <style>
   body { margin:0; font-family:'Poppins', sans-serif; background:linear-gradient(to bottom, #ffffff 70%, #dcfce7); color:#0f172a; padding:20px; }
-  .topo { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+  .topo { display:flex; align-items:center; justify-content: space-between; margin-bottom:20px; }
   .voltar { background:#1e3a8a; color:white; padding:10px 14px; border-radius:10px; cursor:pointer; }
   select, input, textarea { width:100%; padding:14px; margin-top:12px; border-radius:12px; border:1px solid #ccc; font-size:14px; box-sizing: border-box; }
   textarea { min-height:120px; }
@@ -21,23 +21,22 @@
   .item-admin button { margin-top:10px; margin-right:5px; padding:8px 10px; border:none; border-radius:8px; cursor:pointer; width:auto; }
   .btn-editar { background:#f59e0b; color:white; }
   .btn-excluir { background:#ef4444; color:white; }
-  
-  /* ESTILO PARA MENSAGENS */
   .tag-tipo { font-size: 10px; background: #e2e8f0; padding: 3px 8px; border-radius: 5px; text-transform: uppercase; font-weight: bold; }
+  
+  .btn-sair { background:#ef4444; width:auto; padding:8px 15px; margin:0; font-size: 13px; }
 </style>
 </head>
 
 <body>
 
-<div class="topo" style="justify-content: space-between;">
+<div class="topo">
   <div style="display: flex; align-items: center; gap: 10px;">
     <div class="voltar" onclick="voltar()">←</div>
-    <b>Painel do Administrador</b>
+    <b>Painel Administrativo</b>
   </div>
-  
-  <button onclick="logout()" style="background:#ef4444; width:auto; padding:8px 15px; margin:0; font-size: 13px;">Sair</button>
+  <button class="btn-sair" onclick="logout()">Sair</button>
 </div>
-  
+
 <select id="tipo" onchange="alternarInterface()">
   <option value="indicacoes">Indicações</option>
   <option value="requerimentos">Requerimentos</option>
@@ -65,22 +64,9 @@
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
 <script>
-  // 🔒 VERIFICAÇÃO DE SEGURANÇA
-firebase.auth().onAuthStateChanged((user) => {
-  if (!user) {
-    // Se não tiver usuário logado, chuta para a página de login
-    window.location.href = "login.html";
-  }
-});
-
-// Adicione também uma função de Sair para sua segurança
-function logout() {
-  firebase.auth().signOut().then(() => {
-    window.location.href = "login.html";
-  });
-}
 const firebaseConfig = {
   apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
   authDomain: "gabinete-do-povo.firebaseapp.com",
@@ -92,28 +78,33 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-  /* FUNÇÃO PARA LOGOUT */
+const auth = firebase.auth();
+
+// 🔒 TRAVA DE SEGURANÇA: Verifica se está logado
+auth.onAuthStateChanged((user) => {
+  if (!user) {
+    // Se não houver usuário logado, redireciona para o login
+    window.location.href = "login.html";
+  } else {
+    // Se estiver logado, carrega a lista
+    carregarLista();
+  }
+});
+
 function logout() {
-  if(confirm("Deseja realmente sair do painel?")) {
-    firebase.auth().signOut().then(() => {
+  if(confirm("Deseja sair do painel?")) {
+    auth.signOut().then(() => {
       window.location.href = "login.html";
-    }).catch((error) => {
-      alert("Erro ao sair");
     });
   }
 }
+
 let editandoID = null;
 
-// Função para esconder formulário se for "mensagens"
 function alternarInterface() {
   const tipo = document.getElementById("tipo").value;
   const container = document.getElementById("containerCadastro");
-  
-  if(tipo === "mensagens_contato") {
-    container.style.display = "none";
-  } else {
-    container.style.display = "block";
-  }
+  container.style.display = (tipo === "mensagens_contato") ? "none" : "block";
   carregarLista();
 }
 
@@ -155,21 +146,15 @@ function carregarLista(){
     lista.innerHTML = "";
     snapshot.forEach(doc => {
       let n = doc.data();
-      
       if(tipo === "mensagens_contato") {
-        // Layout para Mensagens
         lista.innerHTML += `
           <div class="item-admin">
-            <span class="tag-tipo">${n.tipo}</span><br>
+            <span class="tag-tipo">${n.tipo || 'Mensagem'}</span><br>
             <b>${n.nome}</b> (${n.bairro})<br>
             <p style="font-size:13px; margin:5px 0;">${n.mensagem}</p>
-            <small>${n.dataEnvio ? n.dataEnvio.toDate().toLocaleString() : ''}</small>
-            <div>
-              <button class="btn-excluir" onclick="excluir('${doc.id}')">Apagar Mensagem</button>
-            </div>
+            <div><button class="btn-excluir" onclick="excluir('${doc.id}')">Excluir</button></div>
           </div>`;
       } else {
-        // Layout para Postagens normais
         lista.innerHTML += `
           <div class="item-admin">
             <b>${n.titulo}</b><br><small>${n.data}</small>
@@ -194,9 +179,9 @@ function editar(id, titulo, data, texto, imagem){
 
 function excluir(id){
   let tipo = document.getElementById("tipo").value;
-  if(confirm("Deseja realmente excluir este item?")){
+  if(confirm("Excluir permanentemente?")){
     db.collection(tipo).doc(id).delete().then(() => {
-      alert("Removido!");
+      alert("Excluído!");
       carregarLista();
     });
   }
@@ -212,8 +197,6 @@ function limparCampos(){
 function voltar(){
   window.location.href = "index.html";
 }
-
-carregarLista();
 </script>
 </body>
 </html>
