@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensagens Recebidas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; }
+        .topo { background:#16a34a; color:white; padding:20px; display:flex; align-items:center; gap:15px; border-radius:0 0 25px 25px; }
+        .msg-list { padding:15px; }
+        .msg-card { background:white; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid #16a34a; }
+        .msg-nome { font-weight:600; color:#1e3a8a; }
+        .msg-tipo { font-size:10px; text-transform:uppercase; background:#dcfce7; color:#16a34a; padding:2px 8px; border-radius:5px; font-weight:600; }
+        .msg-texto { font-size:14px; margin-top:10px; color:#475569; }
+        .msg-zap { display:inline-block; margin-top:10px; color:#16a34a; text-decoration:none; font-weight:600; font-size:13px; }
+    </style>
+</head>
+<body>
+    <div class="topo">
+        <div onclick="history.back()" style="cursor:pointer"><i class="material-icons">arrow_back</i></div>
+        <div style="font-weight:600">Mensagens do Povo</div>
+    </div>
+    <div class="msg-list" id="lista">Carregando mensagens...</div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        db.collection("contatos").orderBy("criadoEm","desc").get().then(snapshot => {
+            const lista = document.getElementById("lista"); lista.innerHTML = "";
+            snapshot.forEach(doc => {
+                let m = doc.data();
+                lista.innerHTML += `
+                <div class="msg-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center">
+                        <span class="msg-nome">${m.nome}</span>
+                        <span class="msg-tipo">${m.tipo}</span>
+                    </div>
+                    <div class="msg-texto">${m.mensagem}</div>
+                    <a href="https://wa.me/55${m.whatsapp.replace(/\D/g,'')}" class="msg-zap">Responder via WhatsApp</a>
+                </div>`;
+            });
+        });
+    </script>
+</body>
+</html>
