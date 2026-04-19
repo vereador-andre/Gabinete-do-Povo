@@ -7,9 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: 'Poppins', sans-serif; }
-
+        
         .bg-fundo {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('fundo.jpg');
+            /* Certifique-se que o arquivo fundo.jpg existe na pasta */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('fundo.jpg');
             background-size: cover;
             background-position: center;
             height: 100vh;
@@ -23,15 +24,15 @@
             box-sizing: border-box;
         }
 
-        .logo-home { width: 120px; margin-bottom: 15px; }
-        h1 { font-size: 26px; margin: 0; }
-        p { font-size: 16px; margin-bottom: 40px; opacity: 0.9; }
+        .logo-home { width: 130px; margin-bottom: 20px; }
+        h1 { font-size: 26px; margin: 0; font-weight: 600; }
+        p { font-size: 16px; margin-top: 5px; margin-bottom: 40px; opacity: 0.9; }
 
-        .btn-container { width: 100%; max-width: 280px; display: flex; flex-direction: column; gap: 15px; }
+        .btn-container { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 15px; }
 
         .btn-opcao {
-            padding: 16px;
-            border-radius: 12px;
+            padding: 18px;
+            border-radius: 15px;
             border: none;
             font-size: 16px;
             font-weight: 600;
@@ -41,8 +42,9 @@
             transition: 0.3s;
         }
 
-        .btn-cidadao { background: #22c55e; color: white; }
+        .btn-cidadao { background: #22c55e; color: white; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); }
         .btn-admin { background: white; color: #1e3a8a; }
+        
         .btn-opcao:active { transform: scale(0.95); }
     </style>
 </head>
@@ -51,7 +53,7 @@
     <div class="bg-fundo">
         <img src="logo.png" alt="Logo" class="logo-home">
         <h1>Gabinete do Povo</h1>
-        <p>Vereador André de Dedé</p>
+        <p>André de Dedé</p>
 
         <div class="btn-container">
             <a href="app.html" class="btn-opcao btn-cidadao">Entrar como Cidadão</a>
