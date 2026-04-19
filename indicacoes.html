@@ -3,94 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Indicações</title>
-
+<title>Indicações - Gabinete do Povo</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <style>
-
-body {
-  margin:0;
-  font-family:'Poppins', sans-serif;
-  background:#0f172a;
-  color:white;
-  padding:20px;
-}
-
-.topo {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:20px;
-}
-
-.voltar {
-  background:#1e293b;
-  padding:10px 15px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-.post {
-  background:#1e293b;
-  border-radius:15px;
-  padding:15px;
-  margin-bottom:15px;
-}
-
-.post img, iframe {
-  width:100%;
-  border-radius:10px;
-  margin-bottom:10px;
-}
-
-iframe {
-  height:200px;
-  border:none;
-}
-
-.post-title {
-  font-weight:600;
-}
-
-.post-date {
-  font-size:12px;
-  color:#94a3b8;
-  margin-bottom:8px;
-}
-
-.logo {
-  text-align:center;
-  margin-top:30px;
-}
-
-.logo img {
-  width:100px;
-}
-
+  body { margin:0; font-family:'Poppins', sans-serif; background:#0f172a; color:white; padding:20px; }
+  .topo { display:flex; align-items:center; gap:10px; margin-bottom:20px; position: sticky; top: 0; background: #0f172a; padding: 10px 0; z-index: 100; }
+  .voltar { background:#1e293b; padding:10px 15px; border-radius:10px; cursor:pointer; display: flex; align-items: center; }
+  .post { background:#1e293b; border-radius:15px; padding:15px; margin-bottom:20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+  .post img, .post iframe { width:100%; border-radius:10px; margin-bottom:12px; display: block; border: none; }
+  iframe { height:200px; }
+  .post-title { font-weight:600; font-size: 18px; color: #f8fafc; margin-bottom: 5px; }
+  .post-date { font-size:12px; color:#94a3b8; margin-bottom:10px; display: flex; align-items: center; gap: 5px; }
+  .post-text { font-size:14px; line-height: 1.6; color: #cbd5e1; }
+  .logo { text-align:center; margin-top:30px; opacity: 0.4; }
+  .logo img { width:90px; }
+  #loader { text-align: center; padding: 30px; color: #94a3b8; font-size: 14px; }
 </style>
 </head>
 
 <body>
 
 <div class="topo">
-  <div class="voltar" onclick="voltar()">←</div>
+  <div class="voltar" onclick="voltar()">
+    <span class="material-icons" style="font-size: 20px; margin-right: 5px;">arrow_back</span>
+    Voltar
+  </div>
   <b>Indicações</b>
 </div>
 
+<div id="loader">Carregando indicações...</div>
 <div id="feed"></div>
 
-<div class="logo">
-  <img src="logo.png">
-</div>
+<div class="logo"><img src="logo.png"></div>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
-
 const firebaseConfig = {
   apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
   authDomain: "gabinete-do-povo.firebaseapp.com",
@@ -100,78 +51,71 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* 🔥 DETECTAR YOUTUBE */
-function getYouTubeID(url){
+// 🔥 Função robusta para capturar ID do YouTube
+function getYouTubeID(url) {
   if(!url) return null;
-
-  let regExp = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/;
-  let match = url.match(regExp);
-  return match ? match[1] : null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
 }
 
-/* 🔥 VALIDAR IMAGEM */
+// 🔥 Validar se é imagem
 function isImagem(url){
-  return url.match(/\.(jpeg|jpg|png|webp|gif)$/i);
+  return url && url.match(/\.(jpeg|jpg|png|webp|gif)$/i);
 }
 
-/* 🔥 RENDER MIDIA */
+// 🔥 Renderizar Mídia (Vídeo ou Foto)
 function renderMidia(url){
-
-  if(!url) return "";
-
-  let yt = getYouTubeID(url);
-
-  if(yt){
-    return `<iframe src="https://www.youtube.com/embed/${yt}" allowfullscreen></iframe>`;
-  }
-
-  if(isImagem(url)){
-    return `<img src="${url}" onerror="this.style.display='none'">`;
-  }
-
-  return `<div style="font-size:12px;opacity:0.7;">Mídia inválida</div>`;
+  if(!url || url.trim() === "") return "";
+  
+  let ytId = getYouTubeID(url);
+  if(ytId) return `<iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe>`;
+  
+  if(isImagem(url)) return `<img src="${url}" onerror="this.style.display='none'">`;
+  
+  return "";
 }
 
-/* 🔥 CARREGAR */
 function carregar(){
-
   const feed = document.getElementById("feed");
-  feed.innerHTML = "";
+  const loader = document.getElementById("loader");
 
-  db.collection("indicacoes")
-  .orderBy("criadoEm","desc")
-  .get()
+  db.collection("indicacoes").orderBy("criadoEm","desc").get()
   .then(snapshot => {
+    loader.style.display = "none";
+    feed.innerHTML = "";
+
+    if(snapshot.empty) {
+      feed.innerHTML = "<p style='text-align:center; opacity:0.5;'>Nenhuma indicação cadastrada.</p>";
+      return;
+    }
 
     snapshot.forEach(doc => {
-
       let n = doc.data();
+      // Resolve o problema de parágrafos "grudados"
+      let textoFormatado = n.texto ? n.texto.replace(/\n/g, '<br>') : "";
 
       feed.innerHTML += `
         <div class="post">
           ${renderMidia(n.imagem)}
           <div class="post-title">${n.titulo}</div>
-          <div class="post-date">${n.data}</div>
-          <div>${n.texto}</div>
+          <div class="post-date">📅 ${n.data}</div>
+          <div class="post-text">${textoFormatado}</div>
         </div>
       `;
-
     });
-
+  }).catch(err => {
+    loader.innerText = "Erro ao carregar dados.";
+    console.error(err);
   });
+}
 
+function voltar(){
+  // Volta para a tela de Ações do Mandato
+  window.location.href = "acoes.html";
 }
 
 carregar();
-
-function voltar(){
-  if(history.length > 1){
-    window.history.back();
-  } else {
-    window.location.href = "app.html";
-  }
-}
 </script>
-
 </body>
 </html>
