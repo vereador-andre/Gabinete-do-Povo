@@ -3,182 +3,112 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Requerimentos</title>
-
+<title>Requerimentos - Gabinete do Povo</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <style>
-
-body {
-  margin:0;
-  font-family:'Poppins', sans-serif;
-  background:#0f172a;
-  color:white;
-  padding:20px;
-}
-
-.topo {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:20px;
-}
-
-.voltar {
-  background:#1e293b;
-  padding:10px 15px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-.feed {
-  margin-top:20px;
-}
-
-.post {
-  background:#1e293b;
-  border-radius:15px;
-  padding:15px;
-  margin-bottom:15px;
-}
-
-.post-title {
-  font-weight:600;
-  margin-bottom:5px;
-}
-
-.post-date {
-  font-size:12px;
-  color:#94a3b8;
-  margin-bottom:10px;
-}
-
-.post-text {
-  font-size:14px;
-}
-
-/* MÍDIA */
-.post img {
-  width:100%;
-  border-radius:10px;
-  margin-bottom:10px;
-}
-
-iframe {
-  width:100%;
-  height:200px;
-  border:none;
-  border-radius:10px;
-  margin-bottom:10px;
-}
-
-/* LOGO */
-.logo {
-  text-align:center;
-  margin-top:30px;
-}
-
-.logo img {
-  width:100px;
-  opacity:0.8;
-}
-
+  body { margin:0; font-family:'Poppins', sans-serif; background:#0f172a; color:white; padding:20px; }
+  .topo { display:flex; align-items:center; gap:10px; margin-bottom:20px; position: sticky; top: 0; background: #0f172a; padding: 10px 0; z-index: 100; }
+  .voltar { background:#1e293b; padding:10px 15px; border-radius:10px; cursor:pointer; display: flex; align-items: center; }
+  .post { background:#1e293b; border-radius:15px; padding:15px; margin-bottom:20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+  .post img, .post iframe { width:100%; border-radius:10px; margin-bottom:12px; display: block; border: none; }
+  iframe { height:200px; }
+  .post-title { font-weight:600; font-size: 18px; color: #f8fafc; margin-bottom: 5px; }
+  .post-date { font-size:12px; color:#94a3b8; margin-bottom:10px; display: flex; align-items: center; gap: 5px; }
+  .post-text { font-size:14px; line-height: 1.6; color: #cbd5e1; }
+  .logo { text-align:center; margin-top:30px; opacity: 0.4; }
+  .logo img { width:90px; }
+  #loader { text-align: center; padding: 30px; color: #94a3b8; font-size: 14px; }
 </style>
 </head>
 
 <body>
 
 <div class="topo">
-  <div class="voltar" onclick="voltar()">←</div>
+  <div class="voltar" onclick="voltar()">
+    <span class="material-icons" style="font-size: 20px; margin-right: 5px;">arrow_back</span>
+    Voltar
+  </div>
   <b>Requerimentos</b>
 </div>
 
-<div class="feed" id="feed"></div>
+<div id="loader">Carregando requerimentos...</div>
+<div id="feed"></div>
 
-<div class="logo">
-  <img src="logo.png">
-</div>
+<div class="logo"><img src="logo.png"></div>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
-
 const firebaseConfig = {
   apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
   authDomain: "gabinete-do-povo.firebaseapp.com",
   projectId: "gabinete-do-povo",
-  storageBucket: "gabinete-do-povo.appspot.com",
-  messagingSenderId: "450444313568",
-  appId: "1:450444313568:web:e12ba742d940dc23e52185"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* YOUTUBE */
-function extrairYouTubeID(url){
-  try{
-    let regExp = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/;
-    let match = url.match(regExp);
-    return match ? match[1] : null;
-  }catch{
-    return null;
-  }
+// 🔥 Função robusta para capturar ID do YouTube (links curtos e longos)
+function getYouTubeID(url) {
+  if(!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
 }
 
-/* CARREGAR */
+function isImagem(url){
+  return url && url.match(/\.(jpeg|jpg|png|webp|gif)$/i);
+}
+
+function renderMidia(url){
+  if(!url || url.trim() === "") return "";
+  let ytId = getYouTubeID(url);
+  if(ytId) return `<iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe>`;
+  if(isImagem(url)) return `<img src="${url}" onerror="this.style.display='none'">`;
+  return "";
+}
+
 function carregar(){
-
   const feed = document.getElementById("feed");
+  const loader = document.getElementById("loader");
 
-  db.collection("requerimentos")
-  .orderBy("criadoEm", "desc")
-  .get()
+  db.collection("requerimentos").orderBy("criadoEm","desc").get()
   .then(snapshot => {
+    loader.style.display = "none";
+    feed.innerHTML = "";
+
+    if(snapshot.empty) {
+      feed.innerHTML = "<p style='text-align:center; opacity:0.5;'>Nenhum requerimento encontrado.</p>";
+      return;
+    }
 
     snapshot.forEach(doc => {
-
       let n = doc.data();
-
-      let midia = "";
-
-      let videoID = extrairYouTubeID(n.imagem);
-
-      if(videoID){
-        midia = `<iframe src="https://www.youtube.com/embed/${videoID}" allowfullscreen></iframe>`;
-      }
-      else if(n.imagem){
-        midia = `<img src="${n.imagem}">`;
-      }
+      let textoFormatado = n.texto ? n.texto.replace(/\n/g, '<br>') : "";
 
       feed.innerHTML += `
         <div class="post">
-          ${midia}
+          ${renderMidia(n.imagem)}
           <div class="post-title">${n.titulo}</div>
-          <div class="post-date">${n.data}</div>
-          <div class="post-text">${n.texto}</div>
+          <div class="post-date">📅 ${n.data}</div>
+          <div class="post-text">${textoFormatado}</div>
         </div>
       `;
-
     });
-
+  }).catch(err => {
+    loader.innerText = "Erro ao carregar dados.";
+    console.error(err);
   });
+}
 
+function voltar(){
+  window.location.href = "acoes.html";
 }
 
 carregar();
-
-function voltar(){
-  if(history.length > 1){
-    window.history.back();
-  } else {
-    window.location.href = "app.html";
-  }
-}
 </script>
-
 </body>
 </html>
