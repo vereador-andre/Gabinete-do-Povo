@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Conteúdo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; }
+        .topo { background:#1e293b; color:white; padding:20px; display:flex; align-items:center; gap:15px; }
+        .container { padding: 15px; }
+        .item-lista { 
+            background:white; padding:15px; border-radius:12px; margin-bottom:10px; 
+            display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-del { color:#ef4444; border:none; background:none; cursor:pointer; }
+    </style>
+</head>
+<body>
+<div class="topo">
+    <i class="material-icons" onclick="location.href='admin.html'">arrow_back</i>
+    <span id="titulo-gerenciar">Gerenciar</span>
+</div>
+<div class="container" id="lista-itens">Carregando...</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const colecao = urlParams.get('col');
+    document.getElementById('titulo-gerenciar').innerText = "Gerenciar " + colecao.toUpperCase();
+
+    db.collection(colecao).orderBy("criadoEm", "desc").onSnapshot(snapshot => {
+        const lista = document.getElementById("lista-itens");
+        lista.innerHTML = "";
+        snapshot.forEach(doc => {
+            const item = doc.data();
+            lista.innerHTML += `
+                <div class="item-lista">
+                    <div>
+                        <strong style="font-size:14px; color:#1e3a8a;">${item.titulo || 'Postagem'}</strong><br>
+                        <small style="color:#94a3b8;">${item.data}</small>
+                    </div>
+                    <button class="btn-del" onclick="excluir('${doc.id}')">
+                        <i class="material-icons">delete</i>
+                    </button>
+                </div>`;
+        });
+    });
+
+    function excluir(id) {
+        if(confirm("Deseja realmente excluir permanentemente?")) {
+            db.collection(colecao).doc(id).delete();
+        }
+    }
+</script>
+</body>
+</html>
