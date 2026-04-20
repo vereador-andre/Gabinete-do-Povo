@@ -8,32 +8,32 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 40px; }
-        .header-admin { background:#1e3a8a; color:white; padding:40px 20px; text-align:center; border-radius:0 0 30px 30px; }
+        .header-admin { background:#1e3a8a; color:white; padding:40px 20px; text-align:center; border-radius:0 0 30px 30px; position: relative; }
         .header-admin h1 { margin:0; font-size:22px; }
         
         .grid-admin { display:grid; grid-template-columns: 1fr; gap:12px; padding:20px; margin-top: -20px; }
-        
-        /* Container para alinhar Postar e Gerenciar */
         .admin-row { display: flex; gap: 8px; }
         
         .btn-item { 
             flex: 1; background:white; padding:18px; border-radius:15px; display:flex; align-items:center; gap:15px; 
             text-decoration:none; color:#1e3a8a; font-weight:600; box-shadow:0 4px 10px rgba(0,0,0,0.05);
-            transition: 0.3s; border: 1px solid transparent; font-size: 14px;
+            transition: 0.3s; position: relative;
         }
         .btn-item i { background: #eff6ff; padding: 10px; border-radius: 10px; }
-        
-        /* Botão menor para gerenciar/editar */
-        .btn-manage {
-            background: #cbd5e1; color: #1e293b; width: 55px; border-radius: 15px;
-            display: flex; align-items: center; justify-content: center; text-decoration: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
+        .btn-manage { background: #cbd5e1; color: #1e293b; width: 55px; border-radius: 15px; display: flex; align-items: center; justify-content: center; text-decoration: none; }
 
-        .btn-logout { 
-            margin: 30px 20px; padding: 15px; border-radius: 12px; border: 1px solid #f87171; 
-            color: #f87171; text-align: center; cursor: pointer; font-weight: 600;
+        /* NOTIFICAÇÃO ESTILO BADGE */
+        .badge-alerta { 
+            position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; 
+            width: 24px; height: 24px; border-radius: 50%; display: none; 
+            align-items: center; justify-content: center; font-size: 11px; font-weight: bold;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); animation: pulse 1.5s infinite;
         }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+        .banner-aviso { display: none; background: #fee2e2; color: #b91c1c; padding: 10px; border-radius: 10px; margin: 0 20px 15px; font-size: 12px; text-align: center; font-weight: 600; }
+
+        .btn-logout { margin: 30px 20px; padding: 15px; border-radius: 12px; border: 1px solid #f87171; color: #f87171; text-align: center; cursor: pointer; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -43,51 +43,49 @@
     <p style="opacity:0.8; font-size:12px;">Gestão de Conteúdo</p>
 </div>
 
+<div id="avisoMensagem" class="banner-aviso">⚠️ Você tem novas mensagens pendentes!</div>
+
 <div class="grid-admin">
-    <div class="admin-row">
-        <a href="cad-noticia.html" class="btn-item"><i class="material-icons">newspaper</i> Postar Notícia</a>
-        <a href="gerenciar.html?col=noticias" class="btn-manage"><i class="material-icons">settings</i></a>
-    </div>
-
-    <div class="admin-row">
-        <a href="cad-acao.html" class="btn-item"><i class="material-icons">task_alt</i> Postar Ação Atendida</a>
-        <a href="gerenciar.html?col=acoes-atendidas" class="btn-manage"><i class="material-icons">settings</i></a>
-    </div>
-
-    <div class="admin-row">
-        <a href="cad-indicacao.html" class="btn-item"><i class="material-icons">assignment</i> Postar Indicação</a>
-        <a href="gerenciar.html?col=indicacoes" class="btn-manage"><i class="material-icons">settings</i></a>
-    </div>
-
-    <div class="admin-row">
-        <a href="cad-requerimento.html" class="btn-item"><i class="material-icons">description</i> Postar Requerimento</a>
-        <a href="gerenciar.html?col=requerimentos" class="btn-manage"><i class="material-icons">settings</i></a>
-    </div>
-
-    <div class="admin-row">
-        <a href="cad-projeto.html" class="btn-item"><i class="material-icons">gavel</i> Postar Projeto de Lei</a>
-        <a href="gerenciar.html?col=projetos" class="btn-manage"><i class="material-icons">settings</i></a>
-    </div>
-
-    <div class="admin-row">
-        <a href="cad-sessao.html" class="btn-item"><i class="material-icons">videocam</i> Postar Vídeo de Sessão</a>
-        <a href="gerenciar.html?col=sessoes" class="btn-manage"><i class="material-icons">settings</i></a>
-    </div>
-
+    <div class="admin-row"><a href="cad-noticia.html" class="btn-item"><i class="material-icons">newspaper</i> Notícia</a><a href="gerenciar.html?col=noticias" class="btn-manage"><i class="material-icons">settings</i></a></div>
+    <div class="admin-row"><a href="cad-acao.html" class="btn-item"><i class="material-icons">task_alt</i> Ação Atendida</a><a href="gerenciar.html?col=acoes-atendidas" class="btn-manage"><i class="material-icons">settings</i></a></div>
+    <div class="admin-row"><a href="cad-indicacao.html" class="btn-item"><i class="material-icons">assignment</i> Indicação</a><a href="gerenciar.html?col=indicacoes" class="btn-manage"><i class="material-icons">settings</i></a></div>
+    <div class="admin-row"><a href="cad-requerimento.html" class="btn-item"><i class="material-icons">description</i> Requerimento</a><a href="gerenciar.html?col=requerimentos" class="btn-manage"><i class="material-icons">settings</i></a></div>
+    <div class="admin-row"><a href="cad-projeto.html" class="btn-item"><i class="material-icons">gavel</i> Projeto de Lei</a><a href="gerenciar.html?col=projetos" class="btn-manage"><i class="material-icons">settings</i></a></div>
+    <div class="admin-row"><a href="cad-sessao.html" class="btn-item"><i class="material-icons">videocam</i> Sessão</a><a href="gerenciar.html?col=sessoes" class="btn-manage"><i class="material-icons">settings</i></a></div>
+    
     <a href="ver-mensagens.html" class="btn-item" style="background:#f0fdf4; color:#16a34a; margin-top: 10px;">
         <i class="material-icons" style="background:#dcfce7;">mail</i> Mensagens Recebidas
+        <div id="notifBadge" class="badge-alerta">!</div>
     </a>
 </div>
 
 <div class="btn-logout" onclick="logout()">Sair do Sistema</div>
 
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
     if(localStorage.getItem("logado") !== "true") { window.location.href = "login.html"; }
-    function logout() {
-        localStorage.removeItem("logado");
-        window.location.href = "login.html";
-    }
-</script>
+    
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
+    // Lógica de Notificações em tempo real
+    db.collection("contatos").where("status", "==", "Pendente").onSnapshot(snapshot => {
+        const badge = document.getElementById("notifBadge");
+        const aviso = document.getElementById("avisoMensagem");
+        
+        if (snapshot.size > 0) {
+            badge.style.display = "flex";
+            badge.innerText = snapshot.size; // Mostra a quantidade de mensagens
+            aviso.style.display = "block";
+        } else {
+            badge.style.display = "none";
+            aviso.style.display = "none";
+        }
+    });
+
+    function logout() { localStorage.removeItem("logado"); window.location.href = "login.html"; }
+</script>
 </body>
 </html>
