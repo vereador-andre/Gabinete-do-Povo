@@ -8,42 +8,25 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 30px; }
-        
-        /* Topo Fixo */
-        .header { background:#1e3a8a; color:white; padding:20px; text-align:center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .header h2 { margin:0; font-size: 18px; }
-
-        /* Seletor de Abas Estilo App */
-        .tab-container { display: flex; background: white; padding: 10px; margin: 15px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .tab-btn { 
-            flex: 1; padding: 12px; border: none; background: transparent; 
-            color: #64748b; font-weight: 600; cursor: pointer; border-radius: 10px;
-            transition: 0.3s; font-size: 14px;
-        }
+        .header { background:#1e3a8a; color:white; padding:20px; text-align:center; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: center; }
+        .btn-voltar-sessao { position: absolute; left: 15px; cursor: pointer; background: rgba(255,255,255,0.2); padding: 8px; border-radius: 10px; display: flex; }
+        .tab-container { display: flex; background: white; padding: 10px; margin: 15px; border-radius: 15px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #64748b; font-weight: 600; cursor: pointer; border-radius: 10px; font-size: 14px; }
         .tab-btn.active { background: #1e3a8a; color: white; }
-
-        /* Lista de Vídeos */
-        .lista-videos { padding: 0 15px; min-height: 300px; }
-        .video-card { background: white; border-radius: 20px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); animation: fadeIn 0.4s ease-in; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
+        .lista-videos { padding: 0 15px; }
+        .video-card { background: white; border-radius: 20px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        
         .video-info { padding: 15px; }
-        .video-info h3 { margin: 0; font-size: 15px; color: #1e3a8a; line-height: 1.4; }
+        .video-info h3 { margin: 0; font-size: 15px; color: #1e3a8a; }
         .video-info .meta { display: flex; align-items: center; gap: 5px; margin-top: 8px; color: #94a3b8; font-size: 12px; }
-
-        /* Loading Spinner */
-        .loader { text-align: center; padding: 40px; color: #1e3a8a; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div style="position: absolute; left: 15px; top: 20px;" onclick="location.href='index.html'"><i class="material-icons">arrow_back</i></div>
-    <h2>Sessões da Câmara</h2>
+    <div class="btn-voltar-sessao" onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+    <h2 style="margin:0; font-size:18px;">Sessões da Câmara</h2>
 </div>
 
 <div class="tab-container">
@@ -51,23 +34,16 @@
     <button class="tab-btn" id="btn-extraordinaria" onclick="switchTab('extraordinaria')">Extraordinárias</button>
 </div>
 
-<div class="lista-videos" id="listaSessoes">
-    </div>
+<div class="lista-videos" id="listaSessoes"></div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
-    // Configuração do seu Firebase
-    const firebaseConfig = { 
-        apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
-        authDomain: "gabinete-do-povo.firebaseapp.com", 
-        projectId: "gabinete-do-povo" 
-    };
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Função para extrair o ID do vídeo do YouTube de qualquer formato de link
     function getYoutubeID(url) {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
         const match = url.match(regExp);
@@ -75,65 +51,27 @@
     }
 
     async function switchTab(tipo) {
-        // Atualiza visual dos botões
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById('btn-' + tipo).classList.add('active');
-
         const container = document.getElementById("listaSessoes");
-        container.innerHTML = '<div class="loader"><i class="material-icons" style="font-size:40px; animation: spin 1s linear infinite;">sync</i><p>Buscando sessões...</p></div>';
+        container.innerHTML = '<p style="text-align:center; padding:20px;">Carregando...</p>';
 
         try {
-            // Busca no Firebase filtrando pelo campo "tipo" que criamos no cad-sessao
-            const snapshot = await db.collection("sessoes")
-                .where("tipo", "==", tipo)
-                .orderBy("criadoEm", "desc")
-                .get();
-
+            // Removido o orderBy temporariamente para evitar erro de índice no Firebase vazio
+            const snapshot = await db.collection("sessoes").where("tipo", "==", tipo).get();
             container.innerHTML = "";
-
             if (snapshot.empty) {
-                container.innerHTML = `
-                    <div style="text-align:center; padding:50px; color:#94a3b8;">
-                        <i class="material-icons" style="font-size:48px;">videocam_off</i>
-                        <p>Nenhuma sessão ${tipo} encontrada.</p>
-                    </div>`;
+                container.innerHTML = `<p style="text-align:center; padding:50px; color:#94a3b8;">Nenhuma sessão ${tipo} postada.</p>`;
                 return;
             }
-
             snapshot.forEach(doc => {
                 const s = doc.data();
                 const videoId = getYoutubeID(s.link);
-                const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-
-                container.innerHTML += `
-                    <div class="video-card">
-                        <div class="video-wrapper">
-                            <iframe src="${embedUrl}" allowfullscreen></iframe>
-                        </div>
-                        <div class="video-info">
-                            <h3>${s.titulo}</h3>
-                            <div class="meta">
-                                <i class="material-icons" style="font-size:14px;">calendar_today</i>
-                                <span>${s.data}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                container.innerHTML += `<div class="video-card"><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe></div><div class="video-info"><h3>${s.titulo}</h3><div class="meta"><i class="material-icons" style="font-size:14px;">calendar_today</i><span>${s.data}</span></div></div></div>`;
             });
-        } catch (error) {
-            console.error(error);
-            container.innerHTML = "<p style='text-align:center; color:red;'>Erro ao carregar vídeos.</p>";
-        }
+        } catch (e) { container.innerHTML = "<p style='text-align:center;'>Aguardando novos vídeos...</p>"; }
     }
-
-    // CSS extra para o ícone girando
-    const style = document.createElement('style');
-    style.innerHTML = "@keyframes spin { 100% { transform:rotate(360deg); } }";
-    document.head.appendChild(style);
-
-    // Carrega as Ordinárias por padrão ao abrir
     switchTab('ordinaria');
 </script>
-
 </body>
 </html>
