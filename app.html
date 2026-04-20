@@ -9,164 +9,90 @@
     <style>
         body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 40px; }
         
-        /* Topo com a Foto e Textos */
         .topo-perfil { 
-            background: #1e3a8a; 
-            padding: 40px 20px; 
+            background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%); 
+            padding: 40px 20px 30px; 
             text-align: center; 
-            border-radius: 0 0 40px 40px;
+            border-radius: 0 0 50px 50px;
             color: white;
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.2);
         }
         .foto-perfil {
-            width: 110px;
-            height: 110px;
+            width: 120px; height: 120px;
             border-radius: 50%;
-            border: 4px solid white;
+            border: 4px solid rgba(255,255,255,0.8);
             object-fit: cover;
             margin-bottom: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .topo-perfil h2 { margin: 0; font-size: 24px; font-weight: 600; }
-        .topo-perfil .cargo { margin: 0; font-size: 16px; font-weight: 300; opacity: 0.9; }
-        .topo-perfil .frase-efeito { 
-            margin-top: 10px; font-size: 13px; font-weight: 400;
+        .topo-perfil h2 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.5px; }
+        .topo-perfil .cargo { margin: 0; font-size: 16px; opacity: 0.9; font-weight: 300; }
+
+        /* REDES SOCIAIS NO TOPO */
+        .redes-sociais-topo { margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 20px; }
+        .redes-sociais-topo p { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; opacity: 0.8; }
+        .icones-redes { display: flex; justify-content: center; gap: 15px; }
+        .icones-redes a { 
+            color: white; background: rgba(255,255,255,0.2); 
+            width: 40px; height: 40px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center;
-            gap: 5px; color: #22c55e;
+            text-decoration: none; transition: 0.3s;
         }
+        .icones-redes a:active { background: white; color: #1e3a8a; transform: scale(1.1); }
 
-        /* Grade de Ícones */
-        .grid-menu {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding: 20px 20px 10px; /* Reduzi o padding inferior aqui */
-        }
+        .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 25px 20px 10px; }
         .menu-item {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #1e3a8a;
+            background: white; padding: 20px; border-radius: 20px; display: flex;
+            flex-direction: column; align-items: center; text-decoration: none; color: #1e3a8a;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: 0.3s;
         }
-        .menu-item:active { transform: scale(0.95); }
-        .menu-item i { font-size: 38px; margin-bottom: 10px; color: #1e3a8a; }
-        .menu-item span { font-size: 13px; font-weight: 600; text-align: center; }
+        .menu-item i { font-size: 35px; margin-bottom: 8px; }
+        .menu-item span { font-size: 13px; font-weight: 600; }
 
-        /* Botão de Destaque: Fale Conosco */
         .btn-contato-destaque {
-            margin: 5px 20px 20px;
-            padding: 18px;
+            margin: 10px 20px 20px; padding: 18px;
             background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
+            gap: 12px; color: white; text-decoration: none; font-weight: 600;
             box-shadow: 0 10px 20px rgba(30, 58, 138, 0.2);
-            transition: 0.3s;
-        }
-        .btn-contato-destaque:active { transform: scale(0.97); }
-
-        /* Rodapé Administrativo */
-        .btn-admin-acesso {
-            margin: 10px 20px 10px;
-            padding: 12px;
-            background: #e2e8f0;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: #475569;
-            text-decoration: none;
-            font-size: 12px;
         }
 
-        /* Sair do Aplicativo */
-        .btn-sair-app {
-            margin: 0 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            color: #ef4444;
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 600;
-            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1);
-        }
+        .btn-footer { margin: 10px 20px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 13px; border-radius: 12px; }
+        .btn-admin { background: #e2e8f0; color: #475569; }
+        .btn-sair { background: #fee2e2; color: #ef4444; font-weight: 600; }
     </style>
 </head>
 <body>
 
     <div class="topo-perfil">
-        <img src="fundofoto.jpg" alt="Vereador André de Dedé" class="foto-perfil">
+        <img src="fundofoto.jpg" class="foto-perfil">
         <h2>André de Dedé</h2>
         <p class="cargo">Vereador</p>
-        <div class="frase-efeito">
-            <i class="material-icons" style="font-size: 16px;">bolt</i>
-            Gabinete do Povo em Ação
+        
+        <div class="redes-sociais-topo">
+            <p>Siga-nos em nossas redes sociais</p>
+            <div class="icones-redes">
+                <a href="https://facebook.com/andrekelly.santos" target="_blank"><svg style="width:20px" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/></svg></a>
+                <a href="https://instagram.com/andre.de.dede" target="_blank"><svg style="width:20px" viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4A3.6,3.6 0 0,0 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6A3.6,3.6 0 0,0 16.4,4H7.6M17.2,4.8A1.2,1.2 0 1,1 16,6A1.2,1.2 0 0,1 17.2,4.8M12,7A5,5 0 1,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 1,0 15,12A3,3 0 0,0 12,9Z"/></svg></a>
+                <a href="https://tiktok.com/@andre_de_dede" target="_blank"><svg style="width:20px" viewBox="0 0 24 24"><path fill="currentColor" d="M17.71,6.15C16.31,5.2 15.43,3.68 15.41,2H12.16V16.14C12.12,17.47 11.02,18.52 9.69,18.48C8.35,18.44 7.3,17.34 7.34,16C7.39,14.67 8.48,13.62 9.81,13.66C10.28,13.67 10.73,13.82 11.12,14.1V10.82C9.17,10.45 7.29,11.33 6.44,13.12C5.59,14.91 5.92,17.06 7.28,18.5C8.63,19.93 10.76,20.35 12.56,19.54C14.36,18.73 15.53,16.82 15.45,14.84V8.58C16.73,9.5 18.25,10 19.82,10V6.75C19.05,6.75 18.32,6.54 17.71,6.15Z"/></svg></a>
+            </div>
         </div>
     </div>
 
     <div class="grid-menu">
-        <a href="noticias.html" class="menu-item">
-            <i class="material-icons">newspaper</i>
-            <span>Notícias</span>
-        </a>
-
-        <a href="acoes.html" class="menu-item">
-            <i class="material-icons">task_alt</i>
-            <span>Ações Atendidas</span>
-        </a>
-
-        <a href="indicacoes.html" class="menu-item">
-            <i class="material-icons">assignment</i>
-            <span>Indicações</span>
-        </a>
-
-        <a href="requerimentos.html" class="menu-item">
-            <i class="material-icons">description</i>
-            <span>Requerimentos</span>
-        </a>
-
-        <a href="projetos.html" class="menu-item">
-            <i class="material-icons">gavel</i>
-            <span>Projetos de Lei</span>
-        </a>
-
-        <a href="sessoes.html" class="menu-item">
-            <i class="material-icons">videocam</i>
-            <span>Sessões</span>
-        </a>
+        <a href="noticias.html" class="menu-item"><i class="material-icons">newspaper</i><span>Notícias</span></a>
+        <a href="acoes.html" class="menu-item"><i class="material-icons">task_alt</i><span>Ações</span></a>
+        <a href="indicacoes.html" class="menu-item"><i class="material-icons">assignment</i><span>Indicações</span></a>
+        <a href="requerimentos.html" class="menu-item"><i class="material-icons">description</i><span>Requerimentos</span></a>
+        <a href="projetos.html" class="menu-item"><i class="material-icons">gavel</i><span>Projetos</span></a>
+        <a href="sessoes.html" class="menu-item"><i class="material-icons">videocam</i><span>Sessões</span></a>
     </div>
 
     <a href="contato.html" class="btn-contato-destaque">
-        <i class="material-icons">chat</i>
-        Fale com o Vereador
+        <i class="material-icons">chat</i> Fale com o Vereador
     </a>
 
-    <a href="login.html" class="btn-admin-acesso">
-        <i class="material-icons">lock</i>
-        Acesso Administrativo
-    </a>
-
-    <a href="index.html" class="btn-sair-app">
-        <i class="material-icons">power_settings_new</i>
-        Sair do Aplicativo
-    </a>
+    <a href="login.html" class="btn-footer btn-admin"><i class="material-icons">lock</i> Painel Admin</a>
+    <a href="index.html" class="btn-footer btn-sair"><i class="material-icons">power_settings_new</i> Sair</a>
 
 </body>
 </html>
