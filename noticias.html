@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notícias - André de Dedé</title>
+    <title>Visualizar Conteúdo - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
@@ -11,16 +11,30 @@
         .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; position:sticky; top:0; z-index:100; border-radius:0 0 20px 20px; }
         .container { padding: 15px; }
         .card { background:white; border-radius:20px; overflow:hidden; margin-bottom:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05); }
-        .card img { width:100%; border:none; display:block; object-fit: cover; max-height: 250px; }
+        .card img, .card iframe { width:100%; border:none; display:block; object-fit: cover; }
         .card-body { padding:15px; }
         .card-data { font-size:11px; color:#94a3b8; font-weight:600; text-transform:uppercase; }
         .card-titulo { font-size:16px; color:#1e3a8a; font-weight:600; margin:5px 0; }
         .card-texto { font-size:13px; color:#475569; line-height:1.5; }
-        .btn-compartilhar { display:flex; align-items:center; justify-content:center; gap:8px; background:#f8fafc; color:#1e3a8a; border:1px solid #e2e8f0; padding:10px; border-radius:12px; margin-top:15px; cursor:pointer; font-weight:600; font-size:13px; }
+
+        /* --- ADIÇÃO: ESTILO DO BOTÃO COMPARTILHAR --- */
+        .btn-compartilhar { 
+            display:flex; align-items:center; justify-content:center; gap:8px; 
+            background:#f8fafc; color:#1e3a8a; border:1px solid #e2e8f0; padding:10px; 
+            border-radius:12px; margin-top:15px; cursor:pointer; font-weight:600; font-size:13px;
+            transition: 0.2s;
+        }
+        .btn-compartilhar:active { background: #e2e8f0; transform: scale(0.98); }
+        /* ------------------------------------------- */
     </style>
 </head>
 <body>
-<div class="topo"><i class="material-icons" onclick="history.back()">arrow_back</i><span>Notícias</span></div>
+
+<div class="topo">
+    <i class="material-icons" onclick="history.back()">arrow_back</i>
+    <span id="titulo-pagina">Conteúdo</span>
+</div>
+
 <div class="container" id="lista-publica">Carregando...</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -30,29 +44,72 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    db.collection("noticias").orderBy("data", "desc").onSnapshot(snapshot => {
+    // Defina qual coleção esta página deve ler (Ex: 'noticias' ou 'sessoes')
+    const colecaoNome = "noticias"; // <--- Ajuste isso conforme a página
+
+    // Mantive a ordenação original por criadoEm
+    db.collection(colecaoNome).orderBy("criadoEm", "desc").onSnapshot(snapshot => {
         const lista = document.getElementById("lista-publica");
         lista.innerHTML = "";
+        
+        if(snapshot.empty){
+            lista.innerHTML = "<p style='text-align:center; opacity:0.5; margin-top:50px;'>Nenhum conteúdo encontrado.</p>";
+            return;
+        }
+
         snapshot.forEach(doc => {
             const item = doc.data();
+            const id = doc.id;
+            
+            // Lógica original de mídia (vídeo ou imagem)
+            let midiaHTML = "";
+            if(item.link && item.link.includes('v=')){
+                midiaHTML = `<iframe height="200" src="https://www.youtube.com/embed/${item.link.split('v=')[1]}" allowfullscreen></iframe>`;
+            } else if (item.imagem || item.link) {
+                midiaHTML = `<img src="${item.imagem || item.link}" onerror="this.style.display='none'">`;
+            }
+
+            // Título e Texto originais, tratando campos vazios
+            const titulo = item.titulo || 'Sem Título';
+            const texto = item.descricao || item.texto || '';
+
+            // --- ADIÇÃO: BOTÃO COMPARTILHAR NO HTML DO CARD ---
             lista.innerHTML += `
                 <div class="card">
-                    <img src="${item.imagem || item.link || 'fundo.jpg'}">
+                    ${midiaHTML}
                     <div class="card-body">
-                        <div class="card-data">${item.data}</div>
-                        <div class="card-titulo">${item.titulo}</div>
-                        <div class="card-texto">${item.descricao || item.texto || ''}</div>
-                        <div class="btn-compartilhar" onclick="compartilhar('${item.titulo}', '${item.descricao || item.texto || ''}')">
+                        <div class="card-data">${item.data || ''}</div>
+                        <div class="card-titulo">${titulo}</div>
+                        <div class="card-texto">${texto}</div>
+                        
+                        <div class="btn-compartilhar" onclick="compartilhar('${titulo.replace(/'/g, "\\'")}', '${texto.substring(0, 100).replace(/'/g, "\\'")}')">
                             <i class="material-icons" style="font-size:18px">share</i> Compartilhar
                         </div>
                     </div>
                 </div>`;
+            // -------------------------------------------------
         });
     });
 
+    // --- ADIÇÃO: FUNÇÃO JAVASCRIPT DE COMPARTILHAMENTO ---
     function compartilhar(titulo, texto) {
-        if (navigator.share) { navigator.share({ title: titulo, text: texto, url: window.location.href }); }
+        // Tenta usar a API nativa de compartilhamento do celular
+        if (navigator.share) {
+            navigator.share({
+                title: titulo,
+                text: texto + "...", // Envia o início do texto
+                url: window.location.href // Envia o link da página atual
+            }).then(() => {
+                console.log('Compartilhado com sucesso!');
+            }).catch((error) => {
+                console.log('Erro ao compartilhar:', error);
+            });
+        } else {
+            // Caso o navegador não suporte (ex: desktop antigo), avisa o usuário
+            alert("O compartilhamento nativo não é suportado neste navegador. Você pode copiar o link da página.");
+        }
     }
+    // ----------------------------------------------------
 </script>
 </body>
 </html>
