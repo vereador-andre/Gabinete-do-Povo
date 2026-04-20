@@ -11,7 +11,7 @@
         .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; position:sticky; top:0; z-index:100; border-radius:0 0 20px 20px; }
         .container { padding: 15px; }
         .card { background:white; border-radius:20px; overflow:hidden; margin-bottom:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05); }
-        .card img { width:100%; border:none; display:block; height: 200px; object-fit: cover; }
+        .card img { width:100%; border:none; display:block; object-fit: cover; max-height: 250px; }
         .card-body { padding:15px; }
         .card-data { font-size:11px; color:#94a3b8; font-weight:600; text-transform:uppercase; }
         .card-titulo { font-size:16px; color:#1e3a8a; font-weight:600; margin:5px 0; }
@@ -20,10 +20,7 @@
     </style>
 </head>
 <body>
-<div class="topo">
-    <i class="material-icons" onclick="history.back()">arrow_back</i>
-    <span>Notícias</span>
-</div>
+<div class="topo"><i class="material-icons" onclick="history.back()">arrow_back</i><span>Notícias</span></div>
 <div class="container" id="lista-publica">Carregando...</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -45,7 +42,7 @@
                         <div class="card-data">${item.data}</div>
                         <div class="card-titulo">${item.titulo}</div>
                         <div class="card-texto">${item.descricao || item.texto || ''}</div>
-                        <div class="btn-compartilhar" onclick="compartilhar('${item.titulo}')">
+                        <div class="btn-compartilhar" onclick="compartilhar('${item.titulo}', '${item.descricao || item.texto || ''}')">
                             <i class="material-icons" style="font-size:18px">share</i> Compartilhar
                         </div>
                     </div>
@@ -53,10 +50,8 @@
         });
     });
 
-    function compartilhar(titulo) {
-        if (navigator.share) {
-            navigator.share({ title: titulo, text: 'Confira esta notícia do Vereador André de Dedé', url: window.location.href });
-        }
+    function compartilhar(titulo, texto) {
+        if (navigator.share) { navigator.share({ title: titulo, text: texto, url: window.location.href }); }
     }
 </script>
 </body>
