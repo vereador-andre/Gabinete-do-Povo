@@ -7,70 +7,48 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 40px; }
-        .header-admin { background:#1e3a8a; color:white; padding:40px 20px; text-align:center; border-radius:0 0 30px 30px; }
-        .header-admin h1 { margin:0; font-size:22px; }
-        
-        .grid-admin { display:grid; grid-template-columns: 1fr; gap:12px; padding:20px; margin-top: -20px; }
-        
-        .btn-item { 
-            background:white; padding:18px; border-radius:15px; display:flex; align-items:center; gap:15px; 
-            text-decoration:none; color:#1e3a8a; font-weight:600; box-shadow:0 4px 10px rgba(0,0,0,0.05);
-            transition: 0.3s; border: 1px solid transparent;
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 30px; }
+        .topo-admin { background: #0f172a; color: white; padding: 40px 20px; text-align: center; border-radius: 0 0 30px 30px; }
+        .grid-admin { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .card-admin { 
+            background: white; padding: 20px; border-radius: 20px; display: flex; 
+            flex-direction: column; align-items: center; text-decoration: none; color: #1e3a8a;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center;
         }
-        .btn-item:active { transform: scale(0.97); background: #f8fafc; }
-        .btn-item i { background: #eff6ff; padding: 10px; border-radius: 10px; }
-
-        .btn-logout { 
-            margin: 30px 20px; padding: 15px; border-radius: 12px; border: 1px solid #f87171; 
-            color: #f87171; text-align: center; cursor: pointer; font-weight: 600;
-        }
+        .card-admin i { font-size: 35px; margin-bottom: 10px; color: #3b82f6; }
+        .card-admin span { font-size: 13px; font-weight: 600; }
+        .btn-sair { margin: 20px; padding: 15px; background: #fee2e2; color: #ef4444; border-radius: 15px; text-align: center; text-decoration: none; font-weight: 600; display: block; }
     </style>
 </head>
 <body>
+    <div class="topo-admin">
+        <i class="material-icons" style="font-size: 48px;">admin_panel_settings</i>
+        <h2>Painel de Controle</h2>
+        <p>Olá, Vereador André</p>
+    </div>
 
-<div class="header-admin">
-    <h1>Painel de Controle</h1>
-    <p style="opacity:0.8; font-size:12px;">Gestão de Conteúdo</p>
-</div>
+    <div class="grid-admin">
+        <a href="gerenciar-mensagens.html" class="card-admin">
+            <i class="material-icons">forum</i>
+            <span>Mensagens Recebidas</span>
+        </a>
 
-<div class="grid-admin">
-    <a href="cad-noticia.html" class="btn-item">
-        <i class="material-icons">newspaper</i> Postar Notícia
-    </a>
-    <a href="cad-acao.html" class="btn-item">
-        <i class="material-icons">task_alt</i> Postar Ação Atendida
-    </a>
-    <a href="cad-indicacao.html" class="btn-item">
-        <i class="material-icons">assignment</i> Postar Indicação
-    </a>
-    <a href="cad-requerimento.html" class="btn-item">
-        <i class="material-icons">description</i> Postar Requerimento
-    </a>
-    <a href="cad-projeto.html" class="btn-item">
-        <i class="material-icons">gavel</i> Postar Projeto de Lei
-    </a>
-    <a href="cad-sessao.html" class="btn-item">
-        <i class="material-icons">videocam</i> Postar Vídeo de Sessão
-    </a>
-    <a href="ver-mensagens.html" class="btn-item" style="background:#f0fdf4; color:#16a34a;">
-        <i class="material-icons" style="background:#dcfce7;">mail</i> Mensagens Recebidas
-    </a>
-</div>
-<a href="alterar-senha.html" class="btn-item" style="color: #64748b;">
-    <i class="material-icons">settings</i> Alterar Senha de Acesso
-</a>
-<div class="btn-logout" onclick="logout()">Sair do Sistema</div>
+        <a href="cadastrar-noticia.html" class="card-admin">
+            <i class="material-icons">add_circle</i>
+            <span>Postar Notícia</span>
+        </a>
 
-<script>
-    // Bloqueio de segurança simples
-    if(localStorage.getItem("logado") !== "true") { window.location.href = "login.html"; }
+        <a href="gerenciar-posts.html" class="card-admin">
+            <i class="material-icons">edit_note</i>
+            <span>Editar/Excluir Posts</span>
+        </a>
 
-    function logout() {
-        localStorage.removeItem("logado");
-        window.location.href = "login.html";
-    }
-</script>
+        <a href="cadastrar-sessao.html" class="card-admin">
+            <i class="material-icons">video_call</i>
+            <span>Nova Sessão</span>
+        </a>
+    </div>
 
+    <a href="app.html" class="btn-sair">Sair do Painel</a>
 </body>
 </html>
