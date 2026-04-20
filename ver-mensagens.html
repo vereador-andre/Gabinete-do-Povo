@@ -10,21 +10,22 @@
         body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; }
         .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; }
         .container { padding: 15px; }
-        .card-msg { background:white; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
+        .card-msg { background:white; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid #cbd5e1; }
         .status-select { 
-            width: 100%; padding: 8px; border-radius: 8px; margin-top: 10px; 
-            font-family: inherit; font-size: 12px; font-weight: 600;
+            width: 100%; padding: 10px; border-radius: 8px; margin-top: 10px; 
+            font-family: inherit; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0;
         }
-        /* Cores para os status */
-        .st-pendente { background: #fef9c3; color: #854d0e; }
-        .st-andamento { background: #dbeafe; color: #1e40af; }
-        .st-atendido { background: #dcfce7; color: #166534; }
-        .st-naoatendido { background: #fee2e2; color: #991b1b; }
+        .btn-whatsapp {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: #25d366; color: white; text-decoration: none; padding: 12px;
+            border-radius: 10px; margin-top: 10px; font-weight: 600; font-size: 14px;
+        }
+        .acoes-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
     </style>
 </head>
 <body>
 <div class="topo">
-    <i class="material-icons" onclick="history.back()">arrow_back</i>
+    <i class="material-icons" onclick="location.href='admin.html'">arrow_back</i>
     <span>Mensagens do Público</span>
 </div>
 <div class="container" id="lista">Carregando...</div>
@@ -47,22 +48,33 @@
             const m = doc.data();
             const id = doc.id;
             const status = m.status || "Pendente";
-            
+            // Limpa o número de celular para o link do zap (remove parênteses e traços)
+            const zapLimpo = m.whatsapp ? m.whatsapp.replace(/\D/g, '') : "";
+
             lista.innerHTML += `
                 <div class="card-msg">
                     <div style="display:flex; justify-content:space-between; font-size:12px;">
-                        <strong>${m.nome}</strong> <span>${m.data}</span>
+                        <strong style="color:#1e3a8a;">${m.nome}</strong> <span>${m.data}</span>
                     </div>
-                    <p style="font-size:14px; margin:10px 0;">${m.mensagem}</p>
+                    <p style="font-size:14px; margin:10px 0; color:#475569;">${m.mensagem}</p>
+                    
                     <select class="status-select" onchange="mudarStatus('${id}', this.value)">
                         <option value="Pendente" ${status=='Pendente'?'selected':''}>⏳ Pendente</option>
                         <option value="Em andamento" ${status=='Em andamento'?'selected':''}>⚙️ Em andamento</option>
                         <option value="Atendido" ${status=='Atendido'?'selected':''}>✅ Atendido</option>
                         <option value="Não Atendido" ${status=='Não Atendido'?'selected':''}>❌ Não Atendido</option>
                     </select>
-                    <button onclick="if(confirm('Excluir?')) db.collection('contatos').doc('${id}').delete()" style="margin-top:10px; border:none; background:none; color:red; font-size:12px; display:flex; align-items:center; gap:5px;">
-                        <i class="material-icons" style="font-size:16px;">delete</i> Excluir
-                    </button>
+
+                    <a href="https://wa.me/55${zapLimpo}" target="_blank" class="btn-whatsapp">
+                        <i class="material-icons">chat</i> Responder via WhatsApp
+                    </a>
+
+                    <div class="acoes-footer">
+                        <small style="color:#94a3b8;">ID: ${id.substring(0,5)}</small>
+                        <button onclick="if(confirm('Excluir mensagem?')) db.collection('contatos').doc('${id}').delete()" style="border:none; background:none; color:#ef4444; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                            <i class="material-icons" style="font-size:18px;">delete</i> Excluir
+                        </button>
+                    </div>
                 </div>`;
         });
     });
