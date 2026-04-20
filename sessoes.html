@@ -18,11 +18,16 @@
         .video-card { background: white; border-radius: 20px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .video-info { padding: 15px; }
-        .video-info h3 { margin: 0; font-size: 16px; color: #1e3a8a; }
-        .video-info .meta { color: #94a3b8; font-size: 12px; margin: 5px 0 15px; display: flex; align-items: center; gap: 5px; }
-        .social-share { display: flex; gap: 10px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
-        .social-share a { flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px; border-radius: 10px; color: white; text-decoration: none; font-size: 18px; }
+        .video-info { padding: 20px; }
+        .video-info h3 { margin: 0; font-size: 17px; color: #1e3a8a; line-height: 1.3; }
+        .meta { color: #94a3b8; font-size: 12px; margin: 8px 0 15px; display: flex; align-items: center; gap: 5px; }
+        
+        /* Redes Sociais Padronizadas */
+        .card-footer { border-top: 1px solid #f1f5f9; padding: 15px; display: flex; justify-content: center; gap: 15px; background: #fafafa; }
+        .social-btn { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 16px; transition: 0.3s; }
+        .btn-inst { background: #E1306C; }
+        .btn-face { background: #4267B2; }
+        .btn-tik { background: #000; }
     </style>
 </head>
 <body>
@@ -47,6 +52,7 @@
     const db = firebase.firestore();
 
     function getYoutubeID(url) {
+        if(!url) return "";
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
         const match = url.match(regExp);
         return (match && match[2].length === 11) ? match[2] : null;
@@ -56,10 +62,15 @@
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById('btn-' + tipo).classList.add('active');
         const container = document.getElementById("listaSessoes");
-        container.innerHTML = "<p style='text-align:center; padding:20px;'>Buscando sessões...</p>";
+        container.innerHTML = "<p style='text-align:center; padding:20px; color:#64748b;'>Carregando vídeos...</p>";
 
         try {
-            const snapshot = await db.collection("sessoes").where("tipo", "==", tipo).orderBy("criadoEm", "desc").get();
+            // Se der erro aqui, é falta de Índice no Firebase Console
+            const snapshot = await db.collection("sessoes")
+                .where("tipo", "==", tipo)
+                .orderBy("criadoEm", "desc")
+                .get();
+
             container.innerHTML = "";
             if (snapshot.empty) {
                 container.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8;"><i class="material-icons" style="font-size:48px;">videocam_off</i><p>Aguardando as primeiras sessões...</p></div>`;
@@ -67,22 +78,26 @@
             }
             snapshot.forEach(doc => {
                 const s = doc.data();
-                const embedUrl = `https://www.youtube.com/embed/${getYoutubeID(s.link)}`;
+                const videoId = getYoutubeID(s.link);
+                const embedUrl = `https://www.youtube.com/embed/${videoId}`;
                 container.innerHTML += `
                     <div class="video-card">
                         <div class="video-wrapper"><iframe src="${embedUrl}" allowfullscreen></iframe></div>
                         <div class="video-info">
                             <h3>${s.titulo}</h3>
                             <div class="meta"><i class="material-icons" style="font-size:14px;">calendar_today</i>${s.data}</div>
-                            <div class="social-share">
-                                <a href="https://instagram.com" style="background:#E1306C"><i class="fab fa-instagram"></i></a>
-                                <a href="https://facebook.com" style="background:#4267B2"><i class="fab fa-facebook-f"></i></a>
-                                <a href="https://tiktok.com" style="background:#000"><i class="fab fa-tiktok"></i></a>
-                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a href="https://instagram.com" class="social-btn btn-inst"><i class="fab fa-instagram"></i></a>
+                            <a href="https://facebook.com" class="social-btn btn-face"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://tiktok.com" class="social-btn btn-tik"><i class="fab fa-tiktok"></i></a>
                         </div>
                     </div>`;
             });
-        } catch (e) { container.innerHTML = "<p style='text-align:center; color:red;'>Erro ao carregar vídeos.</p>"; }
+        } catch (e) { 
+            console.error(e);
+            container.innerHTML = "<p style='text-align:center; color:red; padding:20px;'>Erro ao carregar vídeos. Verifique os índices do banco de dados.</p>"; 
+        }
     }
     switchTab('ordinaria');
 </script>
