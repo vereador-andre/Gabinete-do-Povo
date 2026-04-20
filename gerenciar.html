@@ -14,7 +14,10 @@
             background:white; padding:15px; border-radius:12px; margin-bottom:10px; 
             display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.05);
         }
-        .btn-del { color:#ef4444; border:none; background:none; cursor:pointer; }
+        .btns-group { display: flex; gap: 10px; }
+        .btn-action { border:none; background:none; cursor:pointer; padding: 5px; border-radius: 8px; }
+        .btn-edit { color:#3b82f6; background: #eff6ff; }
+        .btn-del { color:#ef4444; background: #fee2e2; }
     </style>
 </head>
 <body>
@@ -42,16 +45,30 @@
             const item = doc.data();
             lista.innerHTML += `
                 <div class="item-lista">
-                    <div>
-                        <strong style="font-size:14px; color:#1e3a8a;">${item.titulo || 'Postagem'}</strong><br>
+                    <div style="flex:1; padding-right:10px;">
+                        <strong style="font-size:14px; color:#1e3a8a;">${item.titulo || 'Sem Título'}</strong><br>
                         <small style="color:#94a3b8;">${item.data}</small>
                     </div>
-                    <button class="btn-del" onclick="excluir('${doc.id}')">
-                        <i class="material-icons">delete</i>
-                    </button>
+                    <div class="btns-group">
+                        <button class="btn-action btn-edit" onclick="editar('${doc.id}', '${item.titulo}')">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="btn-action btn-del" onclick="excluir('${doc.id}')">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
                 </div>`;
         });
     });
+
+    function editar(id, tituloAtual) {
+        const novoTitulo = prompt("Digite o novo título/texto:", tituloAtual);
+        if (novoTitulo != null && novoTitulo != "") {
+            db.collection(colecao).doc(id).update({
+                titulo: novoTitulo
+            }).then(() => alert("Atualizado com sucesso!"));
+        }
+    }
 
     function excluir(id) {
         if(confirm("Deseja realmente excluir permanentemente?")) {
