@@ -15,17 +15,50 @@
             display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.05);
         }
         .btns-group { display: flex; gap: 10px; }
-        .btn-action { border:none; background:none; cursor:pointer; padding: 5px; border-radius: 8px; }
+        .btn-action { border:none; background:none; cursor:pointer; padding: 8px; border-radius: 8px; }
         .btn-edit { color:#3b82f6; background: #eff6ff; }
         .btn-del { color:#ef4444; background: #fee2e2; }
+
+        /* Estilo para a Edição (Modal Simples) */
+        #modalEdicao {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-content { background: white; padding: 20px; border-radius: 20px; width: 90%; max-width: 400px; }
+        .modal-content h3 { margin-top: 0; color: #1e3a8a; font-size: 18px; }
+        .modal-content label { font-size: 12px; font-weight: 600; color: #64748b; }
+        .modal-content input, .modal-content textarea { 
+            width: 100%; padding: 10px; margin: 8px 0 15px; border-radius: 8px; 
+            border: 1px solid #e2e8f0; font-family: inherit; box-sizing: border-box;
+        }
+        .modal-content textarea { height: 100px; resize: none; }
+        .btn-save { width: 100%; background: #1e3a8a; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
+
 <div class="topo">
     <i class="material-icons" onclick="location.href='admin.html'">arrow_back</i>
     <span id="titulo-gerenciar">Gerenciar</span>
 </div>
+
 <div class="container" id="lista-itens">Carregando...</div>
+
+<div id="modalEdicao">
+    <div class="modal-content">
+        <h3>Editar Conteúdo</h3>
+        <input type="hidden" id="editId">
+        
+        <label>Título / Nome</label>
+        <input type="text" id="editTitulo">
+
+        <label>Descrição / Texto</label>
+        <textarea id="editTexto"></textarea>
+
+        <button class="btn-save" onclick="salvarEdicao()">Salvar Alterações</button>
+        <button onclick="fecharModal()" style="width:100%; background:none; border:none; color:#64748b; margin-top:10px; font-size:12px; cursor:pointer;">Cancelar</button>
+    </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -38,6 +71,7 @@
     const colecao = urlParams.get('col');
     document.getElementById('titulo-gerenciar').innerText = "Gerenciar " + colecao.toUpperCase();
 
+    // Carregar Lista
     db.collection(colecao).orderBy("criadoEm", "desc").onSnapshot(snapshot => {
         const lista = document.getElementById("lista-itens");
         lista.innerHTML = "";
@@ -50,7 +84,7 @@
                         <small style="color:#94a3b8;">${item.data}</small>
                     </div>
                     <div class="btns-group">
-                        <button class="btn-action btn-edit" onclick="editar('${doc.id}', '${item.titulo}')">
+                        <button class="btn-action btn-edit" onclick="abrirModal('${doc.id}', '${item.titulo || ''}', '${item.descricao || item.texto || ''}')">
                             <i class="material-icons">edit</i>
                         </button>
                         <button class="btn-action btn-del" onclick="excluir('${doc.id}')">
@@ -61,13 +95,32 @@
         });
     });
 
-    function editar(id, tituloAtual) {
-        const novoTitulo = prompt("Digite o novo título/texto:", tituloAtual);
-        if (novoTitulo != null && novoTitulo != "") {
-            db.collection(colecao).doc(id).update({
-                titulo: novoTitulo
-            }).then(() => alert("Atualizado com sucesso!"));
-        }
+    // Funções do Modal
+    function abrirModal(id, titulo, texto) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editTitulo').value = titulo;
+        document.getElementById('editTexto').value = texto;
+        document.getElementById('modalEdicao').style.display = 'flex';
+    }
+
+    function fecharModal() {
+        document.getElementById('modalEdicao').style.display = 'none';
+    }
+
+    function salvarEdicao() {
+        const id = document.getElementById('editId').value;
+        const novoTitulo = document.getElementById('editTitulo').value;
+        const novoTexto = document.getElementById('editTexto').value;
+
+        // Atualiza conforme os campos que você usa no banco (ex: titulo e descricao)
+        db.collection(colecao).doc(id).update({
+            titulo: novoTitulo,
+            descricao: novoTexto, // Se você usa 'texto' no cadastro, mude aqui para texto: novoTexto
+            texto: novoTexto      // Garante que atualize ambos os nomes comuns de campo
+        }).then(() => {
+            alert("Atualizado com sucesso!");
+            fecharModal();
+        });
     }
 
     function excluir(id) {
