@@ -13,13 +13,22 @@
         
         .grid-admin { display:grid; grid-template-columns: 1fr; gap:12px; padding:20px; margin-top: -20px; }
         
+        /* Container para alinhar Postar e Gerenciar */
+        .admin-row { display: flex; gap: 8px; }
+        
         .btn-item { 
-            background:white; padding:18px; border-radius:15px; display:flex; align-items:center; gap:15px; 
+            flex: 1; background:white; padding:18px; border-radius:15px; display:flex; align-items:center; gap:15px; 
             text-decoration:none; color:#1e3a8a; font-weight:600; box-shadow:0 4px 10px rgba(0,0,0,0.05);
-            transition: 0.3s; border: 1px solid transparent;
+            transition: 0.3s; border: 1px solid transparent; font-size: 14px;
         }
-        .btn-item:active { transform: scale(0.97); background: #f8fafc; }
         .btn-item i { background: #eff6ff; padding: 10px; border-radius: 10px; }
+        
+        /* Botão menor para gerenciar/editar */
+        .btn-manage {
+            background: #cbd5e1; color: #1e293b; width: 55px; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center; text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
 
         .btn-logout { 
             margin: 30px 20px; padding: 15px; border-radius: 12px; border: 1px solid #f87171; 
@@ -35,25 +44,37 @@
 </div>
 
 <div class="grid-admin">
-    <a href="cad-noticia.html" class="btn-item">
-        <i class="material-icons">newspaper</i> Postar Notícia
-    </a>
-    <a href="cad-acao.html" class="btn-item">
-        <i class="material-icons">task_alt</i> Postar Ação Atendida
-    </a>
-    <a href="cad-indicacao.html" class="btn-item">
-        <i class="material-icons">assignment</i> Postar Indicação
-    </a>
-    <a href="cad-requerimento.html" class="btn-item">
-        <i class="material-icons">description</i> Postar Requerimento
-    </a>
-    <a href="cad-projeto.html" class="btn-item">
-        <i class="material-icons">gavel</i> Postar Projeto de Lei
-    </a>
-    <a href="cad-sessao.html" class="btn-item">
-        <i class="material-icons">videocam</i> Postar Vídeo de Sessão
-    </a>
-    <a href="ver-mensagens.html" class="btn-item" style="background:#f0fdf4; color:#16a34a;">
+    <div class="admin-row">
+        <a href="cad-noticia.html" class="btn-item"><i class="material-icons">newspaper</i> Postar Notícia</a>
+        <a href="gerenciar.html?col=noticias" class="btn-manage"><i class="material-icons">settings</i></a>
+    </div>
+
+    <div class="admin-row">
+        <a href="cad-acao.html" class="btn-item"><i class="material-icons">task_alt</i> Postar Ação Atendida</a>
+        <a href="gerenciar.html?col=acoes-atendidas" class="btn-manage"><i class="material-icons">settings</i></a>
+    </div>
+
+    <div class="admin-row">
+        <a href="cad-indicacao.html" class="btn-item"><i class="material-icons">assignment</i> Postar Indicação</a>
+        <a href="gerenciar.html?col=indicacoes" class="btn-manage"><i class="material-icons">settings</i></a>
+    </div>
+
+    <div class="admin-row">
+        <a href="cad-requerimento.html" class="btn-item"><i class="material-icons">description</i> Postar Requerimento</a>
+        <a href="gerenciar.html?col=requerimentos" class="btn-manage"><i class="material-icons">settings</i></a>
+    </div>
+
+    <div class="admin-row">
+        <a href="cad-projeto.html" class="btn-item"><i class="material-icons">gavel</i> Postar Projeto de Lei</a>
+        <a href="gerenciar.html?col=projetos" class="btn-manage"><i class="material-icons">settings</i></a>
+    </div>
+
+    <div class="admin-row">
+        <a href="cad-sessao.html" class="btn-item"><i class="material-icons">videocam</i> Postar Vídeo de Sessão</a>
+        <a href="gerenciar.html?col=sessoes" class="btn-manage"><i class="material-icons">settings</i></a>
+    </div>
+
+    <a href="ver-mensagens.html" class="btn-item" style="background:#f0fdf4; color:#16a34a; margin-top: 10px;">
         <i class="material-icons" style="background:#dcfce7;">mail</i> Mensagens Recebidas
     </a>
 </div>
@@ -61,9 +82,7 @@
 <div class="btn-logout" onclick="logout()">Sair do Sistema</div>
 
 <script>
-    // Bloqueio de segurança simples
     if(localStorage.getItem("logado") !== "true") { window.location.href = "login.html"; }
-
     function logout() {
         localStorage.removeItem("logado");
         window.location.href = "login.html";
