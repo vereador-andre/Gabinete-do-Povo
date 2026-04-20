@@ -8,44 +8,64 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; }
-        .topo { background:#16a34a; color:white; padding:20px; display:flex; align-items:center; gap:15px; border-radius:0 0 25px 25px; }
-        .msg-list { padding:15px; }
-        .msg-card { background:white; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid #16a34a; }
-        .msg-nome { font-weight:600; color:#1e3a8a; }
-        .msg-tipo { font-size:10px; text-transform:uppercase; background:#dcfce7; color:#16a34a; padding:2px 8px; border-radius:5px; font-weight:600; }
-        .msg-texto { font-size:14px; margin-top:10px; color:#475569; }
-        .msg-zap { display:inline-block; margin-top:10px; color:#16a34a; text-decoration:none; font-weight:600; font-size:13px; }
+        .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; }
+        .container { padding: 15px; }
+        .card-msg { background:white; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
+        .status-select { 
+            width: 100%; padding: 8px; border-radius: 8px; margin-top: 10px; 
+            font-family: inherit; font-size: 12px; font-weight: 600;
+        }
+        /* Cores para os status */
+        .st-pendente { background: #fef9c3; color: #854d0e; }
+        .st-andamento { background: #dbeafe; color: #1e40af; }
+        .st-atendido { background: #dcfce7; color: #166534; }
+        .st-naoatendido { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body>
-    <div class="topo">
-        <div onclick="history.back()" style="cursor:pointer"><i class="material-icons">arrow_back</i></div>
-        <div style="font-weight:600">Mensagens do Povo</div>
-    </div>
-    <div class="msg-list" id="lista">Carregando mensagens...</div>
+<div class="topo">
+    <i class="material-icons" onclick="history.back()">arrow_back</i>
+    <span>Mensagens do Público</span>
+</div>
+<div class="container" id="lista">Carregando...</div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script>
-        const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-        db.collection("contatos").orderBy("criadoEm","desc").get().then(snapshot => {
-            const lista = document.getElementById("lista"); lista.innerHTML = "";
-            snapshot.forEach(doc => {
-                let m = doc.data();
-                lista.innerHTML += `
-                <div class="msg-card">
-                    <div style="display:flex; justify-content:space-between; align-items:center">
-                        <span class="msg-nome">${m.nome}</span>
-                        <span class="msg-tipo">${m.tipo}</span>
+    function mudarStatus(id, novoStatus) {
+        db.collection("contatos").doc(id).update({ status: novoStatus });
+    }
+
+    db.collection("contatos").orderBy("criadoEm", "desc").onSnapshot(snapshot => {
+        const lista = document.getElementById("lista");
+        lista.innerHTML = "";
+        snapshot.forEach(doc => {
+            const m = doc.data();
+            const id = doc.id;
+            const status = m.status || "Pendente";
+            
+            lista.innerHTML += `
+                <div class="card-msg">
+                    <div style="display:flex; justify-content:space-between; font-size:12px;">
+                        <strong>${m.nome}</strong> <span>${m.data}</span>
                     </div>
-                    <div class="msg-texto">${m.mensagem}</div>
-                    <a href="https://wa.me/55${m.whatsapp.replace(/\D/g,'')}" class="msg-zap">Responder via WhatsApp</a>
+                    <p style="font-size:14px; margin:10px 0;">${m.mensagem}</p>
+                    <select class="status-select" onchange="mudarStatus('${id}', this.value)">
+                        <option value="Pendente" ${status=='Pendente'?'selected':''}>⏳ Pendente</option>
+                        <option value="Em andamento" ${status=='Em andamento'?'selected':''}>⚙️ Em andamento</option>
+                        <option value="Atendido" ${status=='Atendido'?'selected':''}>✅ Atendido</option>
+                        <option value="Não Atendido" ${status=='Não Atendido'?'selected':''}>❌ Não Atendido</option>
+                    </select>
+                    <button onclick="if(confirm('Excluir?')) db.collection('contatos').doc('${id}').delete()" style="margin-top:10px; border:none; background:none; color:red; font-size:12px; display:flex; align-items:center; gap:5px;">
+                        <i class="material-icons" style="font-size:16px;">delete</i> Excluir
+                    </button>
                 </div>`;
-            });
         });
-    </script>
+    });
+</script>
 </body>
 </html>
