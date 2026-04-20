@@ -38,32 +38,69 @@
     <a href="https://www.instagram.com/andre.de.dede/" class="btn-ig" target="_blank"><svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4A3.6,3.6 0 0,0 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6A3.6,3.6 0 0,0 16.4,4H7.6M17.2,4.8A1.2,1.2 0 1,1 16,6A1.2,1.2 0 0,1 17.2,4.8M12,7A5,5 0 1,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 1,0 15,12A3,3 0 0,0 12,9Z" /></svg></a>
     <a href="https://www.tiktok.com/@andre_de_dede" class="btn-tk" target="_blank"><svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M17.71,6.15C16.31,5.2 15.43,3.68 15.41,2H12.16V16.14C12.12,17.47 11.02,18.52 9.69,18.48C8.35,18.44 7.3,17.34 7.34,16C7.39,14.67 8.48,13.62 9.81,13.66C10.28,13.67 10.73,13.82 11.12,14.1V10.82C9.17,10.45 7.29,11.33 6.44,13.12C5.59,14.91 5.92,17.06 7.28,18.5C8.63,19.93 10.76,20.35 12.56,19.54C14.36,18.73 15.53,16.82 15.45,14.84V8.58C16.73,9.5 18.25,10 19.82,10V6.75C19.05,6.75 18.32,6.54 17.71,6.15Z" /></svg></a>
 </div>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
 const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-function getYouTubeID(url) { const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/; const match = url.match(regExp); return (match && match[2].length === 11) ? match[2] : null; }
-async function switchTab(tipo) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('btn-' + tipo).classList.add('active');
+
+function getYouTubeID(url) { 
+    if(!url) return "";
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/; 
+    const match = url.match(regExp); 
+    return (match && match[2].length === 11) ? match[2] : ""; 
+}
+
+// Criamos uma variável para guardar todas as sessões e não precisar pedir ao Firebase toda hora
+let todasSessoes = [];
+
+async function carregarDados() {
     const feed = document.getElementById("feed");
     feed.innerHTML = "<p style='text-align:center; padding:40px; opacity:0.5;'>Buscando...</p>";
+    
     try {
-        const snapshot = await db.collection("sessoes").where("tipo", "==", tipo).orderBy("criadoEm", "desc").get();
-        feed.innerHTML = "";
-        if (snapshot.empty) { feed.innerHTML = "<p style='text-align:center; opacity:0.5; margin-top:50px;'>Nenhuma sessão encontrada.</p>"; return; }
-        snapshot.forEach(doc => {
-            let s = doc.data();
-            feed.innerHTML += `<div class="post"><iframe src="https://www.youtube.com/embed/${getYouTubeID(s.link)}" allowfullscreen></iframe><div class="post-title">${s.titulo}</div><div class="post-date"><i class="material-icons" style="font-size:12px;">event</i> ${s.data}</div></div>`;
-        });
-    } catch (e) { 
+        // Buscamos TUDO e ordenamos apenas por data. Sem filtros complicados.
+        const snapshot = await db.collection("sessoes").orderBy("criadoEm", "desc").get();
+        todasSessoes = [];
+        snapshot.forEach(doc => todasSessoes.push(doc.data()));
+        
+        // Depois de carregar, mostra as ordinárias por padrão
+        switchTab('ordinaria');
+    } catch (e) {
         console.error(e);
-        feed.innerHTML = "<p style='text-align:center; color:red; padding:20px;'>Erro ao carregar vídeos. Verifique se o índice do Firebase foi criado.</p>"; 
+        feed.innerHTML = "<p style='text-align:center; color:red; padding:20px;'>Erro de conexão.</p>";
     }
 }
-switchTab('ordinaria');
+
+function switchTab(tipo) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('btn-' + tipo).classList.add('active');
+    
+    const feed = document.getElementById("feed");
+    feed.innerHTML = "";
+    
+    // Filtramos aqui no JavaScript (não precisa de índice no Firebase)
+    const filtradas = todasSessoes.filter(s => s.tipo === tipo);
+    
+    if (filtradas.length === 0) {
+        feed.innerHTML = "<p style='text-align:center; opacity:0.5; margin-top:50px;'>Nenhuma sessão encontrada.</p>";
+        return;
+    }
+    
+    filtradas.forEach(s => {
+        feed.innerHTML += `
+            <div class="post">
+                <iframe src="https://www.youtube.com/embed/${getYouTubeID(s.link)}" allowfullscreen></iframe>
+                <div class="post-title">${s.titulo}</div>
+                <div class="post-date"><i class="material-icons" style="font-size:12px;">event</i> ${s.data}</div>
+            </div>`;
+    });
+}
+
+// Inicia o carregamento
+carregarDados();
 </script>
 </body>
 </html>
