@@ -3,94 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Postar Conteúdo</title>
+    <title>Painel Admin - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 30px; }
-        .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; border-radius:0 0 25px 25px; }
-        .btn-voltar { cursor:pointer; background:rgba(255,255,255,0.2); border-radius:10px; padding:8px; display:flex; }
-        .form { padding:20px; }
-        .card { background:white; padding:25px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05); }
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 40px; }
+        .header-admin { background:#1e3a8a; color:white; padding:40px 20px; text-align:center; border-radius:0 0 30px 30px; }
+        .header-admin h1 { margin:0; font-size:22px; }
         
-        label { display:block; font-size:12px; font-weight:600; color:#64748b; margin-bottom:8px; }
-        /* Padronização de tamanhos */
-        input, textarea { 
-            width:100%; padding:15px; border:1px solid #e2e8f0; border-radius:12px; 
-            background:#f8fafc; font-family:inherit; box-sizing:border-box; 
-            font-size:14px; margin-bottom:20px; 
-        }
-        textarea { height:150px; resize: none; }
+        .grid-admin { display:grid; grid-template-columns: 1fr; gap:12px; padding:20px; margin-top: -20px; }
         
-        .btn-salvar { 
-            width:100%; background:#1e3a8a; color:white; border:none; padding:18px; 
-            border-radius:12px; font-weight:600; cursor:pointer; font-size:16px;
-            transition: 0.3s;
+        .btn-item { 
+            background:white; padding:18px; border-radius:15px; display:flex; align-items:center; gap:15px; 
+            text-decoration:none; color:#1e3a8a; font-weight:600; box-shadow:0 4px 10px rgba(0,0,0,0.05);
+            transition: 0.3s; border: 1px solid transparent;
         }
-        .btn-salvar:active { transform: scale(0.98); }
+        .btn-item:active { transform: scale(0.97); background: #f8fafc; }
+        .btn-item i { background: #eff6ff; padding: 10px; border-radius: 10px; }
+
+        .btn-logout { 
+            margin: 30px 20px; padding: 15px; border-radius: 12px; border: 1px solid #f87171; 
+            color: #f87171; text-align: center; cursor: pointer; font-weight: 600;
+        }
     </style>
 </head>
 <body>
-    <div class="topo">
-        <div class="btn-voltar" onclick="history.back()"><i class="material-icons">arrow_back</i></div>
-        <div id="status-topo" style="font-weight:600">Postar Conteúdo</div>
-    </div>
 
-    <div class="form">
-        <div class="card">
-            <label>Título / Nome</label>
-            <input type="text" id="titulo" placeholder="Digite o título principal">
+<div class="header-admin">
+    <h1>Painel de Controle</h1>
+    <p style="opacity:0.8; font-size:12px;">Gestão de Conteúdo</p>
+</div>
 
-            <label>Data (Clique no ícone para abrir o calendário)</label>
-            <input type="date" id="data"> <label>Link da Imagem ou Vídeo (YouTube)</label>
-            <input type="text" id="imagem" placeholder="https://...">
+<div class="grid-admin">
+    <a href="cad-noticia.html" class="btn-item">
+        <i class="material-icons">newspaper</i> Postar Notícia
+    </a>
+    <a href="cad-acao.html" class="btn-item">
+        <i class="material-icons">task_alt</i> Postar Ação Atendida
+    </a>
+    <a href="cad-indicacao.html" class="btn-item">
+        <i class="material-icons">assignment</i> Postar Indicação
+    </a>
+    <a href="cad-requerimento.html" class="btn-item">
+        <i class="material-icons">description</i> Postar Requerimento
+    </a>
+    <a href="cad-projeto.html" class="btn-item">
+        <i class="material-icons">gavel</i> Postar Projeto de Lei
+    </a>
+    <a href="cad-sessao.html" class="btn-item">
+        <i class="material-icons">videocam</i> Postar Vídeo de Sessão
+    </a>
+    <a href="ver-mensagens.html" class="btn-item" style="background:#f0fdf4; color:#16a34a;">
+        <i class="material-icons" style="background:#dcfce7;">mail</i> Mensagens Recebidas
+    </a>
+</div>
 
-            <label>Descrição / Texto</label>
-            <textarea id="texto" placeholder="Escreva os detalhes aqui..."></textarea>
+<div class="btn-logout" onclick="logout()">Sair do Sistema</div>
 
-            <button class="btn-salvar" id="btnSalvar" onclick="salvar()">Publicar Agora</button>
-        </div>
-    </div>
+<script>
+    // Bloqueio de segurança simples
+    if(localStorage.getItem("logado") !== "true") { window.location.href = "login.html"; }
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script>
-        const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    function logout() {
+        localStorage.removeItem("logado");
+        window.location.href = "login.html";
+    }
+</script>
 
-        function salvar() {
-            const t = document.getElementById("titulo").value;
-            let d = document.getElementById("data").value; // Formato YYYY-MM-DD
-            const i = document.getElementById("imagem").value;
-            const tx = document.getElementById("texto").value;
-            const btn = document.getElementById("btnSalvar");
-
-            if(!t || !d || !tx) return alert("Por favor, preencha Título, Data e Texto.");
-
-            // Formata a data para PT-BR (DD/MM/YYYY) antes de salvar, se desejar
-            const dataBR = d.split('-').reverse().join('/');
-
-            btn.innerText = "Enviando...";
-            btn.disabled = true;
-
-            // IMPORTANTE: Mude o nome da coleção abaixo para cada arquivo
-            // Ex: "noticias", "acoes-atendidas", "indicacoes", etc.
-            db.collection("noticias").add({
-                titulo: t,
-                data: dataBR,
-                imagem: i,
-                texto: tx,
-                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                alert("Publicado com sucesso!");
-                history.back();
-            }).catch(err => {
-                alert("Erro ao salvar: " + err);
-                btn.innerText = "Publicar Agora";
-                btn.disabled = false;
-            });
-        }
-    </script>
 </body>
 </html>
