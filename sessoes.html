@@ -6,100 +6,64 @@
     <title>Sessões - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 30px; }
-        .header { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; position: sticky; top: 0; z-index: 100; border-radius:0 0 25px 25px; }
-        .btn-voltar { cursor:pointer; background:rgba(255,255,255,0.2); border-radius:10px; padding:8px; display:flex; }
-        .tab-container { display: flex; background: white; padding: 8px; margin: 15px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #64748b; font-weight: 600; cursor: pointer; border-radius: 10px; font-size: 13px; }
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; color:#0f172a; padding-bottom: 20px; }
+        .topo-interna { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; position: sticky; top:0; z-index:1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 0 0 25px 25px; }
+        .btn-voltar { cursor:pointer; display:flex; align-items:center; justify-content:center; background: rgba(255,255,255,0.15); border-radius: 12px; padding: 8px; }
+        .tab-container { display: flex; background: white; padding: 10px; margin: 15px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #64748b; font-weight: 600; cursor: pointer; border-radius: 10px; font-size: 14px; }
         .tab-btn.active { background: #1e3a8a; color: white; }
-        .lista-videos { padding: 0 15px; }
-        .video-card { background: white; border-radius: 20px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
-        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .video-info { padding: 20px; }
-        .video-info h3 { margin: 0; font-size: 17px; color: #1e3a8a; line-height: 1.3; }
-        .meta { color: #94a3b8; font-size: 12px; margin: 8px 0 15px; display: flex; align-items: center; gap: 5px; }
-        
-        /* Redes Sociais Padronizadas */
-        .card-footer { border-top: 1px solid #f1f5f9; padding: 15px; display: flex; justify-content: center; gap: 15px; background: #fafafa; }
-        .social-btn { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 16px; transition: 0.3s; }
-        .btn-inst { background: #E1306C; }
-        .btn-face { background: #4267B2; }
-        .btn-tik { background: #000; }
+        #feed { padding: 15px; }
+        .post { background:white; border-radius:20px; padding:15px; margin-bottom:20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        .post iframe { width:100%; border-radius:15px; margin-bottom:12px; display: block; border: none; height: 210px; }
+        .post-title { font-weight:600; font-size: 18px; color: #1e3a8a; margin-bottom: 5px; }
+        .post-date { font-size:11px; color:#94a3b8; display: flex; align-items: center; gap: 5px; text-transform: uppercase; font-weight: 600; }
+        .social-bar { display:flex; justify-content:center; gap:20px; padding:20px 20px 40px; }
+        .social-bar a { text-decoration:none; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; background: white; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .btn-fb { color: #1877F2; } .btn-ig { color: #E4405F; } .btn-tk { color: #000000; }
     </style>
 </head>
 <body>
-
-<div class="header">
+<div class="topo-interna">
     <div class="btn-voltar" onclick="history.back()"><i class="material-icons">arrow_back</i></div>
-    <div style="font-weight:600">Sessões da Câmara</div>
+    <div class="titulo-pagina" style="font-weight:600">Sessões da Câmara</div>
 </div>
-
 <div class="tab-container">
     <button class="tab-btn active" id="btn-ordinaria" onclick="switchTab('ordinaria')">Ordinárias</button>
     <button class="tab-btn" id="btn-extraordinaria" onclick="switchTab('extraordinaria')">Extraordinárias</button>
 </div>
-
-<div class="lista-videos" id="listaSessoes"></div>
-
+<div id="feed"></div>
+<div class="social-bar">
+    <a href="https://www.facebook.com/andrekelly.santos/" class="btn-fb" target="_blank"><svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z" /></svg></a>
+    <a href="https://www.instagram.com/andre.de.dede/" class="btn-ig" target="_blank"><svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4A3.6,3.6 0 0,0 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6A3.6,3.6 0 0,0 16.4,4H7.6M17.2,4.8A1.2,1.2 0 1,1 16,6A1.2,1.2 0 0,1 17.2,4.8M12,7A5,5 0 1,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 1,0 15,12A3,3 0 0,0 12,9Z" /></svg></a>
+    <a href="https://www.tiktok.com/@andre_de_dede" class="btn-tk" target="_blank"><svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M17.71,6.15C16.31,5.2 15.43,3.68 15.41,2H12.16V16.14C12.12,17.47 11.02,18.52 9.69,18.48C8.35,18.44 7.3,17.34 7.34,16C7.39,14.67 8.48,13.62 9.81,13.66C10.28,13.67 10.73,13.82 11.12,14.1V10.82C9.17,10.45 7.29,11.33 6.44,13.12C5.59,14.91 5.92,17.06 7.28,18.5C8.63,19.93 10.76,20.35 12.56,19.54C14.36,18.73 15.53,16.82 15.45,14.84V8.58C16.73,9.5 18.25,10 19.82,10V6.75C19.05,6.75 18.32,6.54 17.71,6.15Z" /></svg></a>
+</div>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
-    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    function getYoutubeID(url) {
-        if(!url) return "";
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
+const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+function getYouTubeID(url) { const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/; const match = url.match(regExp); return (match && match[2].length === 11) ? match[2] : null; }
+async function switchTab(tipo) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('btn-' + tipo).classList.add('active');
+    const feed = document.getElementById("feed");
+    feed.innerHTML = "<p style='text-align:center; padding:40px; opacity:0.5;'>Buscando...</p>";
+    try {
+        const snapshot = await db.collection("sessoes").where("tipo", "==", tipo).orderBy("criadoEm", "desc").get();
+        feed.innerHTML = "";
+        if (snapshot.empty) { feed.innerHTML = "<p style='text-align:center; opacity:0.5; margin-top:50px;'>Nenhuma sessão encontrada.</p>"; return; }
+        snapshot.forEach(doc => {
+            let s = doc.data();
+            feed.innerHTML += `<div class="post"><iframe src="https://www.youtube.com/embed/${getYouTubeID(s.link)}" allowfullscreen></iframe><div class="post-title">${s.titulo}</div><div class="post-date"><i class="material-icons" style="font-size:12px;">event</i> ${s.data}</div></div>`;
+        });
+    } catch (e) { 
+        console.error(e);
+        feed.innerHTML = "<p style='text-align:center; color:red; padding:20px;'>Erro ao carregar vídeos. Verifique se o índice do Firebase foi criado.</p>"; 
     }
-
-    async function switchTab(tipo) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('btn-' + tipo).classList.add('active');
-        const container = document.getElementById("listaSessoes");
-        container.innerHTML = "<p style='text-align:center; padding:20px; color:#64748b;'>Carregando vídeos...</p>";
-
-        try {
-            // Se der erro aqui, é falta de Índice no Firebase Console
-            const snapshot = await db.collection("sessoes")
-                .where("tipo", "==", tipo)
-                .orderBy("criadoEm", "desc")
-                .get();
-
-            container.innerHTML = "";
-            if (snapshot.empty) {
-                container.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8;"><i class="material-icons" style="font-size:48px;">videocam_off</i><p>Aguardando as primeiras sessões...</p></div>`;
-                return;
-            }
-            snapshot.forEach(doc => {
-                const s = doc.data();
-                const videoId = getYoutubeID(s.link);
-                const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-                container.innerHTML += `
-                    <div class="video-card">
-                        <div class="video-wrapper"><iframe src="${embedUrl}" allowfullscreen></iframe></div>
-                        <div class="video-info">
-                            <h3>${s.titulo}</h3>
-                            <div class="meta"><i class="material-icons" style="font-size:14px;">calendar_today</i>${s.data}</div>
-                        </div>
-                        <div class="card-footer">
-                            <a href="https://instagram.com" class="social-btn btn-inst"><i class="fab fa-instagram"></i></a>
-                            <a href="https://facebook.com" class="social-btn btn-face"><i class="fab fa-facebook-f"></i></a>
-                            <a href="https://tiktok.com" class="social-btn btn-tik"><i class="fab fa-tiktok"></i></a>
-                        </div>
-                    </div>`;
-            });
-        } catch (e) { 
-            console.error(e);
-            container.innerHTML = "<p style='text-align:center; color:red; padding:20px;'>Erro ao carregar vídeos. Verifique os índices do banco de dados.</p>"; 
-        }
-    }
-    switchTab('ordinaria');
+}
+switchTab('ordinaria');
 </script>
 </body>
 </html>
