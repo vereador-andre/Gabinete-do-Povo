@@ -3,52 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin - André de Dedé</title>
+    <title>Painel Administrativo - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 30px; }
-        .topo-admin { background: #0f172a; color: white; padding: 40px 20px; text-align: center; border-radius: 0 0 30px 30px; }
-        .grid-admin { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-        .card-admin { 
-            background: white; padding: 20px; border-radius: 20px; display: flex; 
-            flex-direction: column; align-items: center; text-decoration: none; color: #1e3a8a;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center;
-        }
-        .card-admin i { font-size: 35px; margin-bottom: 10px; color: #3b82f6; }
-        .card-admin span { font-size: 13px; font-weight: 600; }
-        .btn-sair { margin: 20px; padding: 15px; background: #fee2e2; color: #ef4444; border-radius: 15px; text-align: center; text-decoration: none; font-weight: 600; display: block; }
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; color:#0f172a; padding-bottom: 40px; }
+        
+        /* Topo Administrativo */
+        .topo-admin { background:#0f172a; color:white; padding:30px 20px; text-align:center; border-radius:0 0 30px 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .topo-admin h2 { margin:5px 0; font-size:22px; }
+        .status-badge { background:#22c55e; color:white; font-size:10px; padding:4px 10px; border-radius:20px; text-transform:uppercase; font-weight:600; }
+
+        /* Container de Abas */
+        .tab-container { display:flex; background:white; margin:20px; border-radius:15px; padding:5px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .tab-btn { flex:1; padding:12px; border:none; background:none; font-family:inherit; font-weight:600; color:#64748b; cursor:pointer; border-radius:12px; transition:0.3s; font-size:13px; }
+        .tab-btn.active { background:#1e3a8a; color:white; }
+
+        .secao { display:none; padding:0 20px; }
+        .secao.active { display:block; }
+
+        /* Lista de Itens (Noticias, Requerimentos, etc) */
+        .card-item { background:white; border-radius:15px; padding:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center; }
+        .info-item { flex:1; }
+        .info-item strong { display:block; color:#1e3a8a; font-size:14px; }
+        .info-item span { font-size:11px; color:#94a3b8; }
+        
+        .acoes-btn { display:flex; gap:10px; }
+        .btn-acao { border:none; padding:8px; border-radius:10px; cursor:pointer; display:flex; align-items:center; }
+        .btn-edit { background:#dbeafe; color:#1e40af; }
+        .btn-del { background:#fee2e2; color:#ef4444; }
+
+        /* Estilo das Mensagens do Público */
+        .msg-status { font-size:10px; font-weight:bold; padding:2px 6px; border-radius:4px; margin-top:5px; display:inline-block; }
+        .status-atendida { background:#dcfce7; color:#166534; }
+        .status-respondida { background:#dbeafe; color:#1e40af; }
+        .status-pendente { background:#fef9c3; color:#854d0e; }
+
+        /* Botão Flutuante para Adicionar Novo */
+        .btn-adicionar { position:fixed; bottom:20px; right:20px; background:#1e3a8a; color:white; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(30,58,138,0.4); text-decoration:none; }
     </style>
 </head>
 <body>
-    <div class="topo-admin">
-        <i class="material-icons" style="font-size: 48px;">admin_panel_settings</i>
-        <h2>Painel de Controle</h2>
-        <p>Olá, Vereador André</p>
+
+<div class="topo-admin">
+    <span class="status-badge">Painel Ativo</span>
+    <h2>Gestão do Gabinete</h2>
+    <p style="font-size:12px; opacity:0.8; margin:0;">Bem-vindo, André de Dedé</p>
+</div>
+
+<div class="tab-container">
+    <button class="tab-btn active" onclick="abrirTab(event, 'tab-conteudo')">Conteúdo</button>
+    <button class="tab-btn" onclick="abrirTab(event, 'tab-mensagens')">Mensagens</button>
+</div>
+
+<div id="tab-conteudo" class="secao active">
+    <div style="margin-bottom:15px;">
+        <select id="filtroColecao" onchange="carregarConteudo()" style="width:100%; padding:12px; border-radius:10px; border:1px solid #e2e8f0; font-family:inherit;">
+            <option value="noticias">Notícias</option>
+            <option value="requerimentos">Requerimentos</option>
+            <option value="indicacoes">Indicações</option>
+            <option value="acoes-atendidas">Ações Atendidas</option>
+            <option value="sessoes">Sessões</option>
+        </select>
     </div>
+    <div id="listaConteudo"></div>
+</div>
 
-    <div class="grid-admin">
-        <a href="gerenciar-mensagens.html" class="card-admin">
-            <i class="material-icons">forum</i>
-            <span>Mensagens Recebidas</span>
-        </a>
+<div id="tab-mensagens" class="secao">
+    <div id="listaMensagens"></div>
+</div>
 
-        <a href="cadastrar-noticia.html" class="card-admin">
-            <i class="material-icons">add_circle</i>
-            <span>Postar Notícia</span>
-        </a>
+<a href="cadastro.html" class="btn-adicionar">
+    <i class="material-icons">add</i>
+</a>
 
-        <a href="gerenciar-posts.html" class="card-admin">
-            <i class="material-icons">edit_note</i>
-            <span>Editar/Excluir Posts</span>
-        </a>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-        <a href="cadastrar-sessao.html" class="card-admin">
-            <i class="material-icons">video_call</i>
-            <span>Nova Sessão</span>
-        </a>
-    </div>
+<script>
+const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-    <a href="app.html" class="btn-sair">Sair do Painel</a>
+function abrirTab(evt, nomeTab) {
+    let i, secao, tabBtn;
+    secao = document.getElementsByClassName("secao");
+    for (i = 0; i < secao.length; i++) { secao[i].style.display = "none"; }
+    tabBtn = document.getElementsByClassName("tab-btn");
+    for (i = 0; i < tabBtn.length; i++) { tabBtn[i].className = tabBtn[i].className.replace(" active", ""); }
+    document.getElementById(nomeTab).style.display = "block";
+    evt.currentTarget.className += " active";
+    
+    if(nomeTab === 'tab-mensagens') carregarMensagens();
+    else carregarConteudo();
+}
+
+// FUNÇÃO PARA CARREGAR CONTEÚDO (EDITAR/EXCLUIR)
+function carregarConteudo() {
+    const col = document.getElementById("filtroColecao").value;
+    const lista = document.getElementById("listaConteudo");
+    lista.innerHTML = "Carregando...";
+
+    db.collection(col).orderBy("criadoEm", "desc").get().then(snapshot => {
+        lista.innerHTML = "";
+        snapshot.forEach(doc => {
+            const dados = doc.data();
+            lista.innerHTML += `
+                <div class="card-item">
+                    <div class="info-item">
+                        <strong>${dados.titulo || 'Sem título'}</strong>
+                        <span>Publicado em: ${dados.data}</span>
+                    </div>
+                    <div class="acoes-btn">
+                        <button class="btn-acao btn-del" onclick="excluirItem('${col}', '${doc.id}')"><i class="material-icons">delete</i></button>
+                    </div>
+                </div>`;
+        });
+    });
+}
+
+// FUNÇÃO PARA MENSAGENS DO PÚBLICO (COM STATUS)
+function carregarMensagens() {
+    const lista = document.getElementById("listaMensagens");
+    lista.innerHTML = "Carregando...";
+
+    db.collection("contatos").orderBy("criadoEm", "desc").get().then(snapshot => {
+        lista.innerHTML = "";
+        snapshot.forEach(doc => {
+            const m = doc.data();
+            const status = m.status || 'Pendente';
+            const classe = status === 'Atendida' ? 'status-atendida' : (status === 'Respondida' ? 'status-respondida' : 'status-pendente');
+
+            lista.innerHTML += `
+                <div class="card-item" style="flex-direction:column; align-items:flex-start;">
+                    <div style="width:100%; display:flex; justify-content:space-between;">
+                        <strong>${m.nome}</strong>
+                        <span class="msg-status ${classe}">${status}</span>
+                    </div>
+                    <p style="font-size:13px; margin:10px 0;">${m.mensagem}</p>
+                    <div class="acoes-btn" style="width:100%; justify-content:flex-end;">
+                        <button class="btn-acao btn-edit" onclick="mudarStatusMsg('${doc.id}', 'Respondida')" title="Marcar Respondida"><i class="material-icons">chat</i></button>
+                        <button class="btn-acao btn-edit" style="background:#dcfce7; color:#166534" onclick="mudarStatusMsg('${doc.id}', 'Atendida')" title="Marcar Atendida"><i class="material-icons">check</i></button>
+                        <button class="btn-acao btn-del" onclick="excluirItem('contatos', '${doc.id}')"><i class="material-icons">delete</i></button>
+                    </div>
+                </div>`;
+        });
+    });
+}
+
+function excluirItem(colecao, id) {
+    if(confirm("Deseja realmente excluir este item?")) {
+        db.collection(colecao).doc(id).delete().then(() => {
+            alert("Excluído com sucesso!");
+            if(colecao === 'contatos') carregarMensagens(); else carregarConteudo();
+        });
+    }
+}
+
+function mudarStatusMsg(id, novoStatus) {
+    db.collection("contatos").doc(id).update({ status: novoStatus }).then(() => {
+        carregarMensagens();
+    });
+}
+
+// Início padrão
+carregarConteudo();
+</script>
 </body>
 </html>
