@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensagens - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f8fafc; }
+        .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; }
+        .container { padding: 15px; }
+        .msg-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 5px solid #cbd5e1; }
+        
+        /* Cores por Status */
+        .status-pendente { border-left-color: #f59e0b; }
+        .status-respondida { border-left-color: #3b82f6; }
+        .status-atendida { border-left-color: #10b981; }
+
+        .msg-header { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-bottom: 10px; }
+        .msg-tipo { background: #e2e8f0; padding: 2px 8px; border-radius: 5px; font-weight: 600; color: #1e3a8a; }
+        .msg-corpo { font-size: 14px; margin-bottom: 15px; color: #334155; }
+        
+        .acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-status { border: none; padding: 8px 12px; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: 600; }
+        .btn-excluir { background: #fee2e2; color: #ef4444; border: none; padding: 8px; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="topo">
+        <i class="material-icons" onclick="location.href='admin.html'">arrow_back</i>
+        <strong>Mensagens do Público</strong>
+    </div>
+
+    <div class="container" id="listaMensagens">
+        <p style="text-align:center; opacity:0.5;">Carregando mensagens...</p>
+    </div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function atualizarStatus(id, novoStatus) {
+        db.collection("contatos").doc(id).update({ status: novoStatus })
+        .then(() => location.reload());
+    }
+
+    function excluirMensagem(id) {
+        if(confirm("Deseja apagar esta mensagem?")) {
+            db.collection("contatos").doc(id).delete().then(() => location.reload());
+        }
+    }
+
+    db.collection("contatos").orderBy("criadoEm", "desc").get().then(snapshot => {
+        const container = document.getElementById("listaMensagens");
+        container.innerHTML = "";
+        
+        snapshot.forEach(doc => {
+            const m = doc.data();
+            const id = doc.id;
+            const statusClass = m.status === 'Atendida' ? 'status-atendida' : (m.status === 'Respondida' ? 'status-respondida' : 'status-pendente');
+
+            container.innerHTML += `
+                <div class="msg-card ${statusClass}">
+                    <div class="msg-header">
+                        <span><b style="color:#0f172a">${m.nome}</b> (${m.data})</span>
+                        <span class="msg-tipo">${m.tipo}</span>
+                    </div>
+                    <div class="msg-corpo">
+                        ${m.mensagem}<br>
+                        <small><b>WhatsApp:</b> ${m.whatsapp || 'Não informado'}</small>
+                    </div>
+                    <div style="font-size:11px; margin-bottom:10px; color:#64748b">Status Atual: <b>${m.status || 'Pendente'}</b></div>
+                    <div class="acoes">
+                        <button class="btn-status" style="background:#dbeafe; color:#1e40af" onclick="atualizarStatus('${id}', 'Respondida')">Marcar Respondida</button>
+                        <button class="btn-status" style="background:#dcfce7; color:#166534" onclick="atualizarStatus('${id}', 'Atendida')">Marcar Atendida</button>
+                        <button class="btn-excluir" onclick="excluirMensagem('${id}')"><i class="material-icons" style="font-size:18px">delete</i></button>
+                    </div>
+                </div>
+            `;
+        });
+    });
+</script>
+</body>
+</html>
