@@ -48,7 +48,7 @@
         <input type="text" id="editLink">
 
         <label>DESCRIÇÃO / TEXTO</label>
-        <textarea id="editTexto" style="height:100px;"></textarea>
+        <textarea id="editTexto" style="height:150px;"></textarea>
 
         <button class="btn-save" onclick="salvarEdicao()">Salvar Alterações</button>
         <button onclick="fecharModal()" style="width:100%; background:none; border:none; color:#64748b; margin-top:10px; cursor:pointer;">Cancelar</button>
@@ -71,31 +71,41 @@
         lista.innerHTML = "";
         snapshot.forEach(doc => {
             const item = doc.data();
-            // Formata a data para exibir na lista no padrão BR
-            const dataExibicao = item.data ? item.data.split('-').reverse().join('/') : "";
-            
-            lista.innerHTML += `
-                <div class="item-lista">
-                    <div style="flex:1;">
-                        <strong style="font-size:14px; color:#1e3a8a;">${item.titulo}</strong><br>
-                        <small style="color:#94a3b8;">${dataExibicao}</small>
-                    </div>
-                    <div class="btns-group">
-                        <button class="btn-action btn-edit" onclick="abrirModal('${doc.id}', '${item.titulo}', '${item.data}', '${item.link || item.imagem || ''}', '${item.descricao || item.texto || ''}')">
-                            <i class="material-icons">edit</i>
-                        </button>
-                        <button class="btn-action btn-del" onclick="excluir('${doc.id}')"><i class="material-icons">delete</i></button>
-                    </div>
-                </div>`;
+            const id = doc.id;
+            const dataBR = item.data ? item.data.split('-').reverse().join('/') : "";
+
+            // Criamos o elemento do item
+            const div = document.createElement('div');
+            div.className = 'item-lista';
+            div.innerHTML = `
+                <div style="flex:1;">
+                    <strong style="font-size:14px; color:#1e3a8a;">${item.titulo || 'Sem título'}</strong><br>
+                    <small style="color:#94a3b8;">${dataBR}</small>
+                </div>
+                <div class="btns-group">
+                    <button class="btn-action btn-edit" id="btn-edit-${id}">
+                        <i class="material-icons">edit</i>
+                    </button>
+                    <button class="btn-action btn-del" onclick="excluir('${id}')">
+                        <i class="material-icons">delete</i>
+                    </button>
+                </div>
+            `;
+            lista.appendChild(div);
+
+            // Adicionamos o evento de clique via JavaScript para evitar erros com aspas e quebras de linha
+            document.getElementById(`btn-edit-${id}`).onclick = () => {
+                abrirModal(id, item.titulo, item.data, (item.link || item.imagem || ""), (item.descricao || item.texto || ""));
+            };
         });
     });
 
     function abrirModal(id, titulo, data, link, texto) {
         document.getElementById('editId').value = id;
-        document.getElementById('editTitulo').value = titulo;
+        document.getElementById('editTitulo').value = titulo || "";
         document.getElementById('editData').value = data || "";
-        document.getElementById('editLink').value = link;
-        document.getElementById('editTexto').value = texto;
+        document.getElementById('editLink').value = link || "";
+        document.getElementById('editTexto').value = texto || "";
         document.getElementById('modalEdicao').style.display = 'flex';
     }
 
@@ -103,25 +113,38 @@
 
     function salvarEdicao() {
         const id = document.getElementById('editId').value;
-        const novaData = document.getElementById('editData').value;
+        const ref = db.collection(colecao).doc(id);
         
-        db.collection(colecao).doc(id).update({
+        const dadosAtualizados = {
             titulo: document.getElementById('editTitulo').value,
-            data: novaData,
-            link: document.getElementById('editLink').value,
-            imagem: document.getElementById('editLink').value,
+            data: document.getElementById('editData').value,
             descricao: document.getElementById('editTexto').value,
             texto: document.getElementById('editTexto').value
-        }).then(() => { 
+        };
+
+        // Verifica se é link ou imagem para atualizar o campo certo
+        const linkValor = document.getElementById('editLink').value;
+        if(colecao === 'sessoes') {
+            dadosAtualizados.link = linkValor;
+        } else {
+            dadosAtualizados.imagem = linkValor;
+            dadosAtualizados.link = linkValor;
+        }
+
+        ref.update(dadosAtualizados).then(() => { 
             alert("Atualizado com sucesso!"); 
             fecharModal(); 
         }).catch(err => {
-            console.error("Erro ao atualizar:", err);
-            alert("Erro ao salvar alterações.");
+            alert("Erro ao salvar.");
+            console.error(err);
         });
     }
 
-    function excluir(id) { if(confirm("Excluir permanentemente?")) db.collection(colecao).doc(id).delete(); }
+    function excluir(id) { 
+        if(confirm("Deseja realmente excluir este item?")) {
+            db.collection(colecao).doc(id).delete(); 
+        }
+    }
 </script>
 </body>
 </html>
