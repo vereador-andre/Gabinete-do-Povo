@@ -4,126 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1e3a8a"> 
-    <title>Gabinete do Povo</title>
+    <title>Gabinete André de Dedé</title>
 
-    <link rel="icon" type="image/png" href="https://i.postimg.cc/85MhR0Z0/icon-gabinete.png?v=2">
-    <link rel="apple-touch-icon" href="https://i.postimg.cc/85MhR0Z0/icon-gabinete.png?v=2">
-    
+    <link rel="manifest" href="manifest.json">
+
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/85MhR0Z0/icon-gabinete.png">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/85MhR0Z0/icon-gabinete.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Gabinete">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         body, html { 
-            margin: 0; 
-            padding: 0; 
-            height: 100vh; 
-            width: 100%; 
-            font-family: 'Poppins', sans-serif; 
-            overflow: hidden; 
-            background: #1e3a8a; 
+            margin: 0; padding: 0; height: 100vh; width: 100%; 
+            font-family: 'Poppins', sans-serif; overflow: hidden; background: #1e3a8a; 
         }
-        
         .bg-fundo {
             background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('fundo.jpg');
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: white;
-            padding: 20px;
-            box-sizing: border-box;
+            background-size: cover; background-position: center; height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; color: white; padding: 20px; box-sizing: border-box;
         }
-
-        h1 { 
-            font-size: 32px; 
-            margin: 0; 
-            font-weight: 600; 
-            letter-spacing: 1px;
-        }
-
-        .frase { 
-            font-size: 18px; 
-            margin: 5px 0; 
-            font-weight: 300; 
-            opacity: 0.9;
-        }
-
-        .vereador { 
-            font-size: 14px; 
-            margin-top: 2px;
-            margin-bottom: 40px; 
-            font-weight: 400; 
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #22c55e; 
-        }
-
-        .btn-container { 
-            width: 100%; 
-            max-width: 320px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-        }
-
-        .btn-opcao {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px; 
-            padding: 18px;
-            border-radius: 15px;
-            border: none;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            text-align: center;
-            transition: 0.3s;
-        }
-
-        .btn-cidadao { 
-            background: #22c55e; 
-            color: white; 
-            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); 
-        }
-
-        .btn-admin { 
-            background: white; 
-            color: #1e3a8a; 
-        }
-        
+        h1 { font-size: 32px; margin: 0; font-weight: 600; letter-spacing: 1px; }
+        .frase { font-size: 18px; margin: 5px 0; font-weight: 300; opacity: 0.9; }
+        .vereador { font-size: 14px; margin-top: 2px; margin-bottom: 40px; font-weight: 400; text-transform: uppercase; letter-spacing: 2px; color: #22c55e; }
+        .btn-container { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 15px; }
+        .btn-opcao { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 18px; border-radius: 15px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; transition: 0.3s; }
+        .btn-cidadao { background: #22c55e; color: white; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); }
+        .btn-admin { background: white; color: #1e3a8a; }
         .btn-opcao:active { transform: scale(0.96); opacity: 0.9; }
-        
         .btn-opcao i { font-size: 20px; }
     </style>
 </head>
 <body>
-
     <div class="bg-fundo">
         <h1>Gabinete do Povo</h1>
         <div class="frase">Transparência e Responsabilidade</div>
         <div class="vereador">Vereador André de Dedé</div>
-
         <div class="btn-container">
-            <a href="app.html" class="btn-opcao btn-cidadao">
-                <i class="material-icons">person</i>
-                Entrar como Cidadão
-            </a>
-            
-            <a href="login.html" class="btn-opcao btn-admin">
-                <i class="material-icons">admin_panel_settings</i>
-                Área do Administrador
-            </a>
+            <a href="app.html" class="btn-opcao btn-cidadao"><i class="material-icons">person</i> Entrar como Cidadão</a>
+            <a href="login.html" class="btn-opcao btn-admin"><i class="material-icons">admin_panel_settings</i> Área do Administrador</a>
         </div>
     </div>
-
 </body>
 </html>
