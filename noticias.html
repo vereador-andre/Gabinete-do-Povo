@@ -12,23 +12,19 @@
         .container { padding: 15px; }
         
         /* Estilo dos Cards */
-        .card { background:white; border-radius:20px; overflow:hidden; margin-bottom:25px; box-shadow:0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .card { background:white; border-radius:20px; overflow:hidden; margin-bottom:15px; box-shadow:0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; transition: 0.3s; }
         
-        /* AJUSTE NA IMAGEM PARA NÃO CORTAR */
-        .card img { 
-            width:100%; 
-            height: auto; /* Deixa a altura livre para não cortar a cabeça */
-            display:block; 
-            max-height: 450px; /* Limita para fotos muito altas não ocuparem a tela toda */
-            object-fit: contain; /* Garante que a imagem apareça inteira */
-            background: #f8fafc; /* Cor de fundo caso a foto seja menor que o card */
-        }
-        
+        .card img { width:100%; height: auto; display:block; max-height: 450px; object-fit: contain; background: #f8fafc; }
         .card iframe { width:100%; border:none; display:block; height: 210px; }
         
-        .card-body { padding:20px; }
-        .card-data { font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; }
-        .card-titulo { font-size:18px; color:#1e3a8a; font-weight:600; margin:10px 0; line-height: 1.3; }
+        .card-body { padding:15px; }
+        .card-header-info { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        
+        .card-data { font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; display: flex; align-items: center; gap: 5px; }
+        .card-titulo { font-size:16px; color:#1e3a8a; font-weight:600; margin:5px 0; line-height: 1.3; flex: 1; }
+        
+        /* Conteúdo que inicia escondido */
+        .conteudo-noticia { display: none; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
         
         .card-texto { 
             font-size:14px; 
@@ -38,10 +34,27 @@
             word-wrap: break-word;
         }
 
+        /* Botão de Ver Notícia */
+        .btn-ver-mais {
+            background: #eff6ff;
+            color: #1e3a8a;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
         .btn-compartilhar { 
             display:flex; align-items:center; justify-content:center; gap:8px; 
             background:#f1f5f9; color:#1e3a8a; border:none; padding:12px; 
             border-radius:12px; margin-top:20px; cursor:pointer; font-weight:600; font-size:13px;
+            width: 100%;
         }
 
         .rodape-redes { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 0; display: flex; flex-direction: column; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); border-radius: 25px 25px 0 0; z-index: 1000; }
@@ -57,7 +70,7 @@
     <span>Notícias</span>
 </div>
 
-<div class="container" id="lista-publica">Carregando...</div>
+<div class="container" id="lista-publica">Carregando notícias...</div>
 
 <div class="rodape-redes">
     <p>Siga-nos em nossas redes sociais</p>
@@ -81,6 +94,7 @@
         
         snapshot.forEach(doc => {
             const item = doc.data();
+            const id = doc.id;
             const titulo = item.titulo || 'Sem Título';
             const texto = item.descricao || item.texto || '';
             const dataBR = item.data ? item.data.split('-').reverse().join('/') : "";
@@ -94,18 +108,41 @@
 
             lista.innerHTML += `
                 <div class="card">
-                    ${midiaHTML}
                     <div class="card-body">
-                        <div class="card-data"><i class="material-icons" style="font-size:12px">calendar_today</i> ${dataBR}</div>
-                        <div class="card-titulo">${titulo}</div>
-                        <div class="card-texto">${texto}</div>
-                        <div class="btn-compartilhar" onclick="compartilhar('${titulo.replace(/'/g, "\\'")}', '${texto.substring(0, 100).replace(/'/g, "\\'")}')">
-                            <i class="material-icons" style="font-size:18px">share</i> Compartilhar Notícia
+                        <div class="card-header-info">
+                            <div style="flex: 1;">
+                                <div class="card-data"><i class="material-icons" style="font-size:12px">calendar_today</i> ${dataBR}</div>
+                                <div class="card-titulo">${titulo}</div>
+                            </div>
+                            <button class="btn-ver-mais" onclick="toggleNoticia('${id}')" id="btn-${id}">
+                                Ler notícia <i class="material-icons" style="font-size:16px">expand_more</i>
+                            </button>
+                        </div>
+
+                        <div class="conteudo-noticia" id="conteudo-${id}">
+                            ${midiaHTML}
+                            <div class="card-texto" style="margin-top:15px;">${texto}</div>
+                            <div class="btn-compartilhar" onclick="compartilhar('${titulo.replace(/'/g, "\\'")}', '${texto.substring(0, 100).replace(/'/g, "\\'")}')">
+                                <i class="material-icons" style="font-size:18px">share</i> Compartilhar Notícia
+                            </div>
                         </div>
                     </div>
                 </div>`;
         });
     });
+
+    function toggleNoticia(id) {
+        const conteudo = document.getElementById(`conteudo-${id}`);
+        const btn = document.getElementById(`btn-${id}`);
+        
+        if (conteudo.style.display === "block") {
+            conteudo.style.display = "none";
+            btn.innerHTML = 'Ler notícia <i class="material-icons" style="font-size:16px">expand_more</i>';
+        } else {
+            conteudo.style.display = "block";
+            btn.innerHTML = 'Fechar <i class="material-icons" style="font-size:16px">expand_less</i>';
+        }
+    }
 
     function compartilhar(titulo, texto) {
         if (navigator.share) {
