@@ -8,45 +8,79 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         :root { --primary: #1e3a8a; }
-        body { margin: 0; font-family: 'Poppins', sans-serif; background: #f8fafc; }
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: #f8fafc; padding-bottom: 50px; }
         .topo { background: var(--primary); color: white; padding: 20px; display: flex; align-items: center; gap: 15px; }
+        
+        /* Sistema de Abas */
+        .tabs { display: flex; background: white; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10; }
+        .tab { flex: 1; padding: 15px; text-align: center; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
         .container { padding: 20px 15px; }
         .sessao-card { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-        .sessao-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #eff6ff; color: #3b82f6; }
+        .sessao-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #eff6ff; color: #3b82f6; }
         .sessao-info { flex: 1; }
-        .sessao-tipo { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }
-        .sessao-nome { font-size: 15px; font-weight: 600; color: var(--primary); }
-        .btn-assistir { background: #1e3a8a; color: white; border: none; padding: 8px 15px; border-radius: 10px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; cursor: pointer; text-decoration: none; }
+        .sessao-nome { font-size: 15px; font-weight: 600; color: var(--primary); margin-bottom: 2px; }
+        .sessao-data { font-size: 11px; color: #94a3b8; font-weight: 500; }
+        .btn-assistir { background: #1e3a8a; color: white; border: none; padding: 10px 18px; border-radius: 12px; font-size: 12px; font-weight: 600; text-decoration: none; }
     </style>
 </head>
 <body>
-<div class="topo"><i class="material-icons" onclick="history.back()">arrow_back</i><span>Sessões Legislativas</span></div>
-<div class="container" id="lista-sessoes">Carregando sessões...</div>
+
+<div class="topo"><i class="material-icons" onclick="history.back()">arrow_back</i><span>Sessões</span></div>
+
+<div class="tabs">
+    <div class="tab active" onclick="filtrarSessoes('Ordinária', this)">Ordinárias</div>
+    <div class="tab" onclick="filtrarSessoes('Extraordinária', this)">Extraordinárias</div>
+</div>
+
+<div class="container" id="lista-sessoes">Carregando...</div>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
     const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    db.collection("sessoes").orderBy("criadoEm", "desc").onSnapshot(s => {
-        const l = document.getElementById("lista-sessoes"); l.innerHTML = "";
-        s.forEach(d => {
-            const i = d.data();
-            const corTipo = i.tipo === 'Extraordinária' ? '#ef4444' : '#3b82f6';
+
+    let sessoesData = [];
+
+    // Busca todas e organiza
+    db.collection("sessoes").orderBy("data", "desc").onSnapshot(s => {
+        sessoesData = [];
+        s.forEach(d => sessoesData.push(d.data()));
+        renderizar('Ordinária'); // Inicia mostrando as ordinárias
+    });
+
+    function renderizar(tipo) {
+        const l = document.getElementById("lista-sessoes");
+        l.innerHTML = "";
+        const filtradas = sessoesData.filter(s => s.tipo === tipo);
+        
+        if(filtradas.length === 0) {
+            l.innerHTML = `<p style="text-align:center; color:#94a3b8; margin-top:20px;">Nenhuma sessão ${tipo.toLowerCase()} encontrada.</p>`;
+            return;
+        }
+
+        filtradas.forEach(i => {
+            const dataBR = i.data ? i.data.split('-').reverse().join('/') : "";
             l.innerHTML += `
                 <div class="sessao-card">
-                    <div class="sessao-icon" style="color:${corTipo}; background:${corTipo}15">
-                        <i class="material-icons">videocam</i>
-                    </div>
+                    <div class="sessao-icon"><i class="material-icons">videocam</i></div>
                     <div class="sessao-info">
-                        <span class="sessao-tipo" style="color:${corTipo}">${i.tipo || 'Ordinária'}</span>
                         <div class="sessao-nome">${i.titulo}</div>
-                        <div style="font-size:11px; color:#94a3b8">${i.data || ''}</div>
+                        <div class="sessao-data">${dataBR}</div>
                     </div>
                     <a href="${i.link}" target="_blank" class="btn-assistir">Ver</a>
                 </div>`;
         });
-    });
+    }
+
+    function filtrarSessoes(tipo, el) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        renderizar(tipo);
+    }
 </script>
 </body>
 </html>
