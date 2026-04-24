@@ -212,7 +212,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    db.collection("noticias").orderBy("criadoEm", "desc").onSnapshot(snapshot => {
+    db.collection("noticias").orderBy("data", "desc").onSnapshot(snapshot => {
         const lista = document.getElementById("lista-publica");
         lista.innerHTML = "";
         
