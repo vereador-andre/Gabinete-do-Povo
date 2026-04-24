@@ -1,57 +1,35 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Postar Ação Atendida</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 30px; }
-        .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; border-radius:0 0 25px 25px; }
-        .btn-voltar { cursor:pointer; background:rgba(255,255,255,0.2); border-radius:10px; padding:8px; display:flex; }
-        .form { padding:20px; }
-        .card { background:white; padding:25px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05); }
-        label { display:block; font-size:12px; font-weight:600; color:#64748b; margin-bottom:8px; }
-        input, textarea { width:100%; padding:15px; border:1px solid #e2e8f0; border-radius:12px; background:#f8fafc; font-family:inherit; box-sizing:border-box; font-size:14px; margin-bottom:20px; }
-        textarea { height:150px; resize: none; }
-        .btn-salvar { width:100%; background:#1e3a8a; color:white; border:none; padding:18px; border-radius:12px; font-weight:600; cursor:pointer; font-size:16px; }
-    </style>
-</head>
-<body>
-    <div class="topo">
-        <div class="btn-voltar" onclick="history.back()"><i class="material-icons">arrow_back</i></div>
-        <div style="font-weight:600">Postar Ação Atendida</div>
-    </div>
-    <div class="form">
-        <div class="card">
-            <label>Título da Ação</label>
-            <input type="text" id="titulo" placeholder="Ex: Reforma da Unidade de Saúde">
-            <label>Data</label>
-            <input type="date" id="data">
-            <label>Link da Imagem ou Vídeo</label>
-            <input type="text" id="imagem" placeholder="https://...">
-            <label>Relatório da Ação</label>
-            <textarea id="texto" placeholder="Descreva os resultados da ação..."></textarea>
-            <button class="btn-salvar" id="btnSalvar" onclick="salvar()">Publicar Ação</button>
-        </div>
-    </div>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script>
-        const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        function salvar() {
-            const t = document.getElementById("titulo").value;
-            const d = document.getElementById("data").value;
-            const i = document.getElementById("imagem").value;
-            const tx = document.getElementById("texto").value;
-            if(!t || !d || !tx) return alert("Preencha Título, Data e Texto.");
-            const dataBR = d.split('-').reverse().join('/');
-            db.collection("acoes-atendidas").add({ titulo: t, data: dataBR, imagem: i, texto: tx, criadoEm: firebase.firestore.FieldValue.serverTimestamp() })
-            .then(() => { alert("Ação registrada!"); history.back(); });
-        }
-    </script>
-</body>
-</html>
+<div class="form-card">
+    <h2>Nova Ação Atendida</h2>
+    <form id="formAcao">
+        <label>Título da Ação</label>
+        <input type="text" id="titulo" placeholder="Ex: Reforma da Praça Central" required>
+
+        <label>Data da Realização</label>
+        <input type="date" id="data" required>
+
+        <label>Descrição Detalhada</label>
+        <textarea id="descricao" rows="4" placeholder="Descreva o que foi feito..."></textarea>
+
+        <label>URL da Imagem (Link Direto)</label>
+        <input type="url" id="imagem" placeholder="https://imgur.com/foto.jpg">
+
+        <button type="submit" class="btn-salvar">Publicar Ação</button>
+    </form>
+    <a href="admin.html" class="btn-voltar">Voltar</a>
+</div>
+
+<script>
+    // ... config firebase ...
+    document.getElementById("formAcao").onsubmit = async (e) => {
+        e.preventDefault();
+        await db.collection("acoes-atendidas").add({
+            titulo: document.getElementById("titulo").value,
+            data: document.getElementById("data").value,
+            descricao: document.getElementById("descricao").value,
+            imagem: document.getElementById("imagem").value,
+            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("Ação cadastrada!");
+        window.location.href = "admin.html";
+    };
+</script>
