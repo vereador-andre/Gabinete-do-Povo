@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a"> 
     <title>Gabinete do Povo - André de Dedé</title>
 
@@ -15,7 +15,15 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <style>
+        :root {
+            --primary: #22c55e;
+            --secondary: #1e3a8a;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         body, html { 
             margin: 0; 
             padding: 0; 
@@ -23,11 +31,11 @@
             width: 100%; 
             font-family: 'Poppins', sans-serif; 
             overflow: hidden; 
-            background: #1e3a8a; 
+            background: var(--secondary); 
         }
         
         .bg-fundo {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('fundo.jpg');
+            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('fundo.jpg');
             background-size: cover;
             background-position: center;
             height: 100vh;
@@ -37,32 +45,51 @@
             justify-content: center;
             text-align: center;
             color: white;
-            padding: 20px;
+            padding: 30px;
             box-sizing: border-box;
         }
 
+        /* Animação de entrada suave */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .conteudo-header {
+            animation: fadeInUp 0.8s ease-out;
+            margin-bottom: 50px;
+        }
+
         h1 { 
-            font-size: 32px; 
+            font-size: 34px; 
             margin: 0; 
             font-weight: 600; 
-            letter-spacing: 1px;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to bottom, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .frase { 
-            font-size: 18px; 
-            margin: 5px 0; 
+            font-size: 16px; 
+            margin: 8px 0; 
             font-weight: 300; 
-            opacity: 0.9;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
         }
 
         .vereador { 
-            font-size: 14px; 
-            margin-top: 2px;
-            margin-bottom: 40px; 
-            font-weight: 400; 
+            display: inline-block;
+            font-size: 12px; 
+            margin-top: 15px;
+            padding: 6px 16px;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 50px;
+            font-weight: 600; 
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #22c55e; 
+            color: var(--primary); 
         }
 
         .btn-container { 
@@ -70,47 +97,71 @@
             max-width: 320px; 
             display: flex; 
             flex-direction: column; 
-            gap: 15px; 
+            gap: 16px; 
+            animation: fadeInUp 1s ease-out both;
+            animation-delay: 0.3s;
         }
 
         .btn-opcao {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px; 
-            padding: 18px;
-            border-radius: 15px;
+            gap: 12px; 
+            padding: 20px;
+            border-radius: 18px;
             border: none;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-            text-align: center;
-            transition: 0.3s;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         .btn-cidadao { 
-            background: #22c55e; 
+            background: var(--primary); 
             color: white; 
-            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); 
+        }
+
+        .btn-cidadao:hover, .btn-cidadao:active {
+            background: #1bb054;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.4);
         }
 
         .btn-admin { 
-            background: white; 
-            color: #1e3a8a; 
+            background: rgba(255, 255, 255, 0.1); 
+            color: white; 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-admin:hover, .btn-admin:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
         
-        .btn-opcao:active { transform: scale(0.96); opacity: 0.9; }
-        
-        .btn-opcao i { font-size: 20px; }
+        .btn-opcao i { font-size: 22px; }
+
+        /* Rodapé sutil */
+        .footer-tag {
+            position: absolute;
+            bottom: 20px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
 
     <div class="bg-fundo">
-        <h1>Gabinete do Povo</h1>
-        <div class="frase">Transparência e Responsabilidade</div>
-        <div class="vereador">Vereador André de Dedé</div>
+        <div class="conteudo-header">
+            <h1>Gabinete do Povo</h1>
+            <div class="frase">Transparência e Responsabilidade</div>
+            <div class="vereador">André de Dedé</div>
+        </div>
 
         <div class="btn-container">
             <a href="app.html" class="btn-opcao btn-cidadao">
@@ -123,6 +174,8 @@
                 Área do Administrador
             </a>
         </div>
+
+        <div class="footer-tag">Mandato Areia Branca/RN</div>
     </div>
 
 </body>
