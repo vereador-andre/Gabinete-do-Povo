@@ -2,16 +2,16 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1e3a8a"> 
     <title>Gabinete do Povo - André de Dedé</title>
 
-    <link rel="icon" type="image/jpeg" href="Iconeapp.jpg">
-    <link rel="apple-touch-icon" href="Iconeapp.jpg">
-    
-    <meta name="apple-mobile-web-app-title" content="Gabinete">
-    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="André de Dedé">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/dt1gSyRJ/28EC3CCD-6EF0-4445-8E8B-F53266C4E1E4.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -49,10 +49,23 @@
             box-sizing: border-box;
         }
 
-        /* Animação de entrada suave */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Banner de Instrução de Instalação */
+        #pwa-install-banner {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1e3a8a;
+            padding: 15px;
+            border-radius: 20px;
+            z-index: 9999;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: left;
+            font-size: 13px;
+            animation: fadeInUp 0.5s ease-out;
+            border-left: 5px solid var(--primary);
         }
 
         .conteudo-header {
@@ -115,46 +128,30 @@
             cursor: pointer;
             text-decoration: none;
             transition: var(--transition);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-cidadao { 
-            background: var(--primary); 
-            color: white; 
-        }
+        .btn-cidadao { background: var(--primary); color: white; }
+        .btn-admin { background: rgba(255, 255, 255, 0.1); color: white; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
 
-        .btn-cidadao:hover, .btn-cidadao:active {
-            background: #1bb054;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.4);
-        }
-
-        .btn-admin { 
-            background: rgba(255, 255, 255, 0.1); 
-            color: white; 
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-admin:hover, .btn-admin:active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-        
-        .btn-opcao i { font-size: 22px; }
-
-        /* Rodapé sutil */
-        .footer-tag {
-            position: absolute;
-            bottom: 20px;
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.3);
-            letter-spacing: 1px;
-            text-transform: uppercase;
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
+
+    <div id="pwa-install-banner">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i class="material-icons" style="color:var(--primary)">add_to_home_screen</i>
+            <div>
+                <strong>Instale o nosso App!</strong><br>
+                Clique em <i class="material-icons" style="font-size:16px">ios_share</i> e depois em <b>"Adicionar à Tela de Início"</b> para usar em tela cheia.
+            </div>
+            <i class="material-icons" onclick="this.parentElement.parentElement.style.display='none'" style="cursor:pointer">close</i>
+        </div>
+    </div>
 
     <div class="bg-fundo">
         <div class="conteudo-header">
@@ -168,15 +165,30 @@
                 <i class="material-icons">person</i>
                 Entrar como Cidadão
             </a>
-            
             <a href="login.html" class="btn-opcao btn-admin">
                 <i class="material-icons">admin_panel_settings</i>
                 Área do Administrador
             </a>
         </div>
 
-        <div class="footer-tag">Mandato Areia Branca/RN</div>
+        <div class="footer-tag" style="margin-top:40px; font-size:10px; color:rgba(255,255,255,0.3); letter-spacing:1px; text-transform:uppercase;">Mandato Areia Branca/RN</div>
     </div>
 
+    <script>
+        // Lógica para detectar se o site já está instalado ou rodando no navegador
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        
+        if (!isStandalone) {
+            // Se estiver no navegador, mostra o banner de instalação após 3 segundos
+            setTimeout(() => {
+                document.getElementById('pwa-install-banner').style.display = 'block';
+            }, 3000);
+        }
+
+        // Registrar o Service Worker (necessário para PWA)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('layout.js');
+        }
+    </script>
 </body>
 </html>
