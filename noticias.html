@@ -2,82 +2,206 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Notícias - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 120px; }
-        .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; position:sticky; top:0; z-index:100; border-radius:0 0 20px 20px; }
-        .container { padding: 15px; }
-        
-        /* Estilo dos Cards */
-        .card { background:white; border-radius:20px; overflow:hidden; margin-bottom:15px; box-shadow:0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; transition: 0.3s; }
-        
-        .card img { width:100%; height: auto; display:block; max-height: 450px; object-fit: contain; background: #f8fafc; }
-        .card iframe { width:100%; border:none; display:block; height: 210px; }
-        
-        .card-body { padding:15px; }
-        .card-header-info { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-        
-        .card-data { font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; display: flex; align-items: center; gap: 5px; }
-        .card-titulo { font-size:16px; color:#1e3a8a; font-weight:600; margin:5px 0; line-height: 1.3; flex: 1; }
-        
-        /* Conteúdo que inicia escondido */
-        .conteudo-noticia { display: none; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
-        
-        .card-texto { 
-            font-size:14px; 
-            color:#475569; 
-            line-height: 1.6; 
-            white-space: pre-wrap; 
-            word-wrap: break-word;
+        :root {
+            --primary: #1e3a8a;
+            --accent: #22c55e;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
         }
 
-        /* Botão de Ver Notícia */
-        .btn-ver-mais {
-            background: #eff6ff;
-            color: #1e3a8a;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
+        body { 
+            margin: 0; 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--bg-body); 
+            padding-bottom: 140px; 
+            color: var(--text-main);
+        }
+
+        /* Topo Estilizado */
+        .topo { 
+            background: var(--primary); 
+            color: white; 
+            padding: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            border-radius: 0 0 25px 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .topo i { cursor: pointer; padding: 5px; }
+        .topo span { font-weight: 600; font-size: 18px; }
+
+        .container { padding: 20px 15px; }
+        
+        /* Cards de Notícia Estilo Instagram/News */
+        .card { 
+            background: white; 
+            border-radius: 24px; 
+            overflow: hidden; 
+            margin-bottom: 20px; 
+            box-shadow: var(--card-shadow); 
+            border: 1px solid rgba(0,0,0,0.03);
+            transition: transform 0.2s ease;
+        }
+
+        /* Container da Mídia (Imagem ou Vídeo) */
+        .card-media {
+            width: 100%;
+            background: #e2e8f0;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-media img { 
+            width: 100%; 
+            height: 250px; 
+            object-fit: cover; 
+            display: block;
+        }
+
+        .card-media iframe { 
+            width: 100%; 
+            height: 250px; 
+            border: none; 
+        }
+
+        .card-body { padding: 20px; }
+        
+        .card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .badge-data { 
+            font-size: 11px; 
+            color: var(--primary); 
+            font-weight: 600; 
+            background: rgba(30, 58, 138, 0.08);
+            padding: 4px 10px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             gap: 5px;
-            white-space: nowrap;
         }
 
-        .btn-compartilhar { 
-            display:flex; align-items:center; justify-content:center; gap:8px; 
-            background:#f1f5f9; color:#1e3a8a; border:none; padding:12px; 
-            border-radius:12px; margin-top:20px; cursor:pointer; font-weight:600; font-size:13px;
-            width: 100%;
+        .card-titulo { 
+            font-size: 18px; 
+            color: var(--primary); 
+            font-weight: 600; 
+            margin: 0 0 12px 0; 
+            line-height: 1.4; 
+        }
+        
+        /* Expansão de Conteúdo */
+        .conteudo-noticia { 
+            display: none; 
+            margin-top: 15px; 
+            border-top: 1px solid #f1f5f9; 
+            padding-top: 15px; 
+            animation: fadeIn 0.4s ease;
         }
 
-        .rodape-redes { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 0; display: flex; flex-direction: column; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); border-radius: 25px 25px 0 0; z-index: 1000; }
-        .rodape-redes p { font-size: 11px; font-weight: 600; color: #64748b; margin: 0 0 10px 0; text-transform: uppercase; }
-        .icones-flex { display: flex; gap: 20px; }
-        .icones-flex a { text-decoration: none; color: #1e3a8a; background: #eff6ff; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-texto { 
+            font-size: 14px; 
+            color: #475569; 
+            line-height: 1.7; 
+            white-space: pre-wrap; 
+        }
+
+        /* Botões de Ação */
+        .actions-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-expandir {
+            flex: 1;
+            background: #f1f5f9;
+            color: var(--primary);
+            border: none;
+            padding: 12px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-compartilhar-mini {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 45px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Rodapé Fixo */
+        .rodape-redes { 
+            position: fixed; 
+            bottom: 0; left: 0; 
+            width: 100%; 
+            background: white; 
+            padding: 15px 0 30px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.05); 
+            border-radius: 30px 30px 0 0; 
+            z-index: 1000; 
+        }
+        .rodape-redes p { font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .icones-flex { display: flex; gap: 15px; }
+        .icones-flex a { text-decoration: none; color: var(--primary); background: #f1f5f9; width: 45px; height: 45px; border-radius: 15px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .icones-flex a:active { background: var(--primary); color: white; }
+
+        /* Loading State */
+        .loading { text-align: center; padding: 40px; color: var(--text-muted); font-style: italic; }
     </style>
 </head>
 <body>
 
 <div class="topo">
-    <i class="material-icons" onclick="history.back()">arrow_back</i>
-    <span>Notícias</span>
+    <i class="material-icons" onclick="history.back()">arrow_back_ios_new</i>
+    <span>Notícias do Mandato</span>
 </div>
 
-<div class="container" id="lista-publica">Carregando notícias...</div>
+<div class="container" id="lista-publica">
+    <div class="loading">Buscando as últimas atualizações...</div>
+</div>
 
 <div class="rodape-redes">
-    <p>Siga-nos em nossas redes sociais</p>
+    <p>Acompanhe André de Dedé</p>
     <div class="icones-flex">
-        <a href="https://facebook.com/andrekelly.santos" target="_blank"><svg style="width:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/></svg></a>
-        <a href="https://instagram.com/andre.de.dede" target="_blank"><svg style="width:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4A3.6,3.6 0 0,0 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6A3.6,3.6 0 0,0 16.4,4H7.6M17.2,4.8A1.2,1.2 0 1,1 16,6A1.2,1.2 0 0,1 17.2,4.8M12,7A5,5 0 1,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 1,0 15,12A3,3 0 0,0 12,9Z"/></svg></a>
-        <a href="https://tiktok.com/@andre_de_dede" target="_blank"><svg style="width:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M17.71,6.15C16.31,5.2 15.43,3.68 15.41,2H12.16V16.14C12.12,17.47 11.02,18.52 9.69,18.48C8.35,18.44 7.3,17.34 7.34,16C7.39,14.67 8.48,13.62 9.81,13.66C10.28,13.67 10.73,13.82 11.12,14.1V10.82C9.17,10.45 7.29,11.33 6.44,13.12C5.59,14.91 5.92,17.06 7.28,18.5C8.63,19.93 10.76,20.35 12.56,19.54C14.36,18.73 15.53,16.82 15.45,14.84V8.58C16.73,9.5 18.25,10 19.82,10V6.75C19.05,6.75 18.32,6.54 17.71,6.15Z"/></svg></a>
+        <a href="https://facebook.com/andrekelly.santos" target="_blank"><svg style="width:22px" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/></svg></a>
+        <a href="https://instagram.com/andre.de.dede" target="_blank"><svg style="width:22px" viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4A3.6,3.6 0 0,0 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6A3.6,3.6 0 0,0 16.4,4H7.6M17.2,4.8A1.2,1.2 0 1,1 16,6A1.2,1.2 0 0,1 17.2,4.8M12,7A5,5 0 1,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 1,0 15,12A3,3 0 0,0 12,9Z"/></svg></a>
+        <a href="https://tiktok.com/@andre_de_dede" target="_blank"><svg style="width:22px" viewBox="0 0 24 24"><path fill="currentColor" d="M17.71,6.15C16.31,5.2 15.43,3.68 15.41,2H12.16V16.14C12.12,17.47 11.02,18.52 9.69,18.48C8.35,18.44 7.3,17.34 7.34,16C7.39,14.67 8.48,13.62 9.81,13.66C10.28,13.67 10.73,13.82 11.12,14.1V10.82C9.17,10.45 7.29,11.33 6.44,13.12C5.59,14.91 5.92,17.06 7.28,18.5C8.63,19.93 10.76,20.35 12.56,19.54C14.36,18.73 15.53,16.82 15.45,14.84V8.58C16.73,9.5 18.25,10 19.82,10V6.75C19.05,6.75 18.32,6.54 17.71,6.15Z"/></svg></a>
     </div>
 </div>
 
@@ -97,34 +221,36 @@
             const id = doc.id;
             const titulo = item.titulo || 'Sem Título';
             const texto = item.descricao || item.texto || '';
-            const dataBR = item.data ? item.data.split('-').reverse().join('/') : "";
+            const dataBR = item.data ? item.data.split('-').reverse().join('/') : "--/--/--";
 
             let midiaHTML = "";
-            if(item.link && item.link.includes('v=')){
-                midiaHTML = `<iframe src="https://www.youtube.com/embed/${item.link.split('v=')[1]}" allowfullscreen></iframe>`;
+            if(item.link && (item.link.includes('youtube.com') || item.link.includes('youtu.be'))){
+                const videoId = item.link.includes('v=') ? item.link.split('v=')[1].split('&')[0] : item.link.split('/').pop();
+                midiaHTML = `<div class="card-media"><iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe></div>`;
             } else if (item.imagem || item.link) {
-                midiaHTML = `<img src="${item.imagem || item.link}" onerror="this.style.display='none'">`;
+                midiaHTML = `<div class="card-media"><img src="${item.imagem || item.link}" onerror="this.parentElement.style.display='none'"></div>`;
             }
 
             lista.innerHTML += `
                 <div class="card">
+                    ${midiaHTML}
                     <div class="card-body">
-                        <div class="card-header-info">
-                            <div style="flex: 1;">
-                                <div class="card-data"><i class="material-icons" style="font-size:12px">calendar_today</i> ${dataBR}</div>
-                                <div class="card-titulo">${titulo}</div>
-                            </div>
-                            <button class="btn-ver-mais" onclick="toggleNoticia('${id}')" id="btn-${id}">
-                                Ler notícia <i class="material-icons" style="font-size:16px">expand_more</i>
-                            </button>
+                        <div class="card-meta">
+                            <div class="badge-data"><i class="material-icons" style="font-size:14px">event</i> ${dataBR}</div>
+                        </div>
+                        <h2 class="card-titulo">${titulo}</h2>
+                        
+                        <div class="conteudo-noticia" id="conteudo-${id}">
+                            <div class="card-texto">${texto}</div>
                         </div>
 
-                        <div class="conteudo-noticia" id="conteudo-${id}">
-                            ${midiaHTML}
-                            <div class="card-texto" style="margin-top:15px;">${texto}</div>
-                            <div class="btn-compartilhar" onclick="compartilhar('${titulo.replace(/'/g, "\\'")}', '${texto.substring(0, 100).replace(/'/g, "\\'")}')">
-                                <i class="material-icons" style="font-size:18px">share</i> Compartilhar Notícia
-                            </div>
+                        <div class="actions-row">
+                            <button class="btn-expandir" onclick="toggleNoticia('${id}')" id="btn-${id}">
+                                <span>Ver Detalhes</span> <i class="material-icons">expand_more</i>
+                            </button>
+                            <button class="btn-compartilhar-mini" onclick="compartilhar('${titulo.replace(/'/g, "\\'")}', '${texto.substring(0, 100).replace(/'/g, "\\'")}')">
+                                <i class="material-icons">share</i>
+                            </button>
                         </div>
                     </div>
                 </div>`;
@@ -134,14 +260,11 @@
     function toggleNoticia(id) {
         const conteudo = document.getElementById(`conteudo-${id}`);
         const btn = document.getElementById(`btn-${id}`);
+        const isHidden = conteudo.style.display === "none" || conteudo.style.display === "";
         
-        if (conteudo.style.display === "block") {
-            conteudo.style.display = "none";
-            btn.innerHTML = 'Ler notícia <i class="material-icons" style="font-size:16px">expand_more</i>';
-        } else {
-            conteudo.style.display = "block";
-            btn.innerHTML = 'Fechar <i class="material-icons" style="font-size:16px">expand_less</i>';
-        }
+        conteudo.style.display = isHidden ? "block" : "none";
+        btn.querySelector('span').innerText = isHidden ? "Fechar" : "Ver Detalhes";
+        btn.querySelector('i').innerText = isHidden ? "expand_less" : "expand_more";
     }
 
     function compartilhar(titulo, texto) {
