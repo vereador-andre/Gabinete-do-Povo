@@ -3,55 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Postar Requerimento</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Cadastrar Requerimento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 30px; }
-        .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; border-radius:0 0 25px 25px; }
-        .btn-voltar { cursor:pointer; background:rgba(255,255,255,0.2); border-radius:10px; padding:8px; display:flex; }
-        .form { padding:20px; }
-        .card { background:white; padding:25px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05); }
-        label { display:block; font-size:12px; font-weight:600; color:#64748b; margin-bottom:8px; }
-        input, textarea { width:100%; padding:15px; border:1px solid #e2e8f0; border-radius:12px; background:#f8fafc; font-family:inherit; box-sizing:border-box; font-size:14px; margin-bottom:20px; }
-        textarea { height:150px; resize: none; }
-        .btn-salvar { width:100%; background:#1e3a8a; color:white; border:none; padding:18px; border-radius:12px; font-weight:600; cursor:pointer; font-size:16px; }
+        body { font-family: 'Poppins', sans-serif; background: #f1f5f9; padding: 20px; }
+        .form-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 500px; margin: auto; }
+        h2 { color: #1e3a8a; margin-top: 0; }
+        label { display: block; margin: 15px 0 5px; font-size: 13px; font-weight: 600; color: #64748b; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; }
+        .btn-salvar { background: #3b82f6; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; margin-top: 25px; font-weight: 600; cursor: pointer; }
+        .btn-voltar { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; font-size: 13px; }
     </style>
 </head>
 <body>
-    <div class="topo">
-        <div class="btn-voltar" onclick="history.back()"><i class="material-icons">arrow_back</i></div>
-        <div style="font-weight:600">Postar Requerimento</div>
-    </div>
-    <div class="form">
-        <div class="card">
-            <label>Título do Requerimento</label>
-            <input type="text" id="titulo" placeholder="Ex: Requerimento nº 010/2023">
-            <label>Data</label>
-            <input type="date" id="data">
-            <label>Link da Imagem ou Vídeo</label>
-            <input type="text" id="imagem" placeholder="https://...">
-            <label>Texto do Requerimento</label>
-            <textarea id="texto" placeholder="Descrição do requerimento..."></textarea>
-            <button class="btn-salvar" id="btnSalvar" onclick="salvar()">Publicar Requerimento</button>
-        </div>
-    </div>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script>
-        const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        function salvar() {
-            const t = document.getElementById("titulo").value;
-            const d = document.getElementById("data").value;
-            const i = document.getElementById("imagem").value;
-            const tx = document.getElementById("texto").value;
-            if(!t || !d || !tx) return alert("Preencha Título, Data e Texto.");
-            const dataBR = d.split('-').reverse().join('/');
-            db.collection("requerimentos").add({ titulo: t, data: dataBR, imagem: i, texto: tx, criadoEm: firebase.firestore.FieldValue.serverTimestamp() })
-            .then(() => { alert("Requerimento postado!"); history.back(); });
-        }
-    </script>
+<div class="form-card">
+    <h2>Novo Requerimento</h2>
+    <form id="formReq">
+        <label>Número do Protocolo</label>
+        <input type="text" id="numero" placeholder="Ex: 045/2024" required>
+        <label>Título / Assunto</label>
+        <input type="text" id="titulo" required>
+        <label>Data do Requerimento</label>
+        <input type="date" id="data" required>
+        <label>Descrição do Pedido</label>
+        <textarea id="texto" rows="4" required></textarea>
+        <button type="submit" class="btn-salvar">Salvar Requerimento</button>
+    </form>
+    <a href="admin.html" class="btn-voltar">Voltar</a>
+</div>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    document.getElementById("formReq").onsubmit = async (e) => {
+        e.preventDefault();
+        await db.collection("requerimentos").add({
+            numero: document.getElementById("numero").value,
+            titulo: document.getElementById("titulo").value,
+            data: document.getElementById("data").value,
+            texto: document.getElementById("texto").value,
+            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("Requerimento salvo!"); window.location.href = "admin.html";
+    };
+</script>
 </body>
 </html>
