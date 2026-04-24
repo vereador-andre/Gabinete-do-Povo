@@ -1,20 +1,23 @@
 {
-  "short_name": "Gabinete do Povo",
-  "name": "Gabinete do Povo",
+  "short_name": "André de Dedé",
+  "name": "André de Dedé - Gabinete do Povo",
   "icons": [
     {
-      "src": "https://https://i.postimg.cc/dt1gSyRJ/28EC3CCD-6EF0-4445-8E8B-F53266C4E1E4.png",
+      "src": "https://i.postimg.cc/dt1gSyRJ/28EC3CCD-6EF0-4445-8E8B-F53266C4E1E4.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "https://https://i.postimg.cc/dt1gSyRJ/28EC3CCD-6EF0-4445-8E8B-F53266C4E1E4.png",
+      "src": "https://i.postimg.cc/dt1gSyRJ/28EC3CCD-6EF0-4445-8E8B-F53266C4E1E4.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": "/index.html",
+  "start_url": "index.html",
   "display": "standalone",
+  "orientation": "portrait",
   "theme_color": "#1e3a8a",
   "background_color": "#1e3a8a"
 }
