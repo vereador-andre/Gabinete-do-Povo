@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Conteúdo - André de Dedé</title>
+    <title>Editar - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; background: #f1f5f9; padding: 20px; }
         .form-card { background: white; padding: 25px; border-radius: 20px; max-width: 500px; margin: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        h2 { color: #1e3a8a; margin-top: 0; font-size: 20px; }
+        h2 { color: #1e3a8a; margin-top: 0; font-size: 18px; text-transform: uppercase; }
         label { display: block; margin: 15px 0 5px; font-size: 13px; font-weight: 600; color: #64748b; }
-        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-family: inherit; }
-        
-        .btn-atualizar { background: #16a34a; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; margin-top: 25px; font-weight: 600; cursor: pointer; font-size: 15px; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; }
+        .btn-salvar { background: #16a34a; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; margin-top: 20px; font-weight: 600; cursor: pointer; }
         .btn-voltar { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; font-size: 13px; font-weight: 600; }
     </style>
 </head>
@@ -27,15 +26,15 @@
         <label>Data (Calendário)</label>
         <input type="date" id="data" required>
 
-        <label>Descrição / Texto Completo</label>
-        <textarea id="descricao" rows="6"></textarea>
+        <label>Descrição</label>
+        <textarea id="descricao" rows="5"></textarea>
 
-        <label id="labelLink">Link (Imagem ou Vídeo)</label>
+        <label>Link da Imagem ou Vídeo</label>
         <input type="url" id="link">
 
         <div id="campoExtra"></div>
 
-        <button type="submit" class="btn-atualizar">Salvar Alterações</button>
+        <button type="submit" class="btn-salvar">Salvar Alterações</button>
     </form>
     <a href="javascript:history.back()" class="btn-voltar">Cancelar e Voltar</a>
 </div>
@@ -51,8 +50,7 @@
     const col = urlParams.get('col');
     const id = urlParams.get('id');
 
-    // Ajusta nomes visuais
-    document.getElementById("tituloPagina").innerText = "Editar " + col.replace(/-/g, ' ');
+    document.getElementById("tituloPagina").innerText = "Editar: " + col.replace(/-/g, ' ');
 
     db.collection(col).doc(id).get().then(doc => {
         if (doc.exists) {
@@ -62,46 +60,34 @@
             document.getElementById("descricao").value = d.descricao || d.texto || "";
             document.getElementById("link").value = d.link || d.imagem || "";
             
-            // Campos específicos para manter a lógica igual aos cadastros
             if(col === 'sessoes') {
                 document.getElementById("campoExtra").innerHTML = `
-                    <label>Tipo de Sessão</label>
-                    <select id="tipo">
-                        <option value="Ordinária" ${d.tipo==='Ordinária'?'selected':''}>Ordinária</option>
-                        <option value="Extraordinária" ${d.tipo==='Extraordinária'?'selected':''}>Extraordinária</option>
-                    </select>`;
-            }
-            if(col === 'requerimentos') {
-                document.getElementById("campoExtra").innerHTML = `<label>Número do Protocolo</label><input type="text" id="numero" value="${d.numero || ''}">`;
+                <label>Tipo de Sessão</label>
+                <select id="tipo">
+                    <option value="Ordinária" ${d.tipo==='Ordinária'?'selected':''}>Ordinária</option>
+                    <option value="Extraordinária" ${d.tipo==='Extraordinária'?'selected':''}>Extraordinária</option>
+                </select>`;
             }
         }
     });
 
     document.getElementById("formEdit").onsubmit = async (e) => {
         e.preventDefault();
-        const btn = e.target.querySelector("button");
-        btn.innerText = "Atualizando...";
-        btn.disabled = true;
-
         const obj = {
             titulo: document.getElementById("titulo").value,
             data: document.getElementById("data").value,
             descricao: document.getElementById("descricao").value,
         };
 
-        // Lógica para salvar no campo correto (link ou imagem)
-        if(col === 'acoes-atendidas' || col === 'noticias') {
-            obj.imagem = document.getElementById("link").value;
-        } else {
-            obj.link = document.getElementById("link").value;
-        }
+        // Salva o link no campo certo conforme a coleção
+        if(col === 'noticias' || col === 'acoes-atendidas') { obj.imagem = document.getElementById("link").value; }
+        else { obj.link = document.getElementById("link").value; }
 
         if(document.getElementById("tipo")) obj.tipo = document.getElementById("tipo").value;
-        if(document.getElementById("numero")) obj.numero = document.getElementById("numero").value;
 
         await db.collection(col).doc(id).update(obj);
-        alert("Alterado com sucesso!");
-        window.location.href = `gerenciar.html?col=${col}`;
+        alert("Atualizado!");
+        window.location.href = "gerenciar.html?col=" + col;
     };
 </script>
 </body>
