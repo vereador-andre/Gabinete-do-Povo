@@ -3,55 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Postar Indicação</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Cadastrar Indicação</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 30px; }
-        .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; border-radius:0 0 25px 25px; }
-        .btn-voltar { cursor:pointer; background:rgba(255,255,255,0.2); border-radius:10px; padding:8px; display:flex; }
-        .form { padding:20px; }
-        .card { background:white; padding:25px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05); }
-        label { display:block; font-size:12px; font-weight:600; color:#64748b; margin-bottom:8px; }
-        input, textarea { width:100%; padding:15px; border:1px solid #e2e8f0; border-radius:12px; background:#f8fafc; font-family:inherit; box-sizing:border-box; font-size:14px; margin-bottom:20px; }
-        textarea { height:150px; resize: none; }
-        .btn-salvar { width:100%; background:#1e3a8a; color:white; border:none; padding:18px; border-radius:12px; font-weight:600; cursor:pointer; font-size:16px; }
+        body { font-family: 'Poppins', sans-serif; background: #f1f5f9; padding: 20px; }
+        .form-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 500px; margin: auto; }
+        h2 { color: #1e3a8a; margin-top: 0; }
+        label { display: block; margin: 15px 0 5px; font-size: 13px; font-weight: 600; color: #64748b; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; }
+        .btn-salvar { background: #1e3a8a; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; margin-top: 25px; font-weight: 600; cursor: pointer; }
+        .btn-voltar { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; font-size: 13px; font-weight: 600; }
     </style>
 </head>
 <body>
-    <div class="topo">
-        <div class="btn-voltar" onclick="history.back()"><i class="material-icons">arrow_back</i></div>
-        <div style="font-weight:600">Postar Indicação</div>
-    </div>
-    <div class="form">
-        <div class="card">
-            <label>Título da Indicação</label>
-            <input type="text" id="titulo" placeholder="Ex: Indicação para calçamento">
-            <label>Data</label>
-            <input type="date" id="data">
-            <label>Link da Imagem ou Vídeo</label>
-            <input type="text" id="imagem" placeholder="https://...">
-            <label>Texto da Indicação</label>
-            <textarea id="texto" placeholder="Detalhes da indicação..."></textarea>
-            <button class="btn-salvar" id="btnSalvar" onclick="salvar()">Publicar Indicação</button>
-        </div>
-    </div>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script>
-        const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        function salvar() {
-            const t = document.getElementById("titulo").value;
-            const d = document.getElementById("data").value;
-            const i = document.getElementById("imagem").value;
-            const tx = document.getElementById("texto").value;
-            if(!t || !d || !tx) return alert("Preencha Título, Data e Texto.");
-            const dataBR = d.split('-').reverse().join('/');
-            db.collection("indicacoes").add({ titulo: t, data: dataBR, imagem: i, texto: tx, criadoEm: firebase.firestore.FieldValue.serverTimestamp() })
-            .then(() => { alert("Indicação postada!"); history.back(); });
-        }
-    </script>
+<div class="form-card">
+    <h2>Nova Indicação</h2>
+    <form id="formIndicacao">
+        <label>Título da Indicação</label>
+        <input type="text" id="titulo" placeholder="Ex: Indicação para Iluminação" required>
+        <label>Data</label>
+        <input type="date" id="data" required>
+        <label>Descrição</label>
+        <textarea id="descricao" rows="4" placeholder="Detalhes da indicação..."></textarea>
+        <label>Link de Referência (Opcional)</label>
+        <input type="url" id="link" placeholder="https://...">
+        <button type="submit" class="btn-salvar">Publicar Indicação</button>
+    </form>
+    <a href="admin.html" class="btn-voltar">Voltar ao Painel</a>
+</div>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    document.getElementById("formIndicacao").onsubmit = async (e) => {
+        e.preventDefault();
+        await db.collection("indicacoes").add({
+            titulo: document.getElementById("titulo").value,
+            data: document.getElementById("data").value,
+            descricao: document.getElementById("descricao").value,
+            link: document.getElementById("link").value,
+            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("Indicação publicada!");
+        window.location.href = "admin.html";
+    };
+</script>
 </body>
 </html>
