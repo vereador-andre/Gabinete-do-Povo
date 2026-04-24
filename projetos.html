@@ -8,34 +8,55 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         :root { --primary: #1e3a8a; --accent: #6d28d9; }
-        body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; padding-bottom: 100px; }
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; padding-bottom: 140px; }
         .topo { background: var(--primary); color: white; padding: 20px; display: flex; align-items: center; gap: 15px; border-radius: 0 0 25px 25px; }
         .container { padding: 20px 15px; }
-        .projeto-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .projeto-card::after { content: ''; position: absolute; top: 0; right: 0; width: 40px; height: 40px; background: var(--accent); opacity: 0.1; border-radius: 0 0 0 40px; }
-        .projeto-titulo { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 10px; padding-right: 20px; }
+        .projeto-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04); }
+        .projeto-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .projeto-data { font-size: 11px; color: #94a3b8; font-weight: 600; }
+        .projeto-titulo { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 10px; line-height: 1.4; }
         .projeto-resumo { font-size: 13px; color: #475569; line-height: 1.6; }
-        .tag-lei { display: inline-flex; align-items: center; gap: 5px; background: #ede9fe; color: #6d28d9; font-size: 10px; font-weight: 700; padding: 5px 12px; border-radius: 50px; margin-top: 15px; }
+        .tag-lei { display: inline-flex; align-items: center; gap: 5px; background: #ede9fe; color: #6d28d9; font-size: 10px; font-weight: 700; padding: 5px 12px; border-radius: 50px; margin-top: 15px; text-transform: uppercase; }
+
+        /* Rodapé Redes */
+        .rodape-redes { position: fixed; bottom: 0; width: 100%; background: white; padding: 15px 0 30px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 -10px 25px rgba(0,0,0,0.05); border-radius: 30px 30px 0 0; z-index: 1000; }
+        .icones-flex { display: flex; gap: 15px; }
+        .icones-flex a { color: var(--primary); background: #f1f5f9; width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 <div class="topo"><i class="material-icons" onclick="history.back()">arrow_back</i><span>Projetos de Lei</span></div>
-<div class="container" id="lista-projetos">Carregando...</div>
+<div class="container" id="lista-projetos">Carregando projetos...</div>
+
+<div class="rodape-redes">
+    <p style="font-size:10px; font-weight:700; color:#64748b; margin-bottom:10px; text-transform:uppercase;">Siga André de Dedé</p>
+    <div class="icones-flex">
+        <a href="https://facebook.com/andrekelly.santos" target="_blank"><svg style="width:22px" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/></svg></a>
+        <a href="https://instagram.com/andre.de.dede" target="_blank"><svg style="width:22px" viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4A3.6,3.6 0 0,0 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6A3.6,3.6 0 0,0 16.4,4H7.6M17.2,4.8A1.2,1.2 0 1,1 16,6A1.2,1.2 0 0,1 17.2,4.8M12,7A5,5 0 1,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 1,0 15,12A3,3 0 0,0 12,9Z"/></svg></a>
+        <a href="https://tiktok.com/@andre_de_dede" target="_blank"><svg style="width:22px" viewBox="0 0 24 24"><path fill="currentColor" d="M17.71,6.15C16.31,5.2 15.43,3.68 15.41,2H12.16V16.14C12.12,17.47 11.02,18.52 9.69,18.48C8.35,18.44 7.3,17.34 7.34,16C7.39,14.67 8.48,13.62 9.81,13.66C10.28,13.67 10.73,13.82 11.12,14.1V10.82C9.17,10.45 7.29,11.33 6.44,13.12C5.59,14.91 5.92,17.06 7.28,18.5C8.63,19.93 10.76,20.35 12.56,19.54C14.36,18.73 15.53,16.82 15.45,14.84V8.58C16.73,9.5 18.25,10 19.82,10V6.75C19.05,6.75 18.32,6.54 17.71,6.15Z"/></svg></a>
+    </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
     const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    db.collection("projetos").orderBy("criadoEm", "desc").onSnapshot(s => {
+
+    db.collection("projetos").orderBy("data", "desc").onSnapshot(s => {
         const l = document.getElementById("lista-projetos"); l.innerHTML = "";
         s.forEach(d => {
             const i = d.data();
+            const dataBR = i.data ? i.data.split('-').reverse().join('/') : "";
             l.innerHTML += `
                 <div class="projeto-card">
+                    <div class="projeto-header">
+                        <div class="projeto-data">${dataBR}</div>
+                    </div>
                     <div class="projeto-titulo">${i.titulo}</div>
                     <div class="projeto-resumo">${i.descricao || i.texto || ''}</div>
-                    <div class="tag-lei"><i class="material-icons" style="font-size:14px">gavel</i> PROJETO DE LEI</div>
+                    <div class="tag-lei"><i class="material-icons" style="font-size:14px">gavel</i> Projeto de Lei</div>
                 </div>`;
         });
     });
