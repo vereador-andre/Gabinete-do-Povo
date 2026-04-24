@@ -3,57 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar - André de Dedé</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Gerenciar Conteúdo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; }
-        .topo { background:#1e293b; color:white; padding:20px; display:flex; align-items:center; gap:15px; }
-        .container { padding: 15px; }
-        .item-lista { background:white; padding:15px; border-radius:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
-        .btns-group { display: flex; gap: 8px; }
-        .btn-action { border:none; background:none; cursor:pointer; padding: 8px; border-radius: 8px; }
-        .btn-edit { color:#3b82f6; background: #eff6ff; }
-        .btn-del { color:#ef4444; background: #fee2e2; }
-
-        /* Modal de Edição Completa */
-        #modalEdicao { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 20px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
-        .modal-content label { font-size: 11px; font-weight: 600; color: #64748b; display:block; margin-top:10px; }
-        .modal-content input, .modal-content textarea { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: inherit; box-sizing: border-box; }
-        .btn-save { width: 100%; background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 600; margin-top: 20px; cursor: pointer; }
+        body { font-family: 'Poppins', sans-serif; background: #f1f5f9; padding: 20px; }
+        .topo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: #1e3a8a; }
+        .item-lista { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .item-info b { display: block; color: #1e3a8a; }
+        .item-info span { font-size: 12px; color: #64748b; }
+        .btn-delete { color: #ef4444; cursor: pointer; background: #fee2e2; padding: 8px; border-radius: 8px; border: none; }
     </style>
 </head>
 <body>
-
-<div class="topo">
-    <i class="material-icons" onclick="location.href='admin.html'">arrow_back</i>
-    <span id="titulo-gerenciar">Gerenciar</span>
-</div>
-
-<div class="container" id="lista-itens">Carregando...</div>
-
-<div id="modalEdicao">
-    <div class="modal-content">
-        <h3 style="margin:0 0 15px; color:#1e3a8a;">Editar Postagem</h3>
-        <input type="hidden" id="editId">
-        
-        <label>TÍTULO</label>
-        <input type="text" id="editTitulo">
-
-        <label>DATA DA POSTAGEM</label>
-        <input type="date" id="editData">
-
-        <label>LINK (YouTube ou Imagem)</label>
-        <input type="text" id="editLink">
-
-        <label>DESCRIÇÃO / TEXTO</label>
-        <textarea id="editTexto" style="height:150px;"></textarea>
-
-        <button class="btn-save" onclick="salvarEdicao()">Salvar Alterações</button>
-        <button onclick="fecharModal()" style="width:100%; background:none; border:none; color:#64748b; margin-top:10px; cursor:pointer;">Cancelar</button>
-    </div>
-</div>
+<div class="topo"><i class="material-icons" onclick="history.back()">arrow_back</i> <h2>Gerenciar</h2></div>
+<div id="listaItens">Carregando...</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -63,86 +27,27 @@
     const db = firebase.firestore();
 
     const urlParams = new URLSearchParams(window.location.search);
-    const colecao = urlParams.get('col');
-    document.getElementById('titulo-gerenciar').innerText = "Gerenciar " + (colecao ? colecao.toUpperCase() : "");
+    const colecao = urlParams.get('col'); // Pega qual categoria gerenciar (noticias, acoes, etc)
 
-    db.collection(colecao).orderBy("criadoEm", "desc").onSnapshot(snapshot => {
-        const lista = document.getElementById("lista-itens");
-        lista.innerHTML = "";
-        snapshot.forEach(doc => {
-            const item = doc.data();
-            const id = doc.id;
-            const dataBR = item.data ? item.data.split('-').reverse().join('/') : "";
-
-            // Criamos o elemento do item
-            const div = document.createElement('div');
-            div.className = 'item-lista';
-            div.innerHTML = `
-                <div style="flex:1;">
-                    <strong style="font-size:14px; color:#1e3a8a;">${item.titulo || 'Sem título'}</strong><br>
-                    <small style="color:#94a3b8;">${dataBR}</small>
-                </div>
-                <div class="btns-group">
-                    <button class="btn-action btn-edit" id="btn-edit-${id}">
-                        <i class="material-icons">edit</i>
-                    </button>
-                    <button class="btn-action btn-del" onclick="excluir('${id}')">
-                        <i class="material-icons">delete</i>
-                    </button>
-                </div>
-            `;
-            lista.appendChild(div);
-
-            // Adicionamos o evento de clique via JavaScript para evitar erros com aspas e quebras de linha
-            document.getElementById(`btn-edit-${id}`).onclick = () => {
-                abrirModal(id, item.titulo, item.data, (item.link || item.imagem || ""), (item.descricao || item.texto || ""));
-            };
+    db.collection(colecao).orderBy("criadoEm", "desc").onSnapshot(s => {
+        const l = document.getElementById("listaItens"); l.innerHTML = "";
+        s.forEach(doc => {
+            const i = doc.data();
+            l.innerHTML += `
+                <div class="item-lista">
+                    <div class="item-info">
+                        <b>${i.titulo}</b>
+                        <span>Postado em: ${i.data || '---'}</span>
+                    </div>
+                    <button class="btn-delete" onclick="apagar('${doc.id}')"><i class="material-icons">delete</i></button>
+                </div>`;
         });
     });
 
-    function abrirModal(id, titulo, data, link, texto) {
-        document.getElementById('editId').value = id;
-        document.getElementById('editTitulo').value = titulo || "";
-        document.getElementById('editData').value = data || "";
-        document.getElementById('editLink').value = link || "";
-        document.getElementById('editTexto').value = texto || "";
-        document.getElementById('modalEdicao').style.display = 'flex';
-    }
-
-    function fecharModal() { document.getElementById('modalEdicao').style.display = 'none'; }
-
-    function salvarEdicao() {
-        const id = document.getElementById('editId').value;
-        const ref = db.collection(colecao).doc(id);
-        
-        const dadosAtualizados = {
-            titulo: document.getElementById('editTitulo').value,
-            data: document.getElementById('editData').value,
-            descricao: document.getElementById('editTexto').value,
-            texto: document.getElementById('editTexto').value
-        };
-
-        // Verifica se é link ou imagem para atualizar o campo certo
-        const linkValor = document.getElementById('editLink').value;
-        if(colecao === 'sessoes') {
-            dadosAtualizados.link = linkValor;
-        } else {
-            dadosAtualizados.imagem = linkValor;
-            dadosAtualizados.link = linkValor;
-        }
-
-        ref.update(dadosAtualizados).then(() => { 
-            alert("Atualizado com sucesso!"); 
-            fecharModal(); 
-        }).catch(err => {
-            alert("Erro ao salvar.");
-            console.error(err);
-        });
-    }
-
-    function excluir(id) { 
+    async function apagar(id) {
         if(confirm("Deseja realmente excluir este item?")) {
-            db.collection(colecao).doc(id).delete(); 
+            await db.collection(colecao).doc(id).delete();
+            alert("Excluído com sucesso!");
         }
     }
 </script>
