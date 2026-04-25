@@ -6,13 +6,15 @@
     <meta name="theme-color" content="#1e3a8a"> 
     <title>Gabinete do Povo - André de Dedé</title>
 
-    <link rel="manifest" href="manifest.json?v=2">
+    <link rel="manifest" href="manifest.json">
 
-
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Gabinete do Povo">
-    <link rel="apple-touch-icon" href="https://i.postimg.cc/dt1gSyRJ/fotologo.png">
+    <meta name="apple-mobile-web-app-title" content="Gabinete">
+    
+    <link rel="icon" type="image/jpeg" href="iconeapp.jpg">
+    <link rel="apple-touch-icon" href="iconeapp.jpg">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -50,22 +52,21 @@
             box-sizing: border-box;
         }
 
-        /* Banner de Instrução de Instalação */
+        /* Banner de Instrução */
         #pwa-install-banner {
             display: none;
             position: fixed;
-            top: 20px;
+            top: env(safe-area-inset-top, 20px);
             left: 20px;
             right: 20px;
-            background: rgba(255, 255, 255, 0.95);
+            background: white;
             color: #1e3a8a;
             padding: 15px;
             border-radius: 20px;
             z-index: 9999;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
             text-align: left;
             font-size: 13px;
-            animation: fadeInUp 0.5s ease-out;
             border-left: 5px solid var(--primary);
         }
 
@@ -78,19 +79,12 @@
             font-size: 34px; 
             margin: 0; 
             font-weight: 600; 
-            letter-spacing: -0.5px;
             background: linear-gradient(to bottom, #ffffff, #cbd5e1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .frase { 
-            font-size: 16px; 
-            margin: 8px 0; 
-            font-weight: 300; 
-            color: #94a3b8;
-            letter-spacing: 0.5px;
-        }
+        .frase { font-size: 16px; margin: 8px 0; color: #94a3b8; }
 
         .vereador { 
             display: inline-block;
@@ -102,7 +96,6 @@
             border-radius: 50px;
             font-weight: 600; 
             text-transform: uppercase;
-            letter-spacing: 2px;
             color: var(--primary); 
         }
 
@@ -112,8 +105,6 @@
             display: flex; 
             flex-direction: column; 
             gap: 16px; 
-            animation: fadeInUp 1s ease-out both;
-            animation-delay: 0.3s;
         }
 
         .btn-opcao {
@@ -123,13 +114,10 @@
             gap: 12px; 
             padding: 20px;
             border-radius: 18px;
-            border: none;
             font-size: 16px;
             font-weight: 600;
-            cursor: pointer;
             text-decoration: none;
             transition: var(--transition);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .btn-cidadao { background: var(--primary); color: white; }
@@ -145,12 +133,12 @@
 
     <div id="pwa-install-banner">
         <div style="display:flex; align-items:center; gap:10px;">
-            <i class="material-icons" style="color:var(--primary)">add_to_home_screen</i>
-            <div>
-                <strong>Instale o nosso App!</strong><br>
-                Clique em <i class="material-icons" style="font-size:16px">ios_share</i> e depois em <b>"Adicionar à Tela de Início"</b> para usar em tela cheia.
+            <i class="material-icons">add_to_home_screen</i>
+            <div style="flex:1">
+                <strong>Instalar Gabinete do Povo</strong><br>
+                Toque em <i class="material-icons" style="font-size:16px">ios_share</i> e depois em <b>"Adicionar à Tela de Início"</b>.
             </div>
-            <i class="material-icons" onclick="this.parentElement.parentElement.style.display='none'" style="cursor:pointer">close</i>
+            <i class="material-icons" onclick="this.parentElement.parentElement.style.display='none'">close</i>
         </div>
     </div>
 
@@ -163,30 +151,25 @@
 
         <div class="btn-container">
             <a href="app.html" class="btn-opcao btn-cidadao">
-                <i class="material-icons">person</i>
-                Entrar como Cidadão
+                <i class="material-icons">person</i> Entrar como Cidadão
             </a>
             <a href="login.html" class="btn-opcao btn-admin">
-                <i class="material-icons">admin_panel_settings</i>
-                Área do Administrador
+                <i class="material-icons">admin_panel_settings</i> Área Administrativa
             </a>
         </div>
-
-        <div class="footer-tag" style="margin-top:40px; font-size:10px; color:rgba(255,255,255,0.3); letter-spacing:1px; text-transform:uppercase;">Mandato Areia Branca/RN</div>
     </div>
 
     <script>
-        // Lógica para detectar se o site já está instalado ou rodando no navegador
+        // Verifica se já está instalado
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
         
         if (!isStandalone) {
-            // Se estiver no navegador, mostra o banner de instalação após 3 segundos
+            // Mostra o banner apenas se estiver no navegador
             setTimeout(() => {
                 document.getElementById('pwa-install-banner').style.display = 'block';
-            }, 3000);
+            }, 2500);
         }
 
-        // Registrar o Service Worker (necessário para PWA)
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('layout.js');
         }
