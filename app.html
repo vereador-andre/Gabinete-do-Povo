@@ -57,6 +57,7 @@
         .btn-menu i { font-size: 30px; color: #1e3a8a; }
         .btn-menu span { font-weight: 600; font-size: 13px; }
 
+        /* Botão Contato em Destaque */
         .btn-contato { 
             grid-column: span 2; 
             background: #22c55e; 
@@ -67,8 +68,18 @@
         }
         .btn-contato i, .btn-contato span { color: white; }
 
-        .social-links { text-align: center; margin-top: 20px; }
-        .social-links a { color: #1e3a8a; text-decoration: none; margin: 0 10px; }
+        /* Redes Sociais */
+        .social-section { text-align: center; margin: 30px 20px 10px; }
+        .social-section p { font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 15px; text-transform: uppercase; }
+        .social-icons { display: flex; justify-content: center; gap: 25px; }
+        .social-icons a { color: #1e3a8a; text-decoration: none; }
+        .social-icons img { width: 28px; height: 28px; }
+
+        /* Botões de Rodapé Administrativo */
+        .admin-footer { padding: 0 20px; margin-top: 30px; display: flex; flex-direction: column; gap: 10px; }
+        .btn-admin-view { background: #e2e8f0; color: #475569; padding: 12px; border-radius: 12px; text-decoration: none; text-align: center; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-sair { color: #ef4444; padding: 12px; text-align: center; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #fecaca; border-radius: 12px; }
+
     </style>
 </head>
 <body>
@@ -112,9 +123,22 @@
     </a>
 </div>
 
-<div class="social-links">
-    <a href="https://instagram.com/andre.de.dede"><i class="material-icons">camera_alt</i></a>
-    <a href="https://facebook.com/andrekelly.santos"><i class="material-icons">facebook</i></a>
+<div class="social-section">
+    <p>Sigam nossas redes sociais</p>
+    <div class="social-icons">
+        <a href="https://instagram.com/andre.de.dede"><i class="material-icons">camera_alt</i></a>
+        <a href="https://facebook.com/andrekelly.santos"><i class="material-icons">facebook</i></a>
+        <a href="https://www.tiktok.com/@andrededede_"><img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" alt="TikTok"></a>
+        <a href="https://wa.me/55849XXXXXXXX"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp"></a>
+    </div>
+</div>
+
+<div class="admin-footer">
+    <a href="login.html" class="btn-admin-view">
+        <i class="material-icons" style="font-size:18px">admin_panel_settings</i>
+        Painel Administrativo
+    </a>
+    <div class="btn-sair" onclick="window.location.href='index.html'">Sair do App</div>
 </div>
 
 </body>
