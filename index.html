@@ -51,9 +51,10 @@
             box-sizing: border-box;
         }
 
+        /* RESTAURADO: Espaçamento original do topo */
         .conteudo-header {
             animation: fadeInUp 0.8s ease-out;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
         }
 
         h1 { 
@@ -74,7 +75,6 @@
             flex-direction: column; 
             gap: 16px; 
             animation: fadeInUp 1s ease-out both;
-            z-index: 2;
         }
 
         .btn-opcao {
@@ -93,18 +93,17 @@
         .btn-cidadao { background: var(--primary); color: white; }
         .btn-admin { background: rgba(255, 255, 255, 0.1); color: white; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
 
-        /* ESTILO DO ÍCONE GRANDE E MAIS ABAIXO */
+        /* ALTERAÇÃO APENAS NO ÍCONE */
         .container-icone-pwa {
-            margin-top: auto; /* Empurra para o final da tela */
-            padding-bottom: 40px;
+            margin-top: 40px; 
             animation: animaProfissional 4s ease-in-out infinite;
         }
 
         .icone-pwa {
-            width: 100px; /* Aumentado conforme solicitado */
+            width: 100px;
             height: 100px;
-            border-radius: 22px;
-            border: none; /* Removido bordas conforme solicitado */
+            border-radius: 20px;
+            border: none;
         }
 
         @keyframes fadeInUp {
@@ -112,10 +111,9 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ANIMAÇÃO PROFISSIONAL: Flutuação suave + Brilho */
         @keyframes animaProfissional {
             0% { transform: translateY(0); filter: brightness(1); }
-            50% { transform: translateY(-15px); filter: brightness(1.2); }
+            50% { transform: translateY(-12px); filter: brightness(1.15); }
             100% { transform: translateY(0); filter: brightness(1); }
         }
 
@@ -168,7 +166,7 @@
             <img src="iconeapp.jpg" alt="App Icon" class="icone-pwa">
         </div>
 
-        <div style="font-size:10px; color:rgba(255,255,255,0.3); letter-spacing:1px; margin-bottom: 10px;">AREIA BRANCA/RN</div>
+        <div style="margin-top:20px; font-size:10px; color:rgba(255,255,255,0.3); letter-spacing:1px;">AREIA BRANCA/RN</div>
     </div>
 
     <script>
