@@ -23,7 +23,6 @@
         :root {
             --primary: #22c55e;
             --secondary: #1e3a8a;
-            --white: #ffffff;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -52,27 +51,9 @@
             box-sizing: border-box;
         }
 
-        /* Banner de Instrução */
-        #pwa-install-banner {
-            display: none;
-            position: fixed;
-            top: env(safe-area-inset-top, 20px);
-            left: 20px;
-            right: 20px;
-            background: white;
-            color: #1e3a8a;
-            padding: 15px;
-            border-radius: 20px;
-            z-index: 9999;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-            text-align: left;
-            font-size: 13px;
-            border-left: 5px solid var(--primary);
-        }
-
         .conteudo-header {
             animation: fadeInUp 0.8s ease-out;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
         h1 { 
@@ -86,25 +67,13 @@
 
         .frase { font-size: 16px; margin: 8px 0; color: #94a3b8; }
 
-        .vereador { 
-            display: inline-block;
-            font-size: 12px; 
-            margin-top: 15px;
-            padding: 6px 16px;
-            background: rgba(34, 197, 94, 0.15);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            border-radius: 50px;
-            font-weight: 600; 
-            text-transform: uppercase;
-            color: var(--primary); 
-        }
-
         .btn-container { 
             width: 100%; 
             max-width: 320px; 
             display: flex; 
             flex-direction: column; 
             gap: 16px; 
+            animation: fadeInUp 1s ease-out both;
         }
 
         .btn-opcao {
@@ -112,7 +81,7 @@
             align-items: center;
             justify-content: center;
             gap: 12px; 
-            padding: 20px;
+            padding: 18px;
             border-radius: 18px;
             font-size: 16px;
             font-weight: 600;
@@ -123,9 +92,44 @@
         .btn-cidadao { background: var(--primary); color: white; }
         .btn-admin { background: rgba(255, 255, 255, 0.1); color: white; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
 
+        /* Animação do Ícone Flutuante */
+        .container-icone-pwa {
+            margin-top: 50px;
+            animation: fadeInUp 1.2s ease-out both, flutuar 3s ease-in-out infinite;
+        }
+
+        .icone-pwa {
+            width: 70px;
+            height: 70px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Efeito de pulso/flutuar suave */
+        @keyframes flutuar {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        #pwa-install-banner {
+            display: none;
+            position: fixed;
+            top: 25px;
+            left: 20px;
+            right: 20px;
+            background: white;
+            color: #1e3a8a;
+            padding: 15px;
+            border-radius: 20px;
+            z-index: 9999;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            font-size: 13px;
         }
     </style>
 </head>
@@ -136,7 +140,7 @@
             <i class="material-icons">add_to_home_screen</i>
             <div style="flex:1">
                 <strong>Instalar Gabinete do Povo</strong><br>
-                Toque em <i class="material-icons" style="font-size:16px">ios_share</i> e depois em <b>"Adicionar à Tela de Início"</b>.
+                Toque em <i class="material-icons" style="font-size:16px">ios_share</i> e "Adicionar à Tela de Início".
             </div>
             <i class="material-icons" onclick="this.parentElement.parentElement.style.display='none'">close</i>
         </div>
@@ -146,7 +150,7 @@
         <div class="conteudo-header">
             <h1>Gabinete do Povo</h1>
             <div class="frase">Transparência e Responsabilidade</div>
-            <div class="vereador">Vereador André de Dedé</div>
+            <div class="vereador" style="color:var(--primary); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; margin-top: 10px;">André de Dedé</div>
         </div>
 
         <div class="btn-container">
@@ -157,19 +161,21 @@
                 <i class="material-icons">admin_panel_settings</i> Área Administrativa
             </a>
         </div>
+
+        <div class="container-icone-pwa">
+            <img src="iconeapp.jpg" alt="App Icon" class="icone-pwa">
+        </div>
+
+        <div style="margin-top:20px; font-size:10px; color:rgba(255,255,255,0.3); letter-spacing:1px;">AREIA BRANCA/RN</div>
     </div>
 
     <script>
-        // Verifica se já está instalado
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-        
         if (!isStandalone) {
-            // Mostra o banner apenas se estiver no navegador
             setTimeout(() => {
                 document.getElementById('pwa-install-banner').style.display = 'block';
             }, 2500);
         }
-
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('layout.js');
         }
