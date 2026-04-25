@@ -1,17 +1,17 @@
 {
-  "short_name": "André de Dedé",
-  "name": "André de Dedé - Gabinete do Povo",
+  "short_name": "Gabinete",
+  "name": "Gabinete do Povo",
   "icons": [
     {
-      "src": "https://i.postimg.cc/dt1gSyRJ/28EC3CCD-6EF0-4445-8E8B-F53266C4E1E4.png",
+      "src": "iconeapp.jpg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "https://i.postimg.cc/dt1gSyRJ/28EC3CCD-6EF0-4445-8E8B-F53266C4E1E4.png",
+      "src": "iconeapp.jpg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
   ],
