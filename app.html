@@ -4,204 +4,118 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gabinete do Povo - André de Dedé</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        :root {
-            --primary: #1e3a8a;    /* Azul Forte */
-            --accent: #22c55e;     /* Verde Ação */
-            --text-dark: #1e293b;
-            --text-light: #64748b;
-            --bg: #f8fafc;
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; color: #333; padding-bottom: 40px; }
+        
+        .header-app { 
+            background: #1e3a8a; 
+            color: white; 
+            padding: 40px 20px; 
+            text-align: center; 
+            border-radius: 0 0 30px 30px; 
+            margin-bottom: 20px;
         }
 
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-dark);
-            padding-bottom: 30px;
-        }
-
-        /* Header e Perfil */
-        .perfil-section {
-            background: white;
-            padding: 40px 20px 30px;
-            text-align: center;
-            border-radius: 0 0 40px 40px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-        }
-
-        .avatar-container {
-            position: relative;
-            width: 130px;
-            height: 130px;
-            margin: 0 auto 15px;
-        }
-
-        .avatar-image {
-            width: 100%;
-            height: 100%;
+        .perfil-foto {
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
-            object-fit: cover;
             border: 4px solid white;
-            box-shadow: 0 0 0 3px var(--accent); /* Aro verde ao redor */
-        }
-
-        .nome-vereador {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 5px 0 0;
-            letter-spacing: -0.5px;
-        }
-
-        .cargo-tag {
-            display: inline-block;
-            background: var(--primary);
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 4px 14px;
-            border-radius: 50px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
+            object-fit: cover;
             margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        .frase-mandato {
-            font-size: 14px;
-            font-weight: 400;
-            color: var(--text-light);
-            max-width: 250px;
-            margin: 0 auto;
-            line-height: 1.4;
+        .header-app h1 { margin: 5px 0; font-size: 22px; font-weight: 600; }
+        .header-app p { margin: 0; font-size: 14px; opacity: 0.9; font-weight: 300; }
+        .vereador-tag { font-size: 12px; font-weight: 600; text-transform: uppercase; opacity: 0.7; letter-spacing: 1px; }
+
+        .grid-menu { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            padding: 20px; 
         }
 
-        /* Grid de Botões */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            padding: 0 20px;
-        }
-
-        .menu-item {
-            background: white;
-            padding: 20px 15px;
-            border-radius: 22px;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.03);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-
-        .menu-item:active {
-            transform: scale(0.95);
-            background: #f1f5f9;
-        }
-
-        .menu-item i {
-            font-size: 32px;
-            margin-bottom: 10px;
-            color: var(--primary);
-        }
-
-        .menu-item span {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-dark);
-            text-align: center;
-        }
-
-        /* Botão Destaque (Contato) */
-        .btn-full {
-            grid-column: span 2;
-            background: var(--accent);
-            flex-direction: row;
+        .btn-menu { 
+            background: white; 
+            padding: 20px 10px; 
+            border-radius: 20px; 
+            text-align: center; 
+            text-decoration: none; 
+            color: #1e3a8a; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
             gap: 10px;
-            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: 0.3s;
         }
 
-        .btn-full i, .btn-full span {
-            color: white !important;
-        }
+        .btn-menu i { font-size: 30px; color: #1e3a8a; }
+        .btn-menu span { font-weight: 600; font-size: 13px; }
 
-        /* Rodapé Redes Sociais */
-        .social-footer {
-            margin-top: 30px;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .social-icons {
-            display: flex;
+        .btn-contato { 
+            grid-column: span 2; 
+            background: #22c55e; 
+            color: white; 
+            flex-direction: row; 
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
         }
+        .btn-contato i, .btn-contato span { color: white; }
 
-        .social-icons a {
-            color: var(--primary);
-            text-decoration: none;
-        }
+        .social-links { text-align: center; margin-top: 20px; }
+        .social-links a { color: #1e3a8a; text-decoration: none; margin: 0 10px; }
     </style>
 </head>
 <body>
 
-    <div class="perfil-section">
-        <div class="avatar-container">
-            <img src="fundofoto.jpg" alt="André de Dedé" class="avatar-image">
-        </div>
-        
-        <span class="cargo-tag">Vereador</span>
-        <h1 class="nome-vereador">André de Dedé</h1>
-        <p class="frase-mandato">Conecte-se com o nosso mandato e participe da mudança.</p>
-    </div>
+<div class="header-app">
+    <img src="fundofoto.jpg" class="perfil-foto">
+    <div class="vereador-tag">Vereador</div>
+    <h1>André de Dedé</h1>
+    <p>Conecte-se com o nosso mandato</p>
+</div>
 
-    <div class="menu-grid">
-        <a href="noticias.html" class="menu-item">
-            <i class="material-icons">newspaper</i>
-            <span>Notícias</span>
-        </a>
-        <a href="acoes.html" class="menu-item">
-            <i class="material-icons">task_alt</i>
-            <span>Ações</span>
-        </a>
-        <a href="indicacoes.html" class="menu-item">
-            <i class="material-icons">assignment</i>
-            <span>Indicações</span>
-        </a>
-        <a href="requerimentos.html" class="menu-item">
-            <i class="material-icons">description</i>
-            <span>Requerimentos</span>
-        </a>
-        <a href="projetos.html" class="menu-item">
-            <i class="material-icons">gavel</i>
-            <span>Projetos de Lei</span>
-        </a>
-        <a href="sessoes.html" class="menu-item">
-            <i class="material-icons">videocam</i>
-            <span>Sessões</span>
-        </a>
-        
-        <a href="contato.html" class="menu-item btn-full">
-            <i class="material-icons">chat</i>
-            <span>Falar com o Gabinete</span>
-        </a>
-    </div>
+<div class="grid-menu">
+    <a href="noticias.html" class="btn-menu">
+        <i class="material-icons">newspaper</i>
+        <span>Notícias</span>
+    </a>
+    <a href="acoes.html" class="btn-menu">
+        <i class="material-icons">task_alt</i>
+        <span>Ações</span>
+    </a>
+    <a href="indicacoes.html" class="btn-menu">
+        <i class="material-icons">assignment</i>
+        <span>Indicações</span>
+    </a>
+    <a href="requerimentos.html" class="btn-menu">
+        <i class="material-icons">description</i>
+        <span>Requerimentos</span>
+    </a>
+    <a href="projetos.html" class="btn-menu">
+        <i class="material-icons">gavel</i>
+        <span>Projetos de Lei</span>
+    </a>
+    <a href="sessoes.html" class="btn-menu">
+        <i class="material-icons">videocam</i>
+        <span>Sessões</span>
+    </a>
+    
+    <a href="contato.html" class="btn-menu btn-contato">
+        <i class="material-icons">chat</i>
+        <span>Falar com o Gabinete</span>
+    </a>
+</div>
 
-    <div class="social-footer">
-        <p style="font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Acompanhe nossas redes</p>
-        <div class="social-icons">
-            <a href="https://instagram.com/andre.de.dede"><i class="material-icons">camera_alt</i></a>
-            <a href="https://facebook.com/andrekelly.santos"><i class="material-icons">facebook</i></a>
-        </div>
-    </div>
+<div class="social-links">
+    <a href="https://instagram.com/andre.de.dede"><i class="material-icons">camera_alt</i></a>
+    <a href="https://facebook.com/andrekelly.santos"><i class="material-icons">facebook</i></a>
+</div>
 
 </body>
 </html>
