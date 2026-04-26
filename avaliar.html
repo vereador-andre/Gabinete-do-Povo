@@ -32,11 +32,9 @@
         <div class="card">
             <i class="material-icons" style="font-size:60px; color:#f59e0b;">stars</i>
             <h3>Sua opinião é fundamental!</h3>
-            <p style="font-size:13px; color:#64748b;">Deixe sua avaliação abaixo. Ela aparecerá no seu painel em "Mensagens Recebidas".</p>
-            
-            <textarea id="textoAvaliacao" rows="6" placeholder="Escreva aqui sua avaliação..."></textarea>
-            
-            <button id="btnEnviar" class="btn-enviar" onclick="enviarAvaliacao()">Enviar para o Painel</button>
+            <p style="font-size:13px; color:#64748b;">Deixe sua avaliação abaixo para o gabinete do vereador André de Dedé.</p>
+            <textarea id="textoAvaliacao" rows="6" placeholder="Escreva aqui..."></textarea>
+            <button id="btnEnviar" class="btn-enviar" onclick="enviarAvaliacao()">Enviar Avaliação</button>
         </div>
     </div>
 
@@ -54,34 +52,22 @@
         async function enviarAvaliacao() {
             const texto = document.getElementById('textoAvaliacao').value;
             const btn = document.getElementById('btnEnviar');
-
-            if (texto.trim() === "") {
-                alert("Por favor, escreva uma mensagem antes de enviar.");
-                return;
-            }
-
+            if (texto.trim() === "") { alert("Por favor, escreva algo."); return; }
             btn.disabled = true;
             btn.innerText = "Enviando...";
 
             try {
-                // IMPORTANTE: Usei os campos exatos que o seu painel de mensagens costuma ler
-                await db.collection("mensagens").add({
-                    nome: "Avaliação do Mandato (App)",
-                    email: "app@gabinete.com",
-                    assunto: "Nova Avaliação Recebida",
+                await db.collection("avaliacoes_mandato").add({
                     mensagem: texto,
-                    lido: false,
                     criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
                     data: new Date().toLocaleDateString('pt-BR')
                 });
-                
-                alert("Avaliação enviada com sucesso!");
+                alert("Obrigado! Avaliação enviada.");
                 window.location.href = "app.html";
             } catch (error) {
-                console.error("Erro:", error);
-                alert("Erro ao enviar. Verifique sua conexão.");
+                alert("Erro ao enviar.");
                 btn.disabled = false;
-                btn.innerText = "Enviar para o Painel";
+                btn.innerText = "Enviar Avaliação";
             }
         }
     </script>
