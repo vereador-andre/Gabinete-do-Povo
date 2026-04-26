@@ -8,183 +8,49 @@
       gtag('js', new Date());
       gtag('config', 'G-5PL1D78HGL');
     </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1e3a8a"> 
     <title>Gabinete do Povo - André de Dedé</title>
-
     <link rel="manifest" href="manifest.json">
-
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Gabinete">
-    
     <link rel="icon" type="image/jpeg" href="iconeapp.jpg">
     <link rel="apple-touch-icon" href="iconeapp.jpg">
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
     <style>
-        :root {
-            --primary: #22c55e;
-            --secondary: #1e3a8a;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            height: 100vh; 
-            width: 100%; 
-            font-family: 'Poppins', sans-serif; 
-            overflow: hidden; 
-            background: var(--secondary); 
-        }
-        
+        :root { --primary: #22c55e; --secondary: #1e3a8a; }
+        body, html { margin: 0; padding: 0; height: 100vh; width: 100%; font-family: 'Poppins', sans-serif; overflow: hidden; background: var(--secondary); }
         .bg-fundo {
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('fundo.jpg');
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: white;
-            padding: 30px;
-            box-sizing: border-box;
+            background-size: cover; background-position: center; height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: white; padding: 30px; box-sizing: border-box;
         }
-
-        .conteudo-header {
-            animation: fadeInUp 0.8s ease-out;
-            margin-bottom: 50px;
-        }
-
-        h1 { 
-            font-size: 34px; 
-            margin: 0; 
-            font-weight: 600; 
-            background: linear-gradient(to bottom, #ffffff, #cbd5e1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
+        .conteudo-header { animation: fadeInUp 0.8s ease-out; margin-bottom: 50px; }
+        h1 { font-size: 34px; margin: 0; font-weight: 600; color: white; }
         .frase { font-size: 16px; margin: 8px 0; color: #94a3b8; }
-
-        .btn-container { 
-            width: 100%; 
-            max-width: 320px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 16px; 
-            animation: fadeInUp 1s ease-out both;
-        }
-
-        .btn-opcao {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px; 
-            padding: 18px;
-            border-radius: 18px;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
+        .btn-container { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 16px; animation: fadeInUp 1s ease-out both; }
+        .btn-opcao { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 18px; border-radius: 18px; font-size: 16px; font-weight: 600; text-decoration: none; transition: 0.3s; }
         .btn-cidadao { background: var(--primary); color: white; }
         .btn-admin { background: rgba(255, 255, 255, 0.1); color: white; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-
-        .container-icone-pwa {
-            margin-top: 40px; 
-            animation: animaProfissional 4s ease-in-out infinite;
-        }
-
-        .icone-pwa {
-            width: 100px;
-            height: 100px;
-            border-radius: 20px;
-            border: none;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes animaProfissional {
-            0% { transform: translateY(0); filter: brightness(1); }
-            50% { transform: translateY(-12px); filter: brightness(1.15); }
-            100% { transform: translateY(0); filter: brightness(1); }
-        }
-
-        #pwa-install-banner {
-            display: none;
-            position: fixed;
-            top: 25px;
-            left: 20px;
-            right: 20px;
-            background: white;
-            color: #1e3a8a;
-            padding: 15px;
-            border-radius: 20px;
-            z-index: 9999;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-            font-size: 13px;
-        }
+        .container-icone-pwa { margin-top: 40px; animation: animaProfissional 4s ease-in-out infinite; }
+        .icone-pwa { width: 100px; height: 100px; border-radius: 20px; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes animaProfissional { 0%, 100% { transform: translateY(0); filter: brightness(1); } 50% { transform: translateY(-12px); filter: brightness(1.15); } }
     </style>
 </head>
 <body>
-
-    <div id="pwa-install-banner">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <i class="material-icons">add_to_home_screen</i>
-            <div style="flex:1">
-                <strong>Instalar Gabinete do Povo</strong><br>
-                Toque em <i class="material-icons" style="font-size:16px">ios_share</i> e "Adicionar à Tela de Início".
-            </div>
-            <i class="material-icons" onclick="this.parentElement.parentElement.style.display='none'">close</i>
-        </div>
-    </div>
-
     <div class="bg-fundo">
         <div class="conteudo-header">
             <h1>Gabinete do Povo</h1>
             <div class="frase">Transparência e Responsabilidade</div>
             <div class="vereador" style="color:var(--primary); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; margin-top: 10px;">Bem-vindo</div>
         </div>
-
         <div class="btn-container">
-            <a href="app.html" class="btn-opcao btn-cidadao">
-                <i class="material-icons">person</i> Entrar como Cidadão
-            </a>
-            <a href="login.html" class="btn-opcao btn-admin">
-                <i class="material-icons">admin_panel_settings</i> Área Administrativa
-            </a>
+            <a href="app.html" class="btn-opcao btn-cidadao"> <i class="material-icons">person</i> Entrar como Cidadão </a>
+            <a href="login.html" class="btn-opcao btn-admin"> <i class="material-icons">admin_panel_settings</i> Área Administrativa </a>
         </div>
-
-        <div class="container-icone-pwa">
-            <img src="iconeapp.jpg" alt="App Icon" class="icone-pwa">
-        </div>
-
-        <div style="margin-top:20px; font-size:10px; color:rgba(255,255,255,0.3); letter-spacing:1px;">AREIA BRANCA/RN</div>
+        <div class="container-icone-pwa"> <img src="iconeapp.jpg" class="icone-pwa"> </div>
+        <div style="margin-top:20px; font-size:10px; color:rgba(255,255,255,0.3); letter-spacing:1px;">AREIA BRANCA/RN ®️</div>
     </div>
-
-    <script>
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-        if (!isStandalone) {
-            setTimeout(() => {
-                document.getElementById('pwa-install-banner').style.display = 'block';
-            }, 2500);
-        }
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('layout.js');
-        }
-    </script>
 </body>
 </html>
