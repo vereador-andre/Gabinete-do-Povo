@@ -65,7 +65,7 @@
     const db = firebase.firestore();
 
     // BUSCANDO NA COLEÇÃO DE AÇÕES
-    db.collection("acoes").orderBy("criadoEm", "desc").onSnapshot(snapshot => {
+    db.collection("acoes_realizadas").orderBy("data", "desc").onSnapshot(snapshot => {
         const lista = document.getElementById("lista-publica");
         lista.innerHTML = "";
         snapshot.forEach(doc => {
