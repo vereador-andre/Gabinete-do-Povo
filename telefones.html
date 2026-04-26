@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+      function trackClick(servico) {
+        gtag('event', 'ligacao_util', { 'servico': servico });
+      }
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Telefones Úteis - Areia Branca</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; color: #333; padding-bottom: 30px; }
+        
+        .header-simples { 
+            background: #1e3a8a; color: white; padding: 30px 20px; 
+            text-align: center; border-radius: 0 0 30px 30px; margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .btn-voltar { color: white; text-decoration: none; display: flex; align-items: center; }
+
+        .container-lista { padding: 0 20px; }
+
+        .card-telefone {
+            background: white;
+            margin-bottom: 12px;
+            padding: 18px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            text-decoration: none;
+            color: inherit;
+            transition: 0.3s;
+        }
+
+        .card-telefone:active { transform: scale(0.98); background: #f8fafc; }
+
+        .info-tel { display: flex; align-items: center; gap: 15px; }
+        .info-tel i { 
+            background: rgba(30, 58, 138, 0.1); 
+            color: #1e3a8a; 
+            padding: 10px; 
+            border-radius: 12px; 
+            font-size: 24px;
+        }
+
+        .nome-tel { font-weight: 600; font-size: 15px; color: #1e3a8a; display: block; }
+        .numero-tel { font-size: 13px; color: #64748b; }
+
+        .btn-ligar {
+            background: #22c55e;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-simples">
+    <a href="app.html" class="btn-voltar">
+        <i class="material-icons">chevron_left</i>
+    </a>
+    <h2 style="margin:0; font-size:18px; font-weight:600;">Telefones Úteis</h2>
+    <div style="width:24px;"></div> </div>
+
+<div class="container-lista">
+    <a href="tel:190" class="card-telefone" onclick="trackClick('Policia Militar')">
+        <div class="info-tel">
+            <i class="material-icons">policy</i>
+            <div>
+                <span class="nome-tel">Polícia Militar</span>
+                <span class="numero-tel">190</span>
+            </div>
+        </div>
+        <div class="btn-ligar"><i class="material-icons">call</i></div>
+    </a>
+
+    <a href="tel:192" class="card-telefone" onclick="trackClick('SAMU')">
+        <div class="info-tel">
+            <i class="material-icons">medical_services</i>
+            <div>
+                <span class="nome-tel">SAMU</span>
+                <span class="numero-tel">192</span>
+            </div>
+        </div>
+        <div class="btn-ligar"><i class="material-icons">call</i></div>
+    </a>
+
+    <a href="tel:8433322241" class="card-telefone" onclick="trackClick('Hospital Municipal')">
+        <div class="info-tel">
+            <i class="material-icons">local_hospital</i>
+            <div>
+                <span class="nome-tel">Hospital Municipal</span>
+                <span class="numero-tel">(84) 3332-2241</span>
+            </div>
+        </div>
+        <div class="btn-ligar"><i class="material-icons">call</i></div>
+    </a>
+
+    <a href="tel:193" class="card-telefone" onclick="trackClick('Bombeiros')">
+        <div class="info-tel">
+            <i class="material-icons">fire_truck</i>
+            <div>
+                <span class="nome-tel">Bombeiros</span>
+                <span class="numero-tel">193</span>
+            </div>
+        </div>
+        <div class="btn-ligar"><i class="material-icons">call</i></div>
+    </a>
+
+    <a href="tel:153" class="card-telefone" onclick="trackClick('Guarda Municipal')">
+        <div class="info-tel">
+            <i class="material-icons">security</i>
+            <div>
+                <span class="nome-tel">Guarda Municipal</span>
+                <span class="numero-tel">153</span>
+            </div>
+        </div>
+        <div class="btn-ligar"><i class="material-icons">call</i></div>
+    </a>
+
+    <a href="tel:8433324900" class="card-telefone" onclick="trackClick('Conselho Tutelar')">
+        <div class="info-tel">
+            <i class="material-icons">child_care</i>
+            <div>
+                <span class="nome-tel">Conselho Tutelar</span>
+                <span class="numero-tel">(84) 3332-4900</span>
+            </div>
+        </div>
+        <div class="btn-ligar"><i class="material-icons">call</i></div>
+    </a>
+
+</div>
+
+<p style="text-align:center; font-size:12px; color:#94a3b8; margin-top:30px; padding:0 30px;">
+    Toque sobre o serviço para realizar a ligação direto do seu celular.
+</p>
+
+</body>
+</html>
