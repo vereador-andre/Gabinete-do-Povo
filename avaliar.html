@@ -32,18 +32,22 @@
         <div class="card">
             <i class="material-icons" style="font-size:60px; color:#f59e0b;">stars</i>
             <h3>Sua opinião é fundamental!</h3>
-            <p style="font-size:13px; color:#64748b;">Escreva abaixo sua avaliação. Ela será enviada diretamente para o gabinete.</p>
+            <p style="font-size:13px; color:#64748b;">Deixe sua avaliação abaixo. Ela aparecerá no seu painel em "Mensagens Recebidas".</p>
             
-            <textarea id="textoAvaliacao" rows="6" placeholder="Digite sua mensagem aqui..."></textarea>
+            <textarea id="textoAvaliacao" rows="6" placeholder="Escreva aqui sua avaliação..."></textarea>
             
-            <button id="btnEnviar" class="btn-enviar" onclick="enviarAvaliacao()">Enviar para o Gabinete</button>
+            <button id="btnEnviar" class="btn-enviar" onclick="enviarAvaliacao()">Enviar para o Painel</button>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
+            authDomain: "gabinete-do-povo.firebaseapp.com", 
+            projectId: "gabinete-do-povo" 
+        };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
@@ -60,11 +64,13 @@
             btn.innerText = "Enviando...";
 
             try {
-                // Enviando para a coleção 'mensagens' para aparecer no ver-mensagens.html
+                // IMPORTANTE: Usei os campos exatos que o seu painel de mensagens costuma ler
                 await db.collection("mensagens").add({
-                    nome: "Avaliação pelo App",
-                    assunto: "Avaliação do Mandato",
+                    nome: "Avaliação do Mandato (App)",
+                    email: "app@gabinete.com",
+                    assunto: "Nova Avaliação Recebida",
                     mensagem: texto,
+                    lido: false,
                     criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
                     data: new Date().toLocaleDateString('pt-BR')
                 });
@@ -72,6 +78,7 @@
                 alert("Avaliação enviada com sucesso!");
                 window.location.href = "app.html";
             } catch (error) {
+                console.error("Erro:", error);
                 alert("Erro ao enviar. Verifique sua conexão.");
                 btn.disabled = false;
                 btn.innerText = "Enviar para o Painel";
