@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel - Ver Avaliações</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; }
+        .header { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; }
+        .container { padding: 20px; }
+        .card-aval { background:white; padding:20px; border-radius:15px; margin-bottom:15px; border-left: 5px solid #f59e0b; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .data { font-size:11px; color:#64748b; font-weight:600; }
+        .texto { margin-top:10px; color:#1e293b; font-size:14px; white-space: pre-wrap; }
+        .btn-apagar { color:#ef4444; cursor:pointer; float:right; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <i class="material-icons" onclick="location.href='admin.html'" style="cursor:pointer">arrow_back</i>
+        <span>Avaliações do Mandato</span>
+    </div>
+    <div class="container" id="lista-avaliacoes">Carregando...</div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
+            authDomain: "gabinete-do-povo.firebaseapp.com", 
+            projectId: "gabinete-do-povo" 
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        db.collection("avaliacoes_mandato").orderBy("criadoEm", "desc").onSnapshot(snapshot => {
+            const lista = document.getElementById("lista-avaliacoes");
+            lista.innerHTML = "";
+            if(snapshot.empty) { lista.innerHTML = "Nenhuma avaliação recebida."; return; }
+            snapshot.forEach(doc => {
+                const item = doc.data();
+                lista.innerHTML += `
+                    <div class="card-aval">
+                        <i class="material-icons btn-apagar" onclick="apagar('${doc.id}')">delete</i>
+                        <div class="data">${item.data || 'Sem data'}</div>
+                        <div class="texto">${item.mensagem}</div>
+                    </div>`;
+            });
+        });
+
+        function apagar(id) {
+            if(confirm("Deseja excluir esta avaliação?")) {
+                db.collection("avaliacoes_mandato").doc(id).delete();
+            }
+        }
+    </script>
+</body>
+</html>
