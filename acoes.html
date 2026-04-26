@@ -67,7 +67,7 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    db.collection("acoes-realizadas").orderBy("data", "desc").onSnapshot(snapshot => {
+    db.collection("acoes-atendidas").orderBy("data", "desc").onSnapshot(snapshot => {
         const lista = document.getElementById("lista-publica");
         lista.innerHTML = "";
         if (snapshot.empty) {
