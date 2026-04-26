@@ -49,7 +49,7 @@
 <div class="container" id="lista-publica">Carregando ações...</div>
 
 <div class="rodape-redes">
-    <p style="font-size:10px; font-weight:700; color:#64748b; margin-bottom:10px;">REDES SOCIAIS</p>
+    <p style="font-size:10px; font-weight:700; color:#64748b; margin-bottom:10px;">SIGA ANDRÉ DE DEDÉ</p>
     <div class="icones-flex">
         <a href="https://facebook.com/andrekelly.santos" target="_blank"><i class="fa-brands fa-facebook"></i></a>
         <a href="https://instagram.com/andre.de.dede" target="_blank"><i class="fa-brands fa-instagram"></i></a>
@@ -65,7 +65,7 @@
     const db = firebase.firestore();
 
     // BUSCANDO NA COLEÇÃO DE AÇÕES
-    db.collection("acoes_realizadas").orderBy("data", "desc").onSnapshot(snapshot => {
+    db.collection("acoes_atendidas").orderBy("data", "desc").onSnapshot(snapshot => {
         const lista = document.getElementById("lista-publica");
         lista.innerHTML = "";
         snapshot.forEach(doc => {
