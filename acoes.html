@@ -19,15 +19,18 @@
         .topo-container { background:#1e3a8a; padding:15px; position:sticky; top:0; z-index:1000; border-radius:0 0 25px 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .topo-nav { display:flex; align-items:center; gap:15px; color:white; margin-bottom: 12px; }
         .busca-box { background:white; border-radius:15px; display:flex; align-items:center; padding:5px 15px; }
+        .busca-box i { color: #64748b; font-size: 20px; }
         .busca-box input { border:none; padding:10px; width:100%; outline:none; font-family:'Poppins'; font-size:14px; }
         .container { padding: 15px; }
         .card { background:white; border-radius:20px; overflow:hidden; margin-bottom:15px; box-shadow:0 8px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
         .card-body { padding:15px; }
         .card-titulo { font-size:16px; color:#1e3a8a; font-weight:600; margin:5px 0; }
         .conteudo-noticia { display: none; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
-        .midia-box img { width:100%; border-radius:12px; margin-bottom:10px; }
+        .card-texto { font-size:14px; color:#475569; line-height: 1.6; white-space: pre-wrap; }
+        .midia-box img { width:100%; border-radius:12px; margin-bottom:10px; border:none; }
         .btn-ver-mais { background: #eff6ff; color: #1e3a8a; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .rodape-redes { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 0; display: flex; flex-direction: column; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); border-radius: 25px 25px 0 0; z-index: 1000; }
+        .rodape-redes p { font-size: 10px; font-weight: 700; color: #64748b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .icones-flex { display: flex; gap: 25px; }
         .icones-flex a { font-size: 24px; text-decoration: none; }
         .fa-facebook { color: #1877F2; } .fa-instagram { color: #E1306C; } .fa-tiktok { color: #000; }
@@ -41,7 +44,7 @@
         <span style="font-weight:600">Ações do Mandato</span>
     </div>
     <div class="busca-box">
-        <i class="material-icons" style="color:#64748b">search</i>
+        <i class="material-icons">search</i>
         <input type="text" id="inputBusca" placeholder="Pesquisar ação..." onkeyup="filtrarLista()">
     </div>
 </div>
@@ -49,7 +52,7 @@
 <div class="container" id="lista-publica">Carregando ações...</div>
 
 <div class="rodape-redes">
-    <p style="font-size:10px; font-weight:700; color:#64748b; margin-bottom:10px;">SIGA ANDRÉ DE DEDÉ</p>
+    <p>Siga André de Dedé</p>
     <div class="icones-flex">
         <a href="https://facebook.com/andrekelly.santos" target="_blank"><i class="fa-brands fa-facebook"></i></a>
         <a href="https://instagram.com/andre.de.dede" target="_blank"><i class="fa-brands fa-instagram"></i></a>
@@ -64,10 +67,13 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    // BUSCANDO NA COLEÇÃO DE AÇÕES
-    db.collection("acoes_atendidas").orderBy("data", "desc").onSnapshot(snapshot => {
+    db.collection("acoes-realizadas").orderBy("data", "desc").onSnapshot(snapshot => {
         const lista = document.getElementById("lista-publica");
         lista.innerHTML = "";
+        if (snapshot.empty) {
+            lista.innerHTML = "<p style='text-align:center; color:#64748b;'>Nenhuma ação cadastrada.</p>";
+            return;
+        }
         snapshot.forEach(doc => {
             const item = doc.data();
             const id = doc.id;
@@ -80,7 +86,7 @@
                         </div>
                         <div class="conteudo-noticia" id="conteudo-${id}">
                             <div class="midia-box"><img src="${item.imagem || item.link}" onerror="this.style.display='none'"></div>
-                            <div style="font-size:14px; color:#475569;">${item.descricao || item.texto || ''}</div>
+                            <div class="card-texto">${item.descricao || item.texto || ''}</div>
                         </div>
                     </div>
                 </div>`;
