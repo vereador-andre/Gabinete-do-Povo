@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5PL1D78HGL"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5PL1D78HGL');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliar Mandato</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; text-align: center; }
+        .header { background: #1e3a8a; color: white; padding: 30px; border-radius: 0 0 30px 30px; }
+        .container { padding: 30px 20px; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .btn-enviar { background: #22c55e; color: white; border: none; padding: 15px 30px; border-radius: 15px; font-weight: 600; width: 100%; margin-top: 20px; text-decoration: none; display: block; }
+        textarea { width: 100%; border: 1px solid #ddd; border-radius: 10px; padding: 10px; font-family: 'Poppins'; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="app.html" style="color:white; float:left;"><i class="material-icons">chevron_left</i></a>
+        <h2 style="margin:0; font-size:18px;">Avaliar Mandato</h2>
+    </div>
+    <div class="container">
+        <div class="card">
+            <i class="material-icons" style="font-size:50px; color:#f59e0b;">stars</i>
+            <h3>Sua opinião é importante!</h3>
+            <p style="font-size:14px; color:#64748b;">Como você avalia o trabalho do vereador André de Dedé?</p>
+            <textarea rows="4" placeholder="Escreva aqui sua sugestão ou avaliação..."></textarea>
+            <a href="app.html" class="btn-enviar" onclick="alert('Obrigado pela sua avaliação!')">Enviar Avaliação</a>
+        </div>
+    </div>
+</body>
+</html>
