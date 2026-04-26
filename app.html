@@ -7,165 +7,58 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-5PL1D78HGL');
+      function trackClick(n){ gtag('event', 'clique_menu', { 'botao': n }); }
     </script>
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gabinete do Povo - André de Dedé</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; color: #333; padding-bottom: 100px; }
-        
-        .header-app { 
-            background: #1e3a8a; 
-            color: white; 
-            padding: 40px 20px 30px; 
-            text-align: center; 
-            border-radius: 0 0 30px 30px; 
-            margin-bottom: 20px;
-        }
-
-        .perfil-foto {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            border: 4px solid white;
-            object-fit: cover;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        .header-app h1 { margin: 5px 0; font-size: 22px; font-weight: 600; }
-        .header-app p { margin: 0; font-size: 13px; opacity: 0.9; font-weight: 300; margin-bottom: 15px; }
-
-        .social-area { display: flex; justify-content: center; gap: 20px; margin-top: 10px; }
-        .social-area a { text-decoration: none; font-size: 24px; transition: 0.3s; }
-        .fa-instagram { color: #E1306C; }
-        .fa-facebook { color: #1877F2; }
-        .fa-tiktok { color: #000000; background: white; border-radius: 50%; padding: 2px; font-size: 20px !important; }
-        .fa-whatsapp { color: #25D366; }
-
-        .grid-menu { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 15px; 
-            padding: 20px; 
-        }
-
-        .btn-menu { 
-            background: white; 
-            padding: 20px 10px; 
-            border-radius: 20px; 
-            text-align: center; 
-            text-decoration: none; 
-            color: #1e3a8a; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .btn-menu i { font-size: 30px; color: #1e3a8a; }
-        .btn-menu span { font-weight: 600; font-size: 13px; }
-
-        .btn-contato { 
-            grid-column: span 2; 
-            background: #22c55e; 
-            color: white; 
-            flex-direction: row; 
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .btn-contato i, .btn-contato span { color: white; }
-
-        .admin-footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 0;
-            box-shadow: 0 -2px 15px rgba(0,0,0,0.1);
-            border-radius: 20px 20px 0 0;
-        }
-
-        .btn-footer {
-            text-decoration: none;
-            color: #64748b;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .btn-footer i { color: #1e3a8a; margin-bottom: 4px; }
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; padding-bottom: 120px; }
+        .header-app { background: #1e3a8a; color: white; padding: 40px 20px 30px; text-align: center; border-radius: 0 0 30px 30px; }
+        .perfil-foto { width: 110px; height: 110px; border-radius: 50%; border: 4px solid white; object-fit: cover; margin-bottom: 10px; }
+        .social-area { display: flex; justify-content: center; gap: 20px; margin-top: 15px; }
+        .social-area a { text-decoration: none; font-size: 24px; }
+        .fa-instagram { color: #E1306C; } .fa-facebook { color: #1877F2; } .fa-tiktok { color: #000; background: #fff; border-radius: 50%; padding: 1px; font-size: 20px!important; } .fa-whatsapp { color: #25D366; }
+        .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .btn-menu { background: white; padding: 20px 10px; border-radius: 20px; text-align: center; text-decoration: none; color: #1e3a8a; display: flex; flex-direction: column; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .btn-menu i { font-size: 30px; }
+        .btn-contato { grid-column: span 2; background: #22c55e; color: white; flex-direction: row; justify-content: center; }
+        .btn-flutuante { position: fixed; bottom: 90px; right: 20px; background: #f59e0b; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-decoration: none; z-index: 999; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} }
+        .admin-footer { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-radius: 20px 20px 0 0; box-shadow: 0 -2px 15px rgba(0,0,0,0.1); }
+        .btn-footer { text-decoration: none; color: #64748b; display: flex; flex-direction: column; align-items: center; font-size: 11px; }
         .btn-sair { color: #ef4444; }
-        .btn-sair i { color: #ef4444; }
     </style>
 </head>
 <body>
-
+<a href="avaliar.html" class="btn-flutuante" onclick="trackClick('Avaliar')"><i class="material-icons">star</i></a>
 <div class="header-app">
     <img src="fundofoto.jpg" class="perfil-foto">
     <h1>André de Dedé</h1>
     <p>Sigam nossas redes sociais</p>
-    
     <div class="social-area">
-        <a href="https://instagram.com/andre.de.dede" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-        <a href="https://facebook.com/andrekelly.santos" target="_blank"><i class="fa-brands fa-facebook"></i></a>
-        <a href="https://tiktok.com/@andredededee" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
-        <a href="https://wa.me/5584900000000" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+        <a href="#" onclick="trackClick('Instagram')"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" onclick="trackClick('Facebook')"><i class="fa-brands fa-facebook"></i></a>
+        <a href="#" onclick="trackClick('TikTok')"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="#" onclick="trackClick('WhatsApp')"><i class="fa-brands fa-whatsapp"></i></a>
     </div>
 </div>
-
 <div class="grid-menu">
-    <a href="noticias.html" class="btn-menu">
-        <i class="material-icons">newspaper</i>
-        <span>Notícias</span>
-    </a>
-    <a href="acoes.html" class="btn-menu">
-        <i class="material-icons">task_alt</i>
-        <span>Ações</span>
-    </a>
-    <a href="indicacoes.html" class="btn-menu">
-        <i class="material-icons">assignment</i>
-        <span>Indicações</span>
-    </a>
-    <a href="requerimentos.html" class="btn-menu">
-        <i class="material-icons">description</i>
-        <span>Requerimentos</span>
-    </a>
-    <a href="projetos.html" class="btn-menu">
-        <i class="material-icons">gavel</i>
-        <span>Projetos de Lei</span>
-    </a>
-    <a href="sessoes.html" class="btn-menu">
-        <i class="material-icons">videocam</i>
-        <span>Sessões</span>
-    </a>
-    
-    <a href="contato.html" class="btn-menu btn-contato">
-        <i class="material-icons">chat</i>
-        <span>Falar com o Gabinete</span>
-    </a>
+    <a href="noticias.html" class="btn-menu" onclick="trackClick('Noticias')"><i class="material-icons">newspaper</i><span>Notícias</span></a>
+    <a href="acoes.html" class="btn-menu" onclick="trackClick('Ações')"><i class="material-icons">task_alt</i><span>Ações</span></a>
+    <a href="indicacoes.html" class="btn-menu" onclick="trackClick('Indicações')"><i class="material-icons">assignment</i><span>Indicações</span></a>
+    <a href="requerimentos.html" class="btn-menu" onclick="trackClick('Requerimentos')"><i class="material-icons">description</i><span>Requerimentos</span></a>
+    <a href="projetos.html" class="btn-menu" onclick="trackClick('Projetos')"><i class="material-icons">gavel</i><span>Projetos de Lei</span></a>
+    <a href="sessoes.html" class="btn-menu" onclick="trackClick('Sessões')"><i class="material-icons">videocam</i><span>Sessões</span></a>
+    <a href="telefones.html" class="btn-menu" onclick="trackClick('Telefones')"><i class="material-icons">contact_phone</i><span>Telefones Úteis</span></a>
+    <a href="contato.html" class="btn-menu btn-contato" onclick="trackClick('Contato')"><i class="material-icons">chat</i><span>Falar com o Gabinete</span></a>
 </div>
-
 <div class="admin-footer">
-    <a href="login.html" class="btn-footer">
-        <i class="material-icons">admin_panel_settings</i>
-        <span>Painel Admin</span>
-    </a>
-    <a href="index.html" class="btn-footer btn-sair">
-        <i class="material-icons">logout</i>
-        <span>Sair do App</span>
-    </a>
+    <a href="login.html" class="btn-footer"><i class="material-icons" style="color:#1e3a8a">admin_panel_settings</i><span>Admin</span></a>
+    <a href="index.html" class="btn-footer btn-sair"><i class="material-icons">logout</i><span>Sair</span></a>
 </div>
-
 </body>
 </html>
