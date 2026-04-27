@@ -34,6 +34,20 @@
         .btn-admin { background: rgba(255, 255, 255, 0.1); color: white; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .container-icone-pwa { margin-top: 40px; animation: animaProfissional 4s ease-in-out infinite; }
         .icone-pwa { width: 100px; height: 100px; border-radius: 20px; }
+        
+        /* ESTILO DO BANNER DE INSTALAÇÃO */
+        #pwa-install-banner {
+            display: none; position: fixed; bottom: 20px; left: 20px; right: 20px;
+            background: white; color: #333; padding: 15px; border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 9999;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        .pwa-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .pwa-header img { width: 40px; height: 40px; border-radius: 8px; }
+        .pwa-header h3 { margin: 0; font-size: 14px; color: #1e3a8a; }
+        .pwa-body { font-size: 12px; color: #64748b; text-align: left; line-height: 1.4; }
+        .btn-instalar-pwa { background: #1e3a8a; color: white; border: none; padding: 10px; border-radius: 10px; width: 100%; margin-top: 10px; font-weight: 600; font-family: 'Poppins'; }
+
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes animaProfissional { 0%, 100% { transform: translateY(0); filter: brightness(1); } 50% { transform: translateY(-12px); filter: brightness(1.15); } }
     </style>
@@ -52,5 +66,46 @@
         <div class="container-icone-pwa"> <img src="iconeapp.jpg" class="icone-pwa"> </div>
         <div style="margin-top:20px; font-size:10px; color:rgba(255,255,255,0.3); letter-spacing:1px;">AREIA BRANCA/RN ®️</div>
     </div>
+
+    <div id="pwa-install-banner">
+        <div class="pwa-header">
+            <img src="iconeapp.jpg">
+            <h3>Instalar o Gabinete do Povo</h3>
+        </div>
+        <div id="instrucao-pwa" class="pwa-body">
+            </div>
+        <button class="btn-instalar-pwa" onclick="fecharBanner()">ENTENDI</button>
+    </div>
+
+    <script>
+        // Função para mostrar o banner de instalação apenas no Celular
+        window.addEventListener('load', function() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isAndroid = /Android/.test(navigator.userAgent);
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const banner = document.getElementById('pwa-install-banner');
+            const instrucao = document.getElementById('instrucao-pwa');
+
+            // Só mostra se NÃO estiver já instalado e for mobile
+            if (!isStandalone) {
+                if (isIOS) {
+                    instrucao.innerHTML = 'Toque no ícone de <b>Compartilhar</b> <i class="material-icons" style="font-size:14px; vertical-align:middle;">ios_share</i> e selecione <b>"Adicionar à Tela de Início"</b> para facilitar o acesso.';
+                    banner.style.display = 'block';
+                } else if (isAndroid) {
+                    instrucao.innerHTML = 'Toque nos <b>três pontinhos</b> <i class="material-icons" style="font-size:14px; vertical-align:middle;">more_vert</i> e selecione <b>"Instalar aplicativo"</b> ou <b>"Adicionar à Tela Inicial"</b>.';
+                    banner.style.display = 'block';
+                }
+            }
+        });
+
+        function fecharBanner() {
+            document.getElementById('pwa-install-banner').style.display = 'none';
+        }
+
+        // Registrar o Service Worker (necessário para PWA)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW erro:', err));
+        }
+    </script>
 </body>
 </html>
