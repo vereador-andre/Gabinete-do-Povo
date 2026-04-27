@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Interna - Vereador</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; }
+        .topo { background:#0f172a; color:white; padding:20px; display:flex; align-items:center; gap:15px; }
+        .tabs { display: flex; overflow-x: auto; background: white; padding: 10px; gap: 10px; sticky; top: 0; z-index: 100; border-bottom: 1px solid #e2e8f0; }
+        .tab-btn { padding: 8px 15px; border-radius: 20px; border: none; background: #f1f5f9; color: #64748b; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+        .tab-btn.active { background: #1e3a8a; color: white; }
+        
+        .container { padding: 15px; }
+        .secao { display: none; }
+        .secao.active { display: block; }
+        
+        .card-gestao { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .form-controle { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: 'Poppins'; font-size: 14px; }
+        .btn-salvar { background: #1e3a8a; color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer; }
+        
+        .badge-bairro { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 5px; font-size: 10px; }
+        .gasto-valor { color: #ef4444; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="topo">
+    <i class="material-icons" onclick="location.href='admin.html'" style="cursor:pointer">arrow_back</i>
+    <span style="font-weight:600">Gestão de Mandato</span>
+</div>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(event, 'liderancas')">👥 Lideranças</button>
+    <button class="tab-btn" onclick="switchTab(event, 'agenda')">📅 Agenda</button>
+    <button class="tab-btn" onclick="switchTab(event, 'pedidos')">📂 Pedidos</button>
+    <button class="tab-btn" onclick="switchTab(event, 'gastos')">💰 Finanças</button>
+    <button class="tab-btn" onclick="switchTab(event, 'mapa')">📍 Mapa</button>
+</div>
+
+<div class="container">
+    
+    <div id="liderancas" class="secao active">
+        <div class="card-gestao">
+            <h4 style="margin:0">Nova Liderança</h4>
+            <input type="text" id="nomeLid" class="form-controle" placeholder="Nome da pessoa">
+            <input type="text" id="bairroLid" class="form-controle" placeholder="Bairro/Comunidade">
+            <input type="text" id="zapLid" class="form-controle" placeholder="WhatsApp">
+            <button class="btn-salvar" onclick="salvarLid()">Cadastrar Liderança</button>
+        </div>
+        <div id="listaLid"></div>
+    </div>
+
+    <div id="agenda" class="secao">
+        <div class="card-gestao">
+            <h4 style="margin:0">Novo Compromisso</h4>
+            <input type="date" id="dataAge" class="form-controle">
+            <input type="text" id="localAge" class="form-controle" placeholder="Local/Pessoa">
+            <textarea id="assuntoAge" class="form-controle" placeholder="O que foi acordado?"></textarea>
+            <button class="btn-salvar" onclick="salvarAgenda()">Agendar</button>
+        </div>
+        <div id="listaAgenda"></div>
+    </div>
+
+    <div id="pedidos" class="secao">
+        <div class="card-gestao">
+            <h4 style="margin:0">Controle de Pedido</h4>
+            <input type="text" id="tituloPed" class="form-controle" placeholder="Ex: Calçamento Rua X">
+            <select id="prioridadePed" class="form-controle">
+                <option value="Normal">Prioridade Normal</option>
+                <option value="Urgente">Urgente</option>
+            </select>
+            <button class="btn-salvar" onclick="salvarPedido()">Registrar Pedido</button>
+        </div>
+        <div id="listaPedidos"></div>
+    </div>
+
+    <div id="gastos" class="secao">
+        <div class="card-gestao">
+            <h4 style="margin:0">Registrar Gasto/Ajuda</h4>
+            <input type="text" id="descGasto" class="form-controle" placeholder="Ex: Gasolina para líder X">
+            <input type="number" id="valorGasto" class="form-controle" placeholder="Valor R$">
+            <input type="text" id="pessoaGasto" class="form-controle" placeholder="Pessoa beneficiada">
+            <button class="btn-salvar" onclick="salvarGasto()">Lançar Gasto</button>
+        </div>
+        <div id="listaGastos"></div>
+    </div>
+
+    <div id="mapa" class="secao">
+        <div class="card-gestao">
+            <h4 style="margin:0">Registro de Presença</h4>
+            <p style="font-size:11px; color:#64748b;">Marque onde você esteve para gerar seu mapa de atuação.</p>
+            <input type="text" id="bairroMapa" class="form-controle" placeholder="Bairro visitado">
+            <button class="btn-salvar" onclick="salvarPresenca()">Registrar Visita</button>
+        </div>
+        <div id="listaMapa"></div>
+    </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
+
+    // Troca de Abas
+    function switchTab(evt, tabName) {
+        let sections = document.getElementsByClassName("secao");
+        for (let s of sections) s.classList.remove("active");
+        let buttons = document.getElementsByClassName("tab-btn");
+        for (let b of buttons) b.classList.remove("active");
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    // --- FUNÇÕES DE SALVAMENTO ---
+
+    function salvarLid() {
+        const nome = document.getElementById('nomeLid').value;
+        const bairro = document.getElementById('bairroLid').value;
+        if(!nome || !bairro) return alert("Preencha nome e bairro");
+        db.collection("liderancas").add({
+            nome, bairro, whatsapp: document.getElementById('zapLid').value,
+            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => { alert("Liderança Salva!"); location.reload(); });
+    }
+
+    function salvarGasto() {
+        const desc = document.getElementById('descGasto').value;
+        const valor = document.getElementById('valorGasto').value;
+        if(!desc || !valor) return alert("Preencha descrição e valor");
+        db.collection("gastos_internos").add({
+            descricao: desc, valor: parseFloat(valor), pessoa: document.getElementById('pessoaGasto').value,
+            data: new Date().toLocaleDateString('pt-BR'),
+            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => { alert("Gasto registrado!"); location.reload(); });
+    }
+
+    // --- CARREGAMENTO DE DADOS (EXEMPLO LIDERANÇAS E GASTOS) ---
+    db.collection("liderancas").orderBy("criadoEm", "desc").onSnapshot(snap => {
+        const list = document.getElementById("listaLid");
+        list.innerHTML = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            list.innerHTML += `<div class="card-gestao">
+                <strong>${d.nome}</strong> <span class="badge-bairro">${d.bairro}</span>
+                <p style="margin:5px 0; font-size:12px;">Zap: ${d.whatsapp}</p>
+            </div>`;
+        });
+    });
+
+    db.collection("gastos_internos").orderBy("criadoEm", "desc").onSnapshot(snap => {
+        const list = document.getElementById("listaGastos");
+        list.innerHTML = "";
+        let total = 0;
+        snap.forEach(doc => {
+            const d = doc.data();
+            total += d.valor;
+            list.innerHTML += `<div class="card-gestao">
+                <div style="display:flex; justify-content:space-between">
+                    <span style="font-size:12px;">${d.data}</span>
+                    <span class="gasto-valor">R$ ${d.valor.toFixed(2)}</span>
+                </div>
+                <div style="font-weight:600; margin-top:5px;">${d.descricao}</div>
+                <div style="font-size:11px; color:#64748b;">Para: ${d.pessoa}</div>
+            </div>`;
+        });
+    });
+
+    // Funções de Agenda, Pedidos e Mapa seguem a mesma lógica de add e snapshot acima.
+</script>
+</body>
+</html>
