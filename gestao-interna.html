@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão Interna Pro - André de Dedé</title>
+    <title>Gestão Interna - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
@@ -13,27 +13,21 @@
         .tabs::-webkit-scrollbar { display: none; }
         .tab-btn { padding: 8px 18px; border-radius: 20px; border: none; background: #f1f5f9; color: #64748b; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .tab-btn.active { background: #1e3a8a; color: white; }
-        
         .container { padding: 15px; }
         .secao { display: none; }
         .secao.active { display: block; }
-        
         .card-gestao { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; border-left: 5px solid #1e3a8a; }
         .form-controle { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: 'Poppins'; font-size: 14px; outline: none; }
         .btn-salvar { background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer; }
-        
         .placar-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .placar-item { background: white; padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .placar-item small { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 600; }
         .placar-item div { font-size: 20px; font-weight: 600; color: #1e3a8a; }
-
-        .resumo-caixa { background: #1e293b; color: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; text-align: center; }
         .badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
         .badge-urbana { background: #dcfce7; color: #166534; }
         .badge-rural { background: #fef3c7; color: #92400e; }
         .btn-acao { position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; color: #cbd5e1; }
         .btn-acao i { cursor: pointer; font-size: 20px; }
-        .btn-acao i:hover { color: #ef4444; }
         .valor-txt { color: #ef4444; font-weight: 600; }
     </style>
 </head>
@@ -41,26 +35,23 @@
 
 <div class="topo">
     <i class="material-icons" onclick="location.href='admin.html'" style="cursor:pointer">arrow_back</i>
-    <span style="font-weight:600">Gestão de Mandato</span>
+    <span style="font-weight:600">Gestão de Lideranças</span>
 </div>
 
 <div class="tabs">
     <button class="tab-btn active" onclick="switchTab(event, 'liderancas')"><i class="material-icons" style="font-size:16px">groups</i> Lideranças</button>
-    <button class="tab-btn" onclick="switchTab(event, 'agenda')"><i class="material-icons" style="font-size:16px">event</i> Agenda</button>
-    <button class="tab-btn" onclick="switchTab(event, 'pedidos')"><i class="material-icons" style="font-size:16px">assignment</i> Pedidos</button>
-    <button class="tab-btn" onclick="switchTab(event, 'financas')"><i class="material-icons" style="font-size:16px">payments</i> Finanças</button>
-    <button class="tab-btn" onclick="switchTab(event, 'mapa')"><i class="material-icons" style="font-size:16px">map</i> Mapa</button>
 </div>
 
 <div class="container">
-    
     <div id="liderancas" class="secao active">
         <div class="placar-container">
             <div class="placar-item"><small>Zona Urbana</small><div id="countUrbana">0</div></div>
             <div class="placar-item"><small>Zona Rural</small><div id="countRural">0</div></div>
         </div>
-        <div class="card-gestao">
-            <h4 style="margin:0">Nova Liderança</h4>
+
+        <div class="card-gestao" id="formLideranca">
+            <h4 style="margin:0" id="tituloForm">Nova Liderança</h4>
+            <input type="hidden" id="idLid">
             <input type="text" id="nomeLid" class="form-controle" placeholder="Nome do Líder">
             <input type="text" id="bairroLid" class="form-controle" placeholder="Bairro ou Comunidade">
             <select id="zonaLid" class="form-controle">
@@ -68,295 +59,136 @@
                 <option value="Rural">🚜 Zona Rural</option>
             </select>
             <input type="text" id="contatoLid" class="form-controle" placeholder="Contato (WhatsApp)">
-            <input type="number" id="valorInicialLid" class="form-controle" placeholder="Valor gasto inicial R$">
-            <button class="btn-salvar" onclick="salvarLid()">Cadastrar Base</button>
+            <input type="number" id="valorLid" class="form-controle" placeholder="Valor gasto R$">
+            <button class="btn-salvar" id="btnSalvarLid" onclick="salvarLid()">Cadastrar Liderança</button>
+            <button class="btn-salvar" id="btnCancelarEdit" onclick="cancelarEdicao()" style="display:none; background:#64748b; margin-top:5px;">Cancelar Alteração</button>
         </div>
+
         <div id="listaLid"></div>
     </div>
-
-    <div id="agenda" class="secao">
-        <div class="card-gestao">
-            <h4 style="margin:0">Novo Compromisso</h4>
-            <input type="date" id="dataAge" class="form-controle">
-            <input type="text" id="localAge" class="form-controle" placeholder="Local/Pessoa">
-            <textarea id="assuntoAge" class="form-controle" placeholder="Assunto abordado ou acordado..." rows="3"></textarea>
-            <button class="btn-salvar" onclick="salvarAgenda()">Agendar Visita</button>
-        </div>
-        <div id="listaAgenda"></div>
-    </div>
-
-    <div id="pedidos" class="secao">
-        <div class="card-gestao">
-            <h4 style="margin:0">Registrar Pedido/Demanda</h4>
-            <input type="text" id="tituloPed" class="form-controle" placeholder="Ex: Requerimento de calçamento">
-            <input type="text" id="solicitantePed" class="form-controle" placeholder="Quem pediu?">
-            <select id="statusPed" class="form-controle">
-                <option value="Pendente">⏳ Pendente</option>
-                <option value="Encaminhado">📤 Encaminhado</option>
-                <option value="Concluído">✅ Concluído</option>
-            </select>
-            <button class="btn-salvar" onclick="salvarPedido()">Salvar Demanda</button>
-        </div>
-        <div id="listaPedidos"></div>
-    </div>
-
-    <div id="financas" class="secao">
-        <div class="resumo-caixa">
-            <small>Investimento Total</small>
-            <h2 id="totalFinanceiro">R$ 0,00</h2>
-        </div>
-        <div class="card-gestao">
-            <h4 style="margin:0">Lançar Gasto/Ajuda</h4>
-            <input type="text" id="descGasto" class="form-controle" placeholder="Descrição (Ex: Combustível, Exame)">
-            <input type="number" id="valorGasto" class="form-controle" placeholder="Valor R$">
-            <label style="font-size:11px; color:#64748b; margin-top:10px; display:block">Vincular a uma Liderança?</label>
-            <select id="vincularLid" class="form-controle">
-                <option value="">Gasto Geral (Sem vínculo)</option>
-            </select>
-            <button class="btn-salvar" onclick="salvarGasto()">Registrar Gasto</button>
-        </div>
-        <div id="listaGastos"></div>
-    </div>
-
-    <div id="mapa" class="secao">
-        <div class="card-gestao">
-            <h4 style="margin:0">Registrar Atuação no Bairro</h4>
-            <input type="text" id="bairroMapa" class="form-controle" placeholder="Nome do Bairro visitado">
-            <button class="btn-salvar" onclick="salvarMapa()">Registrar Visita</button>
-        </div>
-        <div id="listaMapa"></div>
-    </div>
-
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
-    const firebaseConfig = { 
-        apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
-        authDomain: "gabinete-do-povo.firebaseapp.com", 
-        projectId: "gabinete-do-povo" 
-    };
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
+    db.enablePersistence().catch(() => {});
 
-    // Habilita persistência offline
-    db.enablePersistence().catch(err => console.error("Erro offline:", err.code));
-
-    // VALIDAÇÃO DE ACESSO AO CARREGAR
     window.onload = async () => {
         try {
             const doc = await db.collection("configuracoes").doc("acesso").get();
-            const senhaMestra = doc.exists ? doc.data().senha : "1234";
-            const confirmacao = prompt("Senha de Segurança - Gestão Interna:");
+            // Tenta pegar a senhaGestao, se não existir usa a senha padrão 1234
+            const senhaGestao = doc.exists && doc.data().senhaGestao ? doc.data().senhaGestao : "1234";
             
-            if(confirmacao === senhaMestra) {
+            const confirmacao = prompt("Senha de Acesso - GESTÃO INTERNA:");
+            
+            if(confirmacao === senhaGestao) {
                 document.body.style.display = "block";
-                iniciarListeners();
+                ouvirLiderancas();
             } else {
-                alert("Acesso negado!");
+                alert("Senha de Gestão Incorreta!");
                 window.location.href = "admin.html";
             }
-        } catch (e) { alert("Erro ao conectar."); }
+        } catch (e) { alert("Erro de conexão."); }
     };
 
     function switchTab(evt, tabName) {
-        let sections = document.getElementsByClassName("secao");
-        for (let s of sections) s.classList.remove("active");
-        let buttons = document.getElementsByClassName("tab-btn");
-        for (let b of buttons) b.classList.remove("active");
-        document.getElementById(tabName).classList.add("active");
-        evt.currentTarget.classList.add("active");
+        document.querySelectorAll('.secao').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+        evt.currentTarget.classList.add('active');
     }
 
-    // --- FUNÇÕES DE LIDERANÇA ---
+    // SALVAR OU ATUALIZAR
     function salvarLid() {
-        const nome = document.getElementById('nomeLid').value;
-        if(!nome) return alert("Digite o nome");
-        db.collection("liderancas").add({
-            nome,
+        const id = document.getElementById('idLid').value;
+        const dados = {
+            nome: document.getElementById('nomeLid').value,
             bairro: document.getElementById('bairroLid').value,
             zona: document.getElementById('zonaLid').value,
             contato: document.getElementById('contatoLid').value,
-            valorGasto: parseFloat(document.getElementById('valorInicialLid').value) || 0,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => { limparCampos(['nomeLid','bairroLid','contatoLid','valorInicialLid']); });
+            valorGasto: parseFloat(document.getElementById('valorLid').value) || 0,
+            atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if(!dados.nome) return alert("Preencha o nome.");
+
+        if(id) {
+            db.collection("liderancas").doc(id).update(dados)
+                .then(() => { alert("Liderança atualizada!"); cancelarEdicao(); });
+        } else {
+            dados.criadoEm = firebase.firestore.FieldValue.serverTimestamp();
+            db.collection("liderancas").add(dados)
+                .then(() => { alert("Liderança cadastrada!"); limparCampos(); });
+        }
     }
 
-    // --- FUNÇÕES DE AGENDA ---
-    function salvarAgenda() {
-        db.collection("agenda_interna").add({
-            data: document.getElementById('dataAge').value,
-            local: document.getElementById('localAge').value,
-            assunto: document.getElementById('assuntoAge').value,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => { limparCampos(['dataAge','localAge','assuntoAge']); });
-    }
-
-    // --- FUNÇÕES DE PEDIDOS ---
-    function salvarPedido() {
-        db.collection("pedidos_internos").add({
-            titulo: document.getElementById('tituloPed').value,
-            solicitante: document.getElementById('solicitantePed').value,
-            status: document.getElementById('statusPed').value,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => { limparCampos(['tituloPed','solicitantePed']); });
-    }
-
-    // --- FUNÇÕES DE FINANÇAS ---
-    function salvarGasto() {
-        const valor = parseFloat(document.getElementById('valorGasto').value);
-        const lider = document.getElementById('vincularLid').value;
-        if(!valor) return alert("Digite o valor");
-
-        db.collection("gastos_internos").add({
-            descricao: document.getElementById('descGasto').value,
-            valor: valor,
-            liderViculado: lider,
-            data: new Date().toLocaleDateString('pt-BR'),
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            // Se houver líder, atualiza o acumulado dele
-            if(lider) {
-                db.collection("liderancas").where("nome", "==", lider).get().then(snap => {
-                    snap.forEach(doc => {
-                        let novoTotal = (doc.data().valorGasto || 0) + valor;
-                        db.collection("liderancas").doc(doc.id).update({ valorGasto: novoTotal });
-                    });
-                });
-            }
-            limparCampos(['descGasto','valorGasto']);
-        });
-    }
-
-    // --- FUNÇÕES DE MAPA ---
-    function salvarMapa() {
-        const bairro = document.getElementById('bairroMapa').value;
-        if(!bairro) return;
-        db.collection("mapa_calor").add({
-            bairro: bairro,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => { document.getElementById('bairroMapa').value = ""; });
-    }
-
-    // --- ESCUTADORES DE DADOS (LISTENERS) ---
-    function iniciarListeners() {
-        // Listener Lideranças
-        db.collection("liderancas").orderBy("criadoEm", "desc").onSnapshot(snap => {
+    // ESCUTAR BANCO (CORREÇÃO DO CONTADOR)
+    function ouvirLiderancas() {
+        db.collection("liderancas").orderBy("nome", "asc").onSnapshot(snap => {
             const lista = document.getElementById("listaLid");
-            const selectFin = document.getElementById("vincularLid");
             let urb = 0, rur = 0;
             lista.innerHTML = "";
-            selectFin.innerHTML = '<option value="">Gasto Geral (Sem vínculo)</option>';
 
             snap.forEach(doc => {
                 const d = doc.data();
-                d.zona === "Urbana" ? urb++ : rur++;
-                selectFin.innerHTML += `<option value="${d.nome}">${d.nome}</option>`;
+                // Contagem exata
+                if(d.zona === "Urbana") urb++; 
+                if(d.zona === "Rural") rur++;
 
                 lista.innerHTML += `
                 <div class="card-gestao" style="border-left-color: ${d.zona === 'Urbana' ? '#1e3a8a' : '#f59e0b'}">
                     <div class="btn-acao">
-                        <i class="material-icons" onclick="editar('liderancas','${doc.id}')">edit</i>
-                        <i class="material-icons" onclick="excluir('liderancas','${doc.id}')">delete</i>
+                        <i class="material-icons" style="color:#64748b" onclick="prepararEdicao('${doc.id}', ${JSON.stringify(d).replace(/"/g, '&quot;')})">edit</i>
+                        <i class="material-icons" style="color:#cbd5e1" onclick="excluirLid('${doc.id}')">delete</i>
                     </div>
                     <strong>${d.nome}</strong> <span class="badge ${d.zona === 'Urbana' ? 'badge-urbana' : 'badge-rural'}">${d.zona}</span>
                     <div style="font-size:12px; color:#64748b; margin-top:5px;">
                         📍 ${d.bairro} | 📱 ${d.contato} <br>
-                        Gastos Vinculados: <span class="valor-txt">R$ ${d.valorGasto.toFixed(2)}</span>
+                        Investimento: <span class="valor-txt">R$ ${d.valorGasto.toFixed(2)}</span>
                     </div>
                 </div>`;
             });
             document.getElementById("countUrbana").innerText = urb;
             document.getElementById("countRural").innerText = rur;
         });
-
-        // Listener Agenda
-        db.collection("agenda_interna").orderBy("data", "desc").onSnapshot(snap => {
-            const lista = document.getElementById("listaAgenda");
-            lista.innerHTML = "";
-            snap.forEach(doc => {
-                const d = doc.data();
-                lista.innerHTML += `
-                <div class="card-gestao">
-                    <div class="btn-acao"><i class="material-icons" onclick="excluir('agenda_interna','${doc.id}')">delete</i></div>
-                    <div class="badge" style="background:#e0e7ff; color:#3730a3">${d.data.split('-').reverse().join('/')}</div>
-                    <div style="font-weight:600; margin:5px 0">${d.local}</div>
-                    <div style="font-size:12px; color:#475569; background:#f8fafc; padding:8px; border-radius:8px;">${d.assunto}</div>
-                </div>`;
-            });
-        });
-
-        // Listener Pedidos
-        db.collection("pedidos_internos").orderBy("criadoEm", "desc").onSnapshot(snap => {
-            const lista = document.getElementById("listaPedidos");
-            lista.innerHTML = "";
-            snap.forEach(doc => {
-                const d = doc.data();
-                lista.innerHTML += `
-                <div class="card-gestao">
-                    <div class="btn-acao"><i class="material-icons" onclick="excluir('pedidos_internos','${doc.id}')">delete</i></div>
-                    <small style="color:#64748b">${d.status}</small>
-                    <div style="font-weight:600">${d.titulo}</div>
-                    <div style="font-size:12px; color:#64748b">Pedido por: ${d.solicitante}</div>
-                </div>`;
-            });
-        });
-
-        // Listener Finanças
-        db.collection("gastos_internos").orderBy("criadoEm", "desc").onSnapshot(snap => {
-            const lista = document.getElementById("listaGastos");
-            let total = 0;
-            lista.innerHTML = "";
-            snap.forEach(doc => {
-                const d = doc.data();
-                total += d.valor;
-                lista.innerHTML += `
-                <div class="card-gestao">
-                    <div class="btn-acao"><i class="material-icons" onclick="excluir('gastos_internos','${doc.id}')">delete</i></div>
-                    <div style="display:flex; justify-content:space-between">
-                        <small>${d.data}</small>
-                        <span class="valor-txt">R$ ${d.valor.toFixed(2)}</span>
-                    </div>
-                    <div style="font-weight:600">${d.descricao}</div>
-                    <div style="font-size:11px; color:#64748b">Destino: ${d.liderViculado || 'Geral'}</div>
-                </div>`;
-            });
-            document.getElementById("totalFinanceiro").innerText = "R$ " + total.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-        });
-
-        // Listener Mapa
-        db.collection("mapa_calor").onSnapshot(snap => {
-            const lista = document.getElementById("listaMapa");
-            let contagem = {};
-            lista.innerHTML = "";
-            snap.forEach(doc => {
-                let b = doc.data().bairro;
-                contagem[b] = (contagem[b] || 0) + 1;
-            });
-            for (let b in contagem) {
-                lista.innerHTML += `
-                <div class="card-gestao" style="display:flex; justify-content:space-between; align-items:center">
-                    <strong>${b}</strong>
-                    <span class="badge" style="background:#1e3a8a; color:white">${contagem[b]} Visitas</span>
-                </div>`;
-            }
-        });
     }
 
-    // --- UTILITÁRIOS ---
-    function excluir(col, id) {
-        if(confirm("Deseja excluir permanentemente?")) db.collection(col).doc(id).delete();
+    // EDITAR TUDO
+    window.prepararEdicao = function(id, data) {
+        document.getElementById('idLid').value = id;
+        document.getElementById('nomeLid').value = data.nome;
+        document.getElementById('bairroLid').value = data.bairro;
+        document.getElementById('zonaLid').value = data.zona;
+        document.getElementById('contatoLid').value = data.contato;
+        document.getElementById('valorLid').value = data.valorGasto;
+        
+        document.getElementById('tituloForm').innerText = "Alterar Liderança";
+        document.getElementById('btnSalvarLid').innerText = "Salvar Alterações";
+        document.getElementById('btnCancelarEdit').style.display = "block";
+        window.scrollTo(0,0);
+    };
+
+    function cancelarEdicao() {
+        limparCampos();
+        document.getElementById('tituloForm').innerText = "Nova Liderança";
+        document.getElementById('btnSalvarLid').innerText = "Cadastrar Liderança";
+        document.getElementById('btnCancelarEdit').style.display = "none";
     }
 
-    function editar(col, id) {
-        const novoNome = prompt("Novo nome:");
-        if(novoNome) db.collection(col).doc(id).update({ nome: novoNome });
+    function excluirLid(id) {
+        if(confirm("Excluir esta liderança?")) db.collection("liderancas").doc(id).delete();
     }
 
-    function limparCampos(ids) {
-        ids.forEach(id => document.getElementById(id).value = "");
+    function limparCampos() {
+        document.getElementById('idLid').value = "";
+        document.getElementById('nomeLid').value = "";
+        document.getElementById('bairroLid').value = "";
+        document.getElementById('contatoLid').value = "";
+        document.getElementById('valorLid').value = "";
     }
 </script>
 </body>
