@@ -49,16 +49,33 @@
 <div class="container">
     
     <div id="liderancas" class="secao active">
-        <div class="card-gestao">
-            <h4 style="margin:0">Nova Liderança</h4>
-            <input type="text" id="nomeLid" class="form-controle" placeholder="Nome da pessoa">
-            <input type="text" id="bairroLid" class="form-controle" placeholder="Bairro/Comunidade">
-            <input type="text" id="zapLid" class="form-controle" placeholder="WhatsApp">
-            <button class="btn-salvar" onclick="salvarLid()">Cadastrar Liderança</button>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+        <div class="card-gestao" style="margin-bottom:0; text-align:center; padding:10px;">
+            <small style="font-size:10px; color:#64748b; font-weight:600;">ZONA URBANA</small>
+            <h3 id="countUrbana" style="margin:5px 0 0; color:#1e3a8a;">0</h3>
         </div>
-        <div id="listaLid"></div>
+        <div class="card-gestao" style="margin-bottom:0; text-align:center; padding:10px;">
+            <small style="font-size:10px; color:#64748b; font-weight:600;">ZONA RURAL</small>
+            <h3 id="countRural" style="margin:5px 0 0; color:#f59e0b;">0</h3>
+        </div>
     </div>
 
+    <div class="card-gestao">
+        <h4 style="margin:0">Cadastrar Nova Liderança</h4>
+        <input type="text" id="nomeLid" class="form-controle" placeholder="Nome Completo">
+        <input type="text" id="bairroLid" class="form-controle" placeholder="Bairro ou Comunidade">
+        
+        <select id="zonaLid" class="form-controle">
+            <option value="Urbana">Zona Urbana</option>
+            <option value="Rural">Zona Rural</option>
+        </select>
+        
+        <input type="text" id="zapLid" class="form-controle" placeholder="WhatsApp">
+        <button class="btn-salvar" onclick="salvarLid()">Salvar Liderança</button>
+    </div>
+    
+    <div id="listaLid"></div>
+</div>
     <div id="agenda" class="secao">
         <div class="card-gestao">
             <h4 style="margin:0">Novo Compromisso</h4>
@@ -126,28 +143,78 @@
     }
 
     // --- LIDERANÇAS ---
-    function salvarLid() {
-        const nome = document.getElementById('nomeLid').value;
-        const bairro = document.getElementById('bairroLid').value;
-        if(!nome || !bairro) return alert("Preencha os campos!");
-        db.collection("liderancas").add({
-            nome, bairro, whatsapp: document.getElementById('zapLid').value,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => { location.reload(); });
-    }
+function salvarLid() {
+    const nome = document.getElementById('nomeLid').value;
+    const bairro = document.getElementById('bairroLid').value;
+    const zona = document.getElementById('zonaLid').value;
+    const zap = document.getElementById('zapLid').value;
 
-    db.collection("liderancas").orderBy("criadoEm", "desc").onSnapshot(snap => {
-        const list = document.getElementById("listaLid");
-        list.innerHTML = "";
-        snap.forEach(doc => {
-            list.innerHTML += `<div class="card-gestao">
-                <i class="material-icons btn-del" onclick="excluir('liderancas','${doc.id}')">delete</i>
-                <strong>${doc.data().nome}</strong> <span class="badge-bairro">${doc.data().bairro}</span>
-                <p style="margin:5px 0; font-size:12px; color:#64748b;">Zap: ${doc.data().whatsapp}</p>
-            </div>`;
-        });
+    if(!nome || !bairro) return alert("Nome e Bairro são obrigatórios!");
+
+    db.collection("liderancas").add({
+        nome: nome,
+        bairro: bairro,
+        zona: zona,
+        whatsapp: zap,
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => { 
+        alert("Liderança cadastrada!");
+        document.getElementById('nomeLid').value = "";
+        document.getElementById('bairroLid').value = "";
+        document.getElementById('zapLid').value = "";
     });
+}
 
+// Escutar Lideranças e Cruzar com Gastos
+db.collection("liderancas").orderBy("nome", "asc").onSnapshot(snapLid => {
+    // Primeiro, pegamos todos os gastos para somar por pessoa
+    db.collection("gastos_internos").get().then(snapGastos => {
+        let gastosPorLid = {};
+        
+        snapGastos.forEach(g => {
+            const dadoGasto = g.data();
+            // Aqui fazemos o "gancho": se o campo 'pessoa' no gasto for igual ao nome da liderança
+            if (dadoGasto.pessoa) {
+                gastosPorLid[dadoGasto.pessoa] = (gastosPorLid[dadoGasto.pessoa] || 0) + dadoGasto.valor;
+            }
+        });
+
+        const list = document.getElementById("listaLid");
+        let urb = 0, rur = 0;
+        list.innerHTML = "";
+
+        snapLid.forEach(doc => {
+            const d = doc.data();
+            const totalGasto = gastosPorLid[d.nome] || 0;
+            
+            if(d.zona === "Urbana") urb++; else rur++;
+
+            list.innerHTML += `
+                <div class="card-gestao">
+                    <i class="material-icons btn-del" onclick="excluir('liderancas','${doc.id}')">delete</i>
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <div>
+                            <strong style="font-size:16px;">${d.nome}</strong><br>
+                            <span class="badge-bairro" style="background:${d.zona==='Urbana'?'#dcfce7':'#fef3c7'}; color:${d.zona==='Urbana'?'#166534':'#92400e'}">
+                                ${d.zona} - ${d.bairro}
+                            </span>
+                        </div>
+                        <div style="text-align:right">
+                            <small style="font-size:10px; color:#94a3b8; display:block;">INVESTIDO</small>
+                            <span style="font-weight:600; color:#ef4444;">R$ ${totalGasto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                        </div>
+                    </div>
+                    <div style="margin-top:10px; font-size:12px; color:#64748b; display:flex; align-items:center; gap:5px;">
+                        <i class="material-icons" style="font-size:14px;">call</i> ${d.whatsapp || 'Sem contato'}
+                    </div>
+                </div>`;
+        });
+
+        document.getElementById("countUrbana").innerText = urb;
+        document.getElementById("countRural").innerText = rur;
+    });
+});
+    
     // --- AGENDA ---
     function salvarAgenda() {
         db.collection("agenda_interna").add({
