@@ -7,325 +7,147 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 50px; }
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; display:none; } /* Escondido até validar senha */
         .topo { background:#0f172a; color:white; padding:20px; display:flex; align-items:center; gap:15px; }
-        .tabs { display: flex; overflow-x: auto; background: white; padding: 10px; gap: 10px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #e2e8f0; }
-        .tab-btn { padding: 8px 15px; border-radius: 20px; border: none; background: #f1f5f9; color: #64748b; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
-        .tab-btn.active { background: #1e3a8a; color: white; }
+        .resumo-liderancas { display: flex; gap: 10px; padding: 15px; }
+        .card-mini { flex:1; background: white; padding: 10px; border-radius: 12px; text-align:center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card-mini span { display:block; font-size: 18px; font-weight: 600; color: #1e3a8a; }
+        .card-mini small { font-size: 10px; color: #64748b; text-transform: uppercase; }
         
         .container { padding: 15px; }
-        .secao { display: none; }
-        .secao.active { display: block; }
-        
         .card-gestao { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; }
         .form-controle { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: 'Poppins'; font-size: 14px; outline: none; }
         .btn-salvar { background: #1e3a8a; color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer; }
         
-        .resumo-caixa { background: #1e293b; color: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; text-align: center; }
-        .resumo-caixa small { opacity: 0.7; font-size: 11px; text-transform: uppercase; }
-        .resumo-caixa h2 { margin: 5px 0 0; font-size: 24px; color: #4ade80; }
-
-        .badge-bairro { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 700; }
-        .gasto-valor { color: #ef4444; font-weight: 600; }
-        .btn-del { position: absolute; top: 15px; right: 15px; color: #cbd5e1; cursor: pointer; font-size: 18px; }
-        .btn-del:hover { color: #ef4444; }
+        .badge-zona { padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 700; margin-left: 5px; }
+        .urbana { background: #e0f2fe; color: #0369a1; }
+        .rural { background: #fef3c7; color: #92400e; }
+        .gasto-lid { color: #ef4444; font-weight: 600; font-size: 13px; margin-top: 5px; display: block; }
+        .btn-acoes { display: flex; gap: 10px; margin-top: 10px; border-top: 1px solid #f1f5f9; padding-top: 10px; }
+        .btn-acao { border:none; background:none; cursor:pointer; font-size:12px; display:flex; align-items:center; gap:4px; font-weight:600; }
     </style>
 </head>
 <body>
 
 <div class="topo">
     <i class="material-icons" onclick="location.href='admin.html'" style="cursor:pointer">arrow_back</i>
-    <span style="font-weight:600">Gestão de Mandato</span>
+    <span style="font-weight:600">Gestão de Lideranças</span>
 </div>
 
-<div class="tabs">
-    <button class="tab-btn active" onclick="switchTab(event, 'liderancas')">👥 Lideranças</button>
-    <button class="tab-btn" onclick="switchTab(event, 'agenda')">📅 Agenda</button>
-    <button class="tab-btn" onclick="switchTab(event, 'pedidos')">📂 Pedidos</button>
-    <button class="tab-btn" onclick="switchTab(event, 'gastos')">💰 Finanças</button>
-    <button class="tab-btn" onclick="switchTab(event, 'mapa')">📍 Mapa</button>
+<div class="resumo-liderancas">
+    <div class="card-mini"><span id="qtdUrbana">0</span><small>Zona Urbana</small></div>
+    <div class="card-mini"><span id="qtdRural">0</span><small>Zona Rural</small></div>
 </div>
 
 <div class="container">
-    
-    <div id="liderancas" class="secao active">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-        <div class="card-gestao" style="margin-bottom:0; text-align:center; padding:10px;">
-            <small style="font-size:10px; color:#64748b; font-weight:600;">ZONA URBANA</small>
-            <h3 id="countUrbana" style="margin:5px 0 0; color:#1e3a8a;">0</h3>
-        </div>
-        <div class="card-gestao" style="margin-bottom:0; text-align:center; padding:10px;">
-            <small style="font-size:10px; color:#64748b; font-weight:600;">ZONA RURAL</small>
-            <h3 id="countRural" style="margin:5px 0 0; color:#f59e0b;">0</h3>
-        </div>
-    </div>
-
     <div class="card-gestao">
-        <h4 style="margin:0">Cadastrar Nova Liderança</h4>
-        <input type="text" id="nomeLid" class="form-controle" placeholder="Nome Completo">
-        <input type="text" id="bairroLid" class="form-controle" placeholder="Bairro ou Comunidade">
-        
+        <h4 style="margin:0" id="tituloForm">Nova Liderança</h4>
+        <input type="hidden" id="idLid"> <input type="text" id="nomeLid" class="form-controle" placeholder="Nome da Liderança">
         <select id="zonaLid" class="form-controle">
             <option value="Urbana">Zona Urbana</option>
             <option value="Rural">Zona Rural</option>
         </select>
-        
+        <input type="text" id="bairroLid" class="form-controle" placeholder="Bairro ou Comunidade">
         <input type="text" id="zapLid" class="form-controle" placeholder="WhatsApp">
-        <button class="btn-salvar" onclick="salvarLid()">Salvar Liderança</button>
+        <button class="btn-salvar" id="btnSalvarLid" onclick="salvarLid()">Cadastrar Liderança</button>
     </div>
-    
+
     <div id="listaLid"></div>
-</div>
-    <div id="agenda" class="secao">
-        <div class="card-gestao">
-            <h4 style="margin:0">Novo Compromisso</h4>
-            <input type="date" id="dataAge" class="form-controle">
-            <input type="text" id="localAge" class="form-controle" placeholder="Local/Pessoa">
-            <textarea id="assuntoAge" class="form-controle" placeholder="Assunto abordado ou acordado..."></textarea>
-            <button class="btn-salvar" onclick="salvarAgenda()">Agendar</button>
-        </div>
-        <div id="listaAgenda"></div>
-    </div>
-
-    <div id="pedidos" class="secao">
-        <div class="card-gestao">
-            <h4 style="margin:0">Controle de Pedido</h4>
-            <input type="text" id="tituloPed" class="form-controle" placeholder="Ex: Reforma da Praça X">
-            <select id="prioridadePed" class="form-controle">
-                <option value="Normal">Prioridade Normal</option>
-                <option value="Urgente">⚠️ Urgente</option>
-            </select>
-            <button class="btn-salvar" onclick="salvarPedido()">Registrar Pedido</button>
-        </div>
-        <div id="listaPedidos"></div>
-    </div>
-
-    <div id="gastos" class="secao">
-        <div class="resumo-caixa">
-            <small>Total de Investimento/Gastos</small>
-            <h2 id="totalGeralGastos">R$ 0,00</h2>
-        </div>
-        <div class="card-gestao">
-            <h4 style="margin:0">Lançar Despesa/Ajuda</h4>
-            <input type="text" id="descGasto" class="form-controle" placeholder="Descrição do gasto">
-            <input type="number" id="valorGasto" class="form-controle" placeholder="Valor R$">
-            <input type="text" id="pessoaGasto" class="form-controle" placeholder="Quem recebeu?">
-            <button class="btn-salvar" onclick="salvarGasto()">Lançar no Caixa</button>
-        </div>
-        <div id="listaGastos"></div>
-    </div>
-
-    <div id="mapa" class="secao">
-        <div class="card-gestao">
-            <h4 style="margin:0">Registrar Visita em Bairro</h4>
-            <input type="text" id="bairroMapa" class="form-controle" placeholder="Nome do Bairro">
-            <button class="btn-salvar" onclick="salvarPresenca()">Confirmar Visita</button>
-        </div>
-        <div id="listaMapa"></div>
-    </div>
-
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
+    // 1. SEGURANÇA: Chave de acesso extra
+    const chave = prompt("Digite a Chave de Acesso para Gestão Interna:");
+    if(chave === "1234") { // Mude "1234" para sua chave secreta
+        document.body.style.display = "block";
+    } else {
+        alert("Chave incorreta!");
+        window.location.href = "admin.html";
+    }
+
     const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    function switchTab(evt, tabName) {
-        let sections = document.getElementsByClassName("secao");
-        for (let s of sections) s.classList.remove("active");
-        let buttons = document.getElementsByClassName("tab-btn");
-        for (let b of buttons) b.classList.remove("active");
-        document.getElementById(tabName).classList.add("active");
-        evt.currentTarget.classList.add("active");
+    // 2. CONFIGURAÇÃO OFFLINE
+    db.settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
+    db.enablePersistence().catch(err => console.error("Erro offline:", err.code));
+
+    // --- FUNÇÕES ---
+
+    function salvarLid() {
+        const id = document.getElementById('idLid').value;
+        const dados = {
+            nome: document.getElementById('nomeLid').value,
+            zona: document.getElementById('zonaLid').value,
+            bairro: document.getElementById('bairroLid').value,
+            whatsapp: document.getElementById('zapLid').value,
+            atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if(!id) {
+            // Novo cadastro
+            dados.criadoEm = firebase.firestore.FieldValue.serverTimestamp();
+            db.collection("liderancas").add(dados);
+        } else {
+            // Editar existente
+            db.collection("liderancas").doc(id).update(dados);
+            document.getElementById('idLid').value = "";
+            document.getElementById('btnSalvarLid').innerText = "Cadastrar Liderança";
+        }
+        limparCampos();
     }
 
-    // --- LIDERANÇAS ---
-function salvarLid() {
-    const nome = document.getElementById('nomeLid').value;
-    const bairro = document.getElementById('bairroLid').value;
-    const zona = document.getElementById('zonaLid').value;
-    const zap = document.getElementById('zapLid').value;
-
-    if(!nome || !bairro) return alert("Nome e Bairro são obrigatórios!");
-
-    db.collection("liderancas").add({
-        nome: nome,
-        bairro: bairro,
-        zona: zona,
-        whatsapp: zap,
-        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => { 
-        alert("Liderança cadastrada!");
+    function limparCampos() {
         document.getElementById('nomeLid').value = "";
         document.getElementById('bairroLid').value = "";
         document.getElementById('zapLid').value = "";
-    });
-}
+    }
 
-// Escutar Lideranças e Cruzar com Gastos
-db.collection("liderancas").orderBy("nome", "asc").onSnapshot(snapLid => {
-    // Primeiro, pegamos todos os gastos para somar por pessoa
-    db.collection("gastos_internos").get().then(snapGastos => {
-        let gastosPorLid = {};
-        
-        snapGastos.forEach(g => {
-            const dadoGasto = g.data();
-            // Aqui fazemos o "gancho": se o campo 'pessoa' no gasto for igual ao nome da liderança
-            if (dadoGasto.pessoa) {
-                gastosPorLid[dadoGasto.pessoa] = (gastosPorLid[dadoGasto.pessoa] || 0) + dadoGasto.valor;
-            }
-        });
-
+    db.collection("liderancas").orderBy("nome", "asc").onSnapshot(snap => {
         const list = document.getElementById("listaLid");
-        let urb = 0, rur = 0;
         list.innerHTML = "";
+        let urbana = 0, rural = 0;
 
-        snapLid.forEach(doc => {
+        snap.forEach(doc => {
             const d = doc.data();
-            const totalGasto = gastosPorLid[d.nome] || 0;
-            
-            if(d.zona === "Urbana") urb++; else rur++;
+            if(d.zona === "Urbana") urbana++; else rural++;
 
             list.innerHTML += `
                 <div class="card-gestao">
-                    <i class="material-icons btn-del" onclick="excluir('liderancas','${doc.id}')">delete</i>
-                    <div style="display:flex; justify-content:space-between; align-items:start;">
-                        <div>
-                            <strong style="font-size:16px;">${d.nome}</strong><br>
-                            <span class="badge-bairro" style="background:${d.zona==='Urbana'?'#dcfce7':'#fef3c7'}; color:${d.zona==='Urbana'?'#166534':'#92400e'}">
-                                ${d.zona} - ${d.bairro}
-                            </span>
-                        </div>
-                        <div style="text-align:right">
-                            <small style="font-size:10px; color:#94a3b8; display:block;">INVESTIDO</small>
-                            <span style="font-weight:600; color:#ef4444;">R$ ${totalGasto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-                        </div>
-                    </div>
-                    <div style="margin-top:10px; font-size:12px; color:#64748b; display:flex; align-items:center; gap:5px;">
-                        <i class="material-icons" style="font-size:14px;">call</i> ${d.whatsapp || 'Sem contato'}
+                    <strong>${d.nome}</strong> 
+                    <span class="badge-zona ${d.zona.toLowerCase()}">${d.zona}</span>
+                    <p style="margin:5px 0; font-size:12px; color:#64748b;">${d.bairro} | Zap: ${d.whatsapp}</p>
+                    <span class="gasto-lid">Gasto Acumulado: R$ 0,00</span>
+                    
+                    <div class="btn-acoes">
+                        <button class="btn-acao" style="color:#3b82f6" onclick="prepararEdicao('${doc.id}', '${d.nome}', '${d.zona}', '${d.bairro}', '${d.whatsapp}')">
+                            <i class="material-icons" style="font-size:16px">edit</i> Alterar
+                        </button>
+                        <button class="btn-acao" style="color:#ef4444" onclick="excluir('${doc.id}')">
+                            <i class="material-icons" style="font-size:16px">delete</i> Excluir
+                        </button>
                     </div>
                 </div>`;
         });
-
-        document.getElementById("countUrbana").innerText = urb;
-        document.getElementById("countRural").innerText = rur;
+        document.getElementById("qtdUrbana").innerText = urbana;
+        document.getElementById("qtdRural").innerText = rural;
     });
-});
-    
-    // --- AGENDA ---
-    function salvarAgenda() {
-        db.collection("agenda_interna").add({
-            data: document.getElementById('dataAge').value,
-            local: document.getElementById('localAge').value,
-            assunto: document.getElementById('assuntoAge').value,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => { location.reload(); });
+
+    function prepararEdicao(id, nome, zona, bairro, zap) {
+        document.getElementById('idLid').value = id;
+        document.getElementById('nomeLid').value = nome;
+        document.getElementById('zonaLid').value = zona;
+        document.getElementById('bairroLid').value = bairro;
+        document.getElementById('zapLid').value = zap;
+        document.getElementById('btnSalvarLid').innerText = "Salvar Alterações";
+        window.scrollTo(0,0);
     }
 
-    db.collection("agenda_interna").orderBy("data", "desc").onSnapshot(snap => {
-        const list = document.getElementById("listaAgenda");
-        list.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            list.innerHTML += `<div class="card-gestao">
-                <i class="material-icons btn-del" onclick="excluir('agenda_interna','${doc.id}')">delete</i>
-                <div class="badge-bairro" style="background:#eff6ff; color:#1e3a8a">${d.data.split('-').reverse().join('/')}</div>
-                <div style="font-weight:600; margin-top:5px;">${d.local}</div>
-                <div style="font-size:12px; color:#475569; margin-top:5px; background:#f8fafc; padding:8px; border-radius:8px;">${d.assunto}</div>
-            </div>`;
-        });
-    });
-
-    // --- GASTOS ---
-    function salvarGasto() {
-        const desc = document.getElementById('descGasto').value;
-        const valor = document.getElementById('valorGasto').value;
-        if(!desc || !valor) return alert("Preencha descrição e valor!");
-        db.collection("gastos_internos").add({
-            descricao: desc, valor: parseFloat(valor), pessoa: document.getElementById('pessoaGasto').value,
-            data: new Date().toLocaleDateString('pt-BR'),
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => { location.reload(); });
-    }
-
-    db.collection("gastos_internos").orderBy("criadoEm", "desc").onSnapshot(snap => {
-        const list = document.getElementById("listaGastos");
-        const totalTxt = document.getElementById("totalGeralGastos");
-        let total = 0;
-        list.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            total += d.valor;
-            list.innerHTML += `<div class="card-gestao">
-                <i class="material-icons btn-del" onclick="excluir('gastos_internos','${doc.id}')">delete_outline</i>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:11px; color:#94a3b8;">${d.data}</span>
-                    <span class="gasto-valor">R$ ${d.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-                </div>
-                <div style="font-weight:600; margin-top:5px; color:#1e293b;">${d.descricao}</div>
-                <div style="font-size:12px; color:#64748b;">Beneficiado: ${d.pessoa || 'Não informado'}</div>
-            </div>`;
-        });
-        totalTxt.innerText = `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-    });
-
-    // --- MAPA (PRESENÇA) ---
-    function salvarPresenca() {
-        const bairro = document.getElementById('bairroMapa').value;
-        if(!bairro) return;
-        db.collection("mapa_presenca").add({
-            bairro: bairro,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => { location.reload(); });
-    }
-
-    db.collection("mapa_presenca").onSnapshot(snap => {
-        const list = document.getElementById("listaMapa");
-        list.innerHTML = "";
-        let contagem = {};
-        snap.forEach(doc => {
-            let b = doc.data().bairro;
-            contagem[b] = (contagem[b] || 0) + 1;
-        });
-        
-        for (let b in contagem) {
-            list.innerHTML += `<div class="card-gestao" style="display:flex; justify-content:space-between; align-items:center;">
-                <strong>${b}</strong>
-                <span class="badge-bairro" style="background:#1e3a8a; color:white; padding:5px 12px; border-radius:15px;">${contagem[b]} Visitas</span>
-            </div>`;
-        }
-    });
-
-    // --- PEDIDOS ---
-    function salvarPedido() {
-        db.collection("pedidos_internos").add({
-            titulo: document.getElementById('tituloPed').value,
-            prioridade: document.getElementById('prioridadePed').value,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => { location.reload(); });
-    }
-
-    db.collection("pedidos_internos").orderBy("criadoEm", "desc").onSnapshot(snap => {
-        const list = document.getElementById("listaPedidos");
-        list.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            const cor = d.prioridade === 'Urgente' ? '#ef4444' : '#64748b';
-            list.innerHTML += `<div class="card-gestao">
-                <i class="material-icons btn-del" onclick="excluir('pedidos_internos','${doc.id}')">check_circle_outline</i>
-                <div style="font-size:10px; color:${cor}; font-weight:bold;">${d.prioridade.toUpperCase()}</div>
-                <div style="font-weight:600; margin-top:3px;">${d.titulo}</div>
-            </div>`;
-        });
-    });
-
-    function excluir(colecao, id) {
-        if(confirm("Deseja remover este registro?")) {
-            db.collection(colecao).doc(id).delete();
-        }
+    function excluir(id) {
+        if(confirm("Deseja excluir esta liderança?")) db.collection("liderancas").doc(id).delete();
     }
 </script>
 </body>
