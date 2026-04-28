@@ -106,6 +106,26 @@
         }
     });
 
+    function fazerLogin() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider).then((result) => {
+        console.log("Usuário logado:", result.user.email);
+        // Aqui você pode recarregar a página ou liberar o acesso às funções
+    }).catch((error) => {
+        alert("Erro ao logar: " + error.message);
+    });
+}
+
+// Verificar se o usuário está logado ao carregar a página
+firebase.auth().onAuthStateChanged((user) => {
+    if (user && user.email === "seu-email@gmail.com") {
+        renderizarTudo(); // Só carrega os dados se for você
+    } else {
+        // Redireciona ou mostra botão de login
+        document.body.innerHTML = '<button onclick="fazerLogin()">Acessar Painel</button>';
+    }
+});
+    
     function verificarAvisosGerais() {
         const aviso = document.getElementById("avisoMensagem");
         const b1 = document.getElementById("notifBadge").style.display;
