@@ -17,11 +17,15 @@
         .secao.active { display: block; }
         
         .dash-resumo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .card-mini { background: white; padding: 12px; border-radius: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 3px solid #1e3a8a; }
-        .card-mini span { display: block; font-size: 18px; font-weight: 600; color: #1e3a8a; }
-        .card-mini label { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 600; }
+        .card-mini { background: white; padding: 12px; border-radius: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 3px solid #1e3a8a; display: flex; flex-direction: column; justify-content: center; }
+        .card-mini span { display: block; font-size: 16px; font-weight: 600; color: #1e3a8a; }
+        .card-mini label { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
+        
+        /* Estilo para os sub-valores no dashboard */
+        .dash-detalhe { font-size: 9px; display: flex; justify-content: space-around; margin-top: 5px; border-top: 1px solid #f1f5f9; padding-top: 5px; }
+        .det-res { color: #166534; font-weight: 600; }
+        .det-pen { color: #991b1b; font-weight: 600; }
 
-        /* ESTILO DO FILTRO DE DATA */
         .filtro-periodo { background: #e2e8f0; padding: 12px; border-radius: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: space-between; }
         .filtro-periodo label { font-size: 10px; font-weight: 700; color: #1e3a8a; text-transform: uppercase; display: block; }
         .input-filtro { border: 1px solid #cbd5e1; border-radius: 8px; padding: 5px; font-family: 'Poppins'; font-size: 12px; outline: none; }
@@ -54,10 +58,24 @@
 <div class="container">
     
     <div class="dash-resumo">
-        <div class="card-mini"><span id="dashPedidos">0</span><label>Pedidos</label></div>
-        <div class="card-mini"><span id="dashPautas">0</span><label>Pautas Abertas</label></div>
-        <div class="card-mini"><span id="dashInvest">R$ 0</span><label>Investimento</label></div>
-        <div class="card-mini"><span id="dashEventos">0</span><label>Eventos</label></div>
+        <div class="card-mini">
+            <label>Pedidos</label>
+            <span id="dashPedidos">0</span>
+            <div class="dash-detalhe">
+                <div class="det-res">✔ <span id="dashPedRes">0</span></div>
+                <div class="det-pen">⏳ <span id="dashPedPen">0</span></div>
+            </div>
+        </div>
+        <div class="card-mini"><label>Pautas Abertas</label><span id="dashPautas">0</span></div>
+        <div class="card-mini">
+            <label>Investimento</label>
+            <span id="dashInvest">R$ 0</span>
+            <div class="dash-detalhe">
+                <div class="det-res">✔ <span id="dashInvRes">R$ 0</span></div>
+                <div class="det-pen">⏳ <span id="dashInvPen">R$ 0</span></div>
+            </div>
+        </div>
+        <div class="card-mini"><label>Eventos</label><span id="dashEventos">0</span></div>
     </div>
 
     <div class="filtro-periodo">
@@ -149,7 +167,6 @@
         if(evt) evt.currentTarget.classList.add('active');
     }
 
-    // LOGICA DE FILTRO DE DATA
     function aplicarFiltros() {
         const ini = document.getElementById("filtroInicio").value;
         const fim = document.getElementById("filtroFim").value;
@@ -234,16 +251,27 @@
 
     async function atualizarParticipacao(id, valor) { await db.collection("eventos_externos").doc(id).update({ participou: valor }); }
 
-    // RENDERIZADOR COM FILTRO DE DATA
     function renderizarTudo(ini = "", fim = "") {
         // PEDIDOS
         db.collection("crm_pedidos").orderBy("dataPedido", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
-            let totalGasto = 0; let contador = 0;
+            let totalGasto = 0, totalRes = 0, totalPen = 0;
+            let contTotal = 0, contRes = 0, contPen = 0;
+            
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.dataPedido >= ini) && (!fim || d.dataPedido <= fim)) {
-                    contador++; totalGasto += d.gasto || 0;
+                    contTotal++;
+                    totalGasto += d.gasto || 0;
+                    
+                    if(d.status === 'Resolvido') {
+                        contRes++;
+                        totalRes += d.gasto || 0;
+                    } else {
+                        contPen++;
+                        totalPen += d.gasto || 0;
+                    }
+
                     const corStatus = d.status === 'Resolvido' ? '#166534' : (d.status === 'Encaminhado' ? '#854d0e' : '#991b1b');
                     lista.innerHTML += `<div class="card-controle">
                         <div class="acoes-card">
@@ -256,8 +284,14 @@
                     </div>`;
                 }
             });
-            document.getElementById("dashPedidos").innerText = contador;
-            document.getElementById("dashInvest").innerText = "R$ " + totalGasto.toLocaleString();
+            // Update Dashboard Pedidos
+            document.getElementById("dashPedidos").innerText = contTotal;
+            document.getElementById("dashPedRes").innerText = contRes;
+            document.getElementById("dashPedPen").innerText = contPen;
+            // Update Dashboard Investimento
+            document.getElementById("dashInvest").innerText = "R$ " + totalGasto.toLocaleString('pt-BR');
+            document.getElementById("dashInvRes").innerText = "R$ " + totalRes.toLocaleString('pt-BR');
+            document.getElementById("dashInvPen").innerText = "R$ " + totalPen.toLocaleString('pt-BR');
         });
 
         // REUNIÕES
@@ -308,7 +342,6 @@
         });
     }
 
-    // LIDERANÇAS (Não filtradas por data, lista fixa)
     db.collection("liderancas").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas");
         const select = document.getElementById("pLider");
@@ -328,7 +361,6 @@
 
     function deletar(col, id) { if(confirm("Excluir?")) db.collection(col).doc(id).delete(); }
 
-    // Iniciar carregamento
     renderizarTudo();
 </script>
 </body>
