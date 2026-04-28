@@ -21,7 +21,7 @@
         .card-mini span { display: block; font-size: 16px; font-weight: 600; color: #1e3a8a; }
         .card-mini label { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
         
-        .dash-detalhe { font-size: 9px; display: flex; justify-content: space-around; margin-top: 5px; border-top: 1px solid #f1f5f9; padding-top: 5px; }
+        .dash-detalhe { font-size: 9px; display: flex; justify-content: space-around; margin-top: 5px; border-top: 1px solid #f1f5f9; padding-top: 5px; gap: 5px; flex-wrap: wrap; }
         .det-res { color: #166534; font-weight: 600; }
         .det-pen { color: #991b1b; font-weight: 600; }
         .det-urb { color: #1e3a8a; font-weight: 600; }
@@ -41,6 +41,13 @@
         .btn-del { color: #ef4444; cursor: pointer; font-size: 20px; }
         .pauta-item { display: flex; flex-direction: column; gap: 5px; background: #f8fafc; padding: 10px; border-radius: 10px; margin-top: 5px; border-left: 3px solid #1e3a8a; }
         .dash-unica { grid-template-columns: 1fr !important; }
+
+        /* Estilos Relatórios e Status Reunião */
+        .status-pauta { font-size: 9px; padding: 2px 5px; border-radius: 4px; font-weight: bold; text-transform: uppercase; margin-right: 5px; }
+        .st-total { background: #dcfce7; color: #166534; }
+        .st-parcial { background: #fef9c3; color: #854d0e; }
+        .st-nao { background: #fee2e2; color: #991b1b; }
+        .st-disc { background: #e2e8f0; color: #475569; }
 
         .relatorio-area { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
         .relatorio-area h3 { color: #1e3a8a; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-top: 0; font-size: 16px; }
@@ -80,9 +87,6 @@
         <div class="card-mini"><label>Por Zona</label><span id="dashPedidosZona">0</span>
             <div class="dash-detalhe"><div class="det-urb">🏙 <span id="dashPedUrb">0</span></div><div class="det-rur">🚜 <span id="dashPedRur">0</span></div></div>
         </div>
-        <div class="card-mini" style="grid-column: span 2;"><label>Investimento Total</label><span id="dashInvest">R$ 0</span>
-            <div class="dash-detalhe"><div class="det-res">✔ <span id="dashInvRes">R$ 0</span></div><div class="det-pen">⏳ <span id="dashInvPen">R$ 0</span></div></div>
-        </div>
     </div>
 
     <div id="dashContainerLiderancas" class="dash-resumo dash-unica" style="display:none;">
@@ -94,11 +98,12 @@
     <div id="dashContainerAgenda" class="dash-resumo" style="display:none;">
         <div class="card-mini"><label>Total Reuniões</label><span id="dashTotalReu">0</span></div>
         <div class="card-mini"><label>Total Pautas</label><span id="dashTotalPau">0</span></div>
-        <div class="card-mini" style="grid-column: span 2;"><label>Status das Pautas</label>
+        <div class="card-mini" style="grid-column: span 2;"><label>Status Detalhado das Pautas</label>
             <div class="dash-detalhe">
-                <div style="color:#166534">Total: <b id="dashPauTotal">0</b></div>
-                <div style="color:#854d0e">Parcial: <b id="dashPauParcial">0</b></div>
-                <div style="color:#991b1b">Não: <b id="dashPauNao">0</b></div>
+                <div class="det-res">Total: <b id="dashPauTotal">0</b></div>
+                <div class="det-rur">Parcial: <b id="dashPauParcial">0</b></div>
+                <div class="det-pen">Não: <b id="dashPauNao">0</b></div>
+                <div style="color:#475569">Não Disc: <b id="dashPauDisc">0</b></div>
             </div>
         </div>
     </div>
@@ -107,8 +112,8 @@
         <div class="card-mini"><label>Total Eventos</label><span id="dashTotalEve">0</span></div>
         <div class="card-mini"><label>Presença</label>
             <div class="dash-detalhe">
-                <div style="color:#166534">✔ <span id="dashEveSim">0</span></div>
-                <div style="color:#991b1b">✖ <span id="dashEveNao">0</span></div>
+                <div class="det-res">✔ <span id="dashEveSim">0</span></div>
+                <div class="det-pen">✖ <span id="dashEveNao">0</span></div>
             </div>
         </div>
     </div>
@@ -218,25 +223,33 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabName).classList.add('active');
         if(evt) evt.currentTarget.classList.add('active');
-
         document.getElementById('dashContainerPedidos').style.display = (tabName === 'demandas') ? 'grid' : 'none';
         document.getElementById('dashContainerLiderancas').style.display = (tabName === 'liderancas') ? 'grid' : 'none';
         document.getElementById('dashContainerAgenda').style.display = (tabName === 'agenda') ? 'grid' : 'none';
         document.getElementById('dashContainerEventos').style.display = (tabName === 'eventos') ? 'grid' : 'none';
     }
 
-    function aplicarFiltros() {
-        const ini = document.getElementById("filtroInicio").value;
-        const fim = document.getElementById("filtroFim").value;
-        document.getElementById("relPeriodo").innerText = (ini && fim) ? `${ini} até ${fim}` : "Todo o histórico";
-        renderizarTudo(ini, fim);
+    function aplicarFiltros() { renderizarTudo(document.getElementById("filtroInicio").value, document.getElementById("filtroFim").value); }
+    function limparFiltros() { document.getElementById("filtroInicio").value = ""; document.getElementById("filtroFim").value = ""; renderizarTudo(); }
+
+    function addPautaLista() {
+        const txt = document.getElementById("tempPauta").value;
+        if(txt) { pautasParaSalvar.push({ texto: txt, status: "Não discutido" }); document.getElementById("tempPauta").value = ""; renderPautasTemp(); }
     }
 
-    function limparFiltros() {
-        document.getElementById("filtroInicio").value = "";
-        document.getElementById("filtroFim").value = "";
-        document.getElementById("relPeriodo").innerText = "Todo o histórico";
-        renderizarTudo();
+    function renderPautasTemp() {
+        const div = document.getElementById("listaPautasTemp"); div.innerHTML = "";
+        pautasParaSalvar.forEach((p, i) => {
+            div.innerHTML += `<div class="pauta-item">
+                <div style="display:flex; justify-content:space-between"><span>${p.texto}</span><i class="material-icons" style="color:red; font-size:18px" onclick="pautasParaSalvar.splice(${i},1); renderPautasTemp();">delete</i></div>
+                <select class="form-controle" style="padding:5px" onchange="pautasParaSalvar[${i}].status=this.value">
+                    <option value="Não discutido" ${p.status=='Não discutido'?'selected':''}>Não discutido</option>
+                    <option value="Atendido total" ${p.status=='Atendido total'?'selected':''}>Atendido total</option>
+                    <option value="Atendido parcial" ${p.status=='Atendido parcial'?'selected':''}>Atendido parcial</option>
+                    <option value="Não atendido" ${p.status=='Não atendido'?'selected':''}>Não atendido</option>
+                </select>
+            </div>`;
+        });
     }
 
     async function salvarItem(colecao) {
@@ -266,60 +279,71 @@
         document.querySelectorAll('input[type="hidden"]').forEach(i => i.value = "");
     }
 
-    function addPautaLista() {
-        const txt = document.getElementById("tempPauta").value;
-        if(txt) { pautasParaSalvar.push({ texto: txt, status: "Não discutido" }); document.getElementById("tempPauta").value = ""; renderPautasTemp(); }
-    }
-
-    function renderPautasTemp() {
-        const div = document.getElementById("listaPautasTemp"); div.innerHTML = "";
-        pautasParaSalvar.forEach((p, i) => {
-            div.innerHTML += `<div class="pauta-item">
-                <div style="display:flex; justify-content:space-between"><span>${p.texto}</span><i class="material-icons" style="color:red; font-size:18px" onclick="pautasParaSalvar.splice(${i},1); renderPautasTemp();">delete</i></div>
-                <select class="form-controle" style="padding:5px" onchange="pautasParaSalvar[${i}].status=this.value">
-                    <option value="Não discutido" ${p.status=='Não discutido'?'selected':''}>Não discutido</option>
-                    <option value="Atendido total" ${p.status=='Atendido total'?'selected':''}>Atendido total</option>
-                    <option value="Atendido parcial" ${p.status=='Atendido parcial'?'selected':''}>Atendido parcial</option>
-                    <option value="Não atendido" ${p.status=='Não atendido'?'selected':''}>Não atendido</option>
-                </select>
-            </div>`;
-        });
+    function getStatusClass(status) {
+        if(status === 'Atendido total') return 'st-total';
+        if(status === 'Atendido parcial') return 'st-parcial';
+        if(status === 'Não atendido') return 'st-nao';
+        return 'st-disc';
     }
 
     function renderizarTudo(ini = "", fim = "") {
+        // PEDIDOS
         db.collection("crm_pedidos").orderBy("dataPedido", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
-            let tG=0, tR=0, tP=0, cT=0, cR=0, cP=0, cU=0, cRu=0;
+            let tG=0, cT=0, cR=0, cP=0, cU=0, cRu=0;
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.dataPedido >= ini) && (!fim || d.dataPedido <= fim)) {
                     cT++; tG += d.gasto || 0;
-                    if(d.status === 'Resolvido') { cR++; tR += d.gasto || 0; } else { cP++; tP += d.gasto || 0; }
+                    if(d.status === 'Resolvido') cR++; else cP++;
                     if(d.zona === 'Urbana') cU++; else cRu++;
                     lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarPed('${doc.id}','${d.dataPedido}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}','${d.status}',${d.gasto},'${d.descricao}')">edit</i><i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i></div><div class="label-topo">${d.dataPedido} | ${d.status}</div><strong>${d.nome}</strong><br><small>${d.bairro}</small><div class="badge-valor">R$ ${d.gasto}</div></div>`;
                 }
             });
             document.getElementById("dashPedidos").innerText=cT; document.getElementById("dashPedRes").innerText=cR; document.getElementById("dashPedPen").innerText=cP;
             document.getElementById("dashPedidosZona").innerText=cT; document.getElementById("dashPedUrb").innerText=cU; document.getElementById("dashPedRur").innerText=cRu;
-            document.getElementById("dashInvest").innerText="R$ "+tG.toLocaleString(); totaisRel.ped=cT; totaisRel.pedR=cR; totaisRel.inv=tG; atualizarRel();
+            totaisRel.ped=cT; totaisRel.pedR=cR; totaisRel.inv=tG; atualizarRel();
         });
 
+        // REUNIÕES (ATUALIZADO)
         db.collection("agenda_vereador").orderBy("dataReuniao", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
-            let rT=0, pT=0, pTo=0, pPa=0, pNa=0;
+            let rT=0, pT=0, pTo=0, pPa=0, pNa=0, pDi=0;
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.dataReuniao >= ini) && (!fim || d.dataReuniao <= fim)) {
                     rT++; 
-                    d.pautas?.forEach(p => { pT++; if(p.status==='Atendido total') pTo++; else if(p.status==='Atendido parcial') pPa++; else pNa++; });
-                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')},'${d.observacoes||""}')">edit</i><i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i></div><div class="label-topo">${d.dataReuniao}</div><strong>${d.comQuem}</strong></div>`;
+                    let pHTML = "";
+                    d.pautas?.forEach(p => { 
+                        pT++; 
+                        if(p.status==='Atendido total') pTo++; 
+                        else if(p.status==='Atendido parcial') pPa++; 
+                        else if(p.status==='Não atendido') pNa++;
+                        else pDi++;
+                        pHTML += `<div style="font-size:11px; margin-top:5px;"><span class="status-pauta ${getStatusClass(p.status)}">${p.status}</span> ${p.texto}</div>`;
+                    });
+                    lista.innerHTML += `<div class="card-controle">
+                        <div class="acoes-card">
+                            <i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')},'${d.observacoes||""}')">edit</i>
+                            <i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i>
+                        </div>
+                        <div class="label-topo">${d.dataReuniao} | ${d.local}</div>
+                        <strong>${d.comQuem}</strong>
+                        <div style="margin-top:10px; border-top:1px solid #f1f5f9; padding-top:5px;">${pHTML}</div>
+                        ${d.observacoes ? `<div style="margin-top:8px; font-size:10px; color:#64748b; font-style:italic;">Obs: ${d.observacoes}</div>` : ''}
+                    </div>`;
                 }
             });
-            document.getElementById("dashTotalReu").innerText=rT; document.getElementById("dashTotalPau").innerText=pT;
-            document.getElementById("dashPauTotal").innerText=pTo; document.getElementById("dashPauParcial").innerText=pPa; document.getElementById("dashPauNao").innerText=pNa;
+            document.getElementById("dashTotalReu").innerText=rT; 
+            document.getElementById("dashTotalPau").innerText=pT;
+            document.getElementById("dashPauTotal").innerText=pTo; 
+            document.getElementById("dashPauParcial").innerText=pPa; 
+            document.getElementById("dashPauNao").innerText=pNa;
+            document.getElementById("dashPauDisc").innerText=pDi;
             totaisRel.reu=rT; totaisRel.pau=pT; atualizarRel();
         });
 
+        // EVENTOS
         db.collection("eventos_externos").orderBy("data", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
             let eT=0, eS=0, eN=0;
@@ -327,7 +351,7 @@
                 const d = doc.data();
                 if ((!ini || d.data >= ini) && (!fim || d.data <= fim)) {
                     eT++; if(d.participou==='Sim') eS++; else eN++;
-                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}')">edit</i><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div><div class="label-topo">${d.data}</div><strong>${d.titulo}</strong><select class="form-controle" onchange="db.collection('eventos_externos').doc('${doc.id}').update({participou:this.value})"><option value="Não" ${d.participou=='Não'?'selected':''}>Não</option><option value="Sim" ${d.participou=='Sim'?'selected':''}>Sim</option></select></div>`;
+                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}')">edit</i><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div><div class="label-topo">${d.data} | ${d.local}</div><strong>${d.titulo}</strong><select class="form-controle" onchange="db.collection('eventos_externos').doc('${doc.id}').update({participou:this.value})"><option value="Não" ${d.participou=='Não'?'selected':''}>Não Participei</option><option value="Sim" ${d.participou=='Sim'?'selected':''}>Participei</option></select></div>`;
                 }
             });
             document.getElementById("dashTotalEve").innerText=eT; document.getElementById("dashEveSim").innerText=eS; document.getElementById("dashEveNao").innerText=eN;
@@ -335,6 +359,7 @@
         });
     }
 
+    // LIDERANÇAS
     db.collection("liderancas").orderBy("nome").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas"); const sel = document.getElementById("pLider");
         lista.innerHTML = ""; sel.innerHTML = '<option value="">Direto com Vereador</option>';
@@ -342,14 +367,7 @@
         snap.forEach(doc => {
             const l = doc.data(); sel.innerHTML += `<option value="${l.nome}">${l.nome}</option>`;
             lT++; if(l.zona==='Urbana') lU++; else lR++;
-            lista.innerHTML += `<div class="card-controle">
-                <div class="acoes-card">
-                    <i class="material-icons btn-edit" onclick="editarLid('${doc.id}','${l.nome}','${l.fone}','${l.zona}','${l.bairroSetor}')">edit</i>
-                    <i class="material-icons btn-del" onclick="deletar('liderancas','${doc.id}')">delete</i>
-                </div>
-                <div class="label-topo">${l.zona} | ${l.bairroSetor}</div>
-                <strong>${l.nome}</strong><br><small>WhatsApp: ${l.fone}</small>
-            </div>`;
+            lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarLid('${doc.id}','${l.nome}','${l.fone}','${l.zona}','${l.bairroSetor}')">edit</i><i class="material-icons btn-del" onclick="deletar('liderancas','${doc.id}')">delete</i></div><div class="label-topo">${l.zona} | ${l.bairroSetor}</div><strong>${l.nome}</strong><br><small>WhatsApp: ${l.fone}</small></div>`;
         });
         document.getElementById("dashLiderancas").innerText=lT; document.getElementById("dashLidUrb").innerText=lU; document.getElementById("dashLidRur").innerText=lR;
         totaisRel.lid=lT; atualizarRel();
