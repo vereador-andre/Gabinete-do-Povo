@@ -16,18 +16,14 @@
         .secao { display: none; }
         .secao.active { display: block; }
         .card-controle { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; }
-        .form-controle { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: 'Poppins'; font-size: 14px; outline: none; }
+        .form-controle { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: 'Poppins'; font-size: 14px; outline: none; display: block; }
         .btn-acao { background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer; }
-        .badge-valor { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+        .badge-valor { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 5px; display: inline-block; }
         .label-topo { font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
-        .info-linha { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 13px; border-top: 1px solid #f1f5f9; padding-top: 8px; }
         .acoes-card { position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; }
         .btn-edit { color: #1e3a8a; cursor: pointer; font-size: 20px; }
         .btn-del { color: #ef4444; cursor: pointer; font-size: 20px; }
-        
-        /* Estilo Pautas */
         .pauta-item { display: flex; flex-direction: column; gap: 5px; background: #f8fafc; padding: 10px; border-radius: 10px; margin-top: 5px; border-left: 3px solid #1e3a8a; }
-        .pauta-status { font-size: 11px; padding: 5px; border-radius: 5px; border: 1px solid #cbd5e1; background: white; }
     </style>
 </head>
 <body>
@@ -38,17 +34,17 @@
 </div>
 
 <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab(event, 'demandas')"><i class="material-icons">handshake</i> Pedidos</button>
-    <button class="tab-btn" onclick="switchTab(event, 'liderancas')"><i class="material-icons">groups</i> Lideranças</button>
-    <button class="tab-btn" onclick="switchTab(event, 'agenda')"><i class="material-icons">forum</i> Reuniões</button>
-    <button class="tab-btn" onclick="switchTab(event, 'eventos')"><i class="material-icons">event_available</i> Eventos</button>
+    <button class="tab-btn active" id="tab-demandas" onclick="switchTab(event, 'demandas')"><i class="material-icons">handshake</i> Pedidos</button>
+    <button class="tab-btn" id="tab-liderancas" onclick="switchTab(event, 'liderancas')"><i class="material-icons">groups</i> Lideranças</button>
+    <button class="tab-btn" id="tab-agenda" onclick="switchTab(event, 'agenda')"><i class="material-icons">forum</i> Reuniões</button>
+    <button class="tab-btn" id="tab-eventos" onclick="switchTab(event, 'eventos')"><i class="material-icons">event_available</i> Eventos</button>
 </div>
 
 <div class="container">
     
     <div id="demandas" class="secao active">
         <div class="card-controle">
-            <h4 id="titPedido">Novo Registro de Pedido</h4>
+            <h4 id="titPedido">Novo Pedido</h4>
             <input type="hidden" id="pId">
             <input type="date" id="pData" class="form-controle">
             <input type="text" id="pNome" class="form-controle" placeholder="Nome do Cidadão">
@@ -57,19 +53,19 @@
             <select id="pLider" class="form-controle"><option value="">Direto com Vereador</option></select>
             <input type="number" id="pGasto" class="form-controle" placeholder="Valor gasto (R$)">
             <textarea id="pDesc" class="form-controle" style="height:70px" placeholder="O que foi solicitado?"></textarea>
-            <button class="btn-acao" id="btnSalvarP" onclick="salvarItem('crm_pedidos')">Salvar Registro</button>
+            <button class="btn-acao" id="btnSalvarP" onclick="salvarItem('crm_pedidos')">Salvar Pedido</button>
         </div>
         <div id="listaPedidos"></div>
     </div>
 
     <div id="liderancas" class="secao">
-        <div class="card-controle" style="border-top: 4px solid #1e3a8a;">
-            <h4 id="titLider">Cadastrar Nova Liderança</h4>
+        <div class="card-controle">
+            <h4 id="titLider">Cadastrar Liderança</h4>
             <input type="hidden" id="lId">
-            <input type="text" id="lNome" class="form-controle" placeholder="Nome da Liderança">
+            <input type="text" id="lNome" class="form-controle" placeholder="Nome">
             <input type="tel" id="lFone" class="form-controle" placeholder="WhatsApp">
             <select id="lZona" class="form-controle"><option value="Urbana">Zona Urbana</option><option value="Rural">Zona Rural</option></select>
-            <input type="number" id="lGastoFixo" class="form-controle" placeholder="Gasto Fixo Mensal (R$)">
+            <input type="number" id="lGastoFixo" class="form-controle" placeholder="Gasto Fixo Mensal">
             <button class="btn-acao" id="btnSalvarL" onclick="salvarItem('liderancas')">Salvar Líder</button>
         </div>
         <div id="listaLiderancas"></div>
@@ -80,19 +76,16 @@
             <h4 id="titAgenda">Nova Reunião</h4>
             <input type="hidden" id="aId">
             <input type="date" id="aData" class="form-controle">
-            <input type="text" id="aLocal" class="form-controle" placeholder="Local da Reunião">
+            <input type="text" id="aLocal" class="form-controle" placeholder="Local">
             <input type="text" id="aCom" class="form-controle" placeholder="Com quem?">
-            
-            <div style="margin-top:15px; background:#f1f5f9; padding:10px; border-radius:10px;">
-                <p style="font-size:12px; font-weight:600; margin:0 0 5px 0;">Adicionar Pautas:</p>
+            <div style="margin-top:10px; background:#f1f5f9; padding:10px; border-radius:10px;">
                 <div style="display:flex; gap:5px;">
-                    <input type="text" id="tempPauta" class="form-controle" style="margin-top:0" placeholder="Digite uma pauta...">
-                    <button onclick="addPautaLista()" style="background:#1e3a8a; color:white; border:none; border-radius:10px; padding:0 15px;">+</button>
+                    <input type="text" id="tempPauta" class="form-controle" style="margin-top:0" placeholder="Pauta...">
+                    <button onclick="addPautaLista()" style="background:#1e3a8a; color:white; border:none; padding:0 15px; border-radius:10px;">+</button>
                 </div>
-                <div id="listaPautasTemp" style="margin-top:10px;"></div>
+                <div id="listaPautasTemp"></div>
             </div>
-
-            <button class="btn-acao" id="btnSalvarA" onclick="salvarItem('agenda_vereador')">Salvar Reunião Completa</button>
+            <button class="btn-acao" id="btnSalvarA" onclick="salvarItem('agenda_vereador')">Salvar Reunião</button>
         </div>
         <div id="listaAgenda"></div>
     </div>
@@ -117,137 +110,133 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let lideresNomes = [];
     let pautasParaSalvar = [];
+    let abaAtual = "demandas";
 
     function switchTab(evt, tabName) {
+        abaAtual = tabName;
         document.querySelectorAll('.secao').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabName).classList.add('active');
-        evt.currentTarget.classList.add('active');
+        if(evt) evt.currentTarget.classList.add('active');
     }
 
     function addPautaLista() {
         const txt = document.getElementById("tempPauta").value;
-        if(!txt) return;
-        pautasParaSalvar.push({ texto: txt, status: "Não discutido" });
-        document.getElementById("tempPauta").value = "";
-        renderPautasTemp();
+        if(txt) { pautasParaSalvar.push({ texto: txt, status: "Não discutido" }); document.getElementById("tempPauta").value = ""; renderPautasTemp(); }
     }
 
     function renderPautasTemp() {
         const div = document.getElementById("listaPautasTemp");
         div.innerHTML = "";
-        pautasParaSalvar.forEach((p, index) => {
-            div.innerHTML += `
-                <div class="pauta-item">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:13px;">${p.texto}</span>
-                        <i class="material-icons" style="font-size:18px; color:red;" onclick="pautasParaSalvar.splice(${index},1); renderPautasTemp();">delete</i>
-                    </div>
-                    <select class="pauta-status" onchange="pautasParaSalvar[${index}].status = this.value">
-                        <option value="Não discutido">Não discutido</option>
-                        <option value="Atendido total">Atendido total</option>
-                        <option value="Atendido parcial">Atendido parcial</option>
-                        <option value="Não atendido">Não atendido</option>
-                    </select>
-                </div>`;
+        pautasParaSalvar.forEach((p, i) => {
+            div.innerHTML += `<div class="pauta-item">
+                <div style="display:flex; justify-content:space-between"><span>${p.texto}</span><i class="material-icons" style="color:red; font-size:18px" onclick="pautasParaSalvar.splice(${i},1); renderPautasTemp();">delete</i></div>
+                <select class="form-controle" style="padding:5px" onchange="pautasParaSalvar[${i}].status=this.value">
+                    <option value="Não discutido" ${p.status=='Não discutido'?'selected':''}>Não discutido</option>
+                    <option value="Atendido total" ${p.status=='Atendido total'?'selected':''}>Atendido total</option>
+                    <option value="Atendido parcial" ${p.status=='Atendido parcial'?'selected':''}>Atendido parcial</option>
+                    <option value="Não atendido" ${p.status=='Não atendido'?'selected':''}>Não atendido</option>
+                </select>
+            </div>`;
         });
     }
 
     async function salvarItem(colecao) {
-        let dados = {};
-        let id = "";
-
-        if(colecao === 'liderancas') {
-            id = document.getElementById("lId").value;
-            dados = { nome: document.getElementById("lNome").value.trim(), fone: document.getElementById("lFone").value, zona: document.getElementById("lZona").value, gastoFixo: parseFloat(document.getElementById("lGastoFixo").value) || 0 };
-        } else if(colecao === 'crm_pedidos') {
-            id = document.getElementById("pId").value;
-            dados = { dataPedido: document.getElementById("pData").value, nome: document.getElementById("pNome").value, bairro: document.getElementById("pBairro").value, zona: document.getElementById("pZona").value, lideranca: document.getElementById("pLider").value || "Direto", gasto: parseFloat(document.getElementById("pGasto").value) || 0, descricao: document.getElementById("pDesc").value };
-        } else if(colecao === 'agenda_vereador') {
-            id = document.getElementById("aId").value;
-            dados = { dataReuniao: document.getElementById("aData").value, local: document.getElementById("aLocal").value, comQuem: document.getElementById("aCom").value, pautas: pautasParaSalvar };
-        } else if(colecao === 'eventos_externos') {
-            id = document.getElementById("eId").value;
-            dados = { data: document.getElementById("eData").value, titulo: document.getElementById("eTitulo").value };
+        let dados = {}; let id = "";
+        if(colecao==='crm_pedidos'){
+            id=document.getElementById("pId").value;
+            dados={ dataPedido:document.getElementById("pData").value, nome:document.getElementById("pNome").value, bairro:document.getElementById("pBairro").value, zona:document.getElementById("pZona").value, lideranca:document.getElementById("pLider").value, gasto:parseFloat(document.getElementById("pGasto").value)||0, descricao:document.getElementById("pDesc").value };
+        } else if(colecao==='liderancas'){
+            id=document.getElementById("lId").value;
+            dados={ nome:document.getElementById("lNome").value, fone:document.getElementById("lFone").value, zona:document.getElementById("lZona").value, gastoFixo:parseFloat(document.getElementById("lGastoFixo").value)||0 };
+        } else if(colecao==='agenda_vereador'){
+            id=document.getElementById("aId").value;
+            dados={ dataReuniao:document.getElementById("aData").value, local:document.getElementById("aLocal").value, comQuem:document.getElementById("aCom").value, pautas:pautasParaSalvar };
+        } else if(colecao==='eventos_externos'){
+            id=document.getElementById("eId").value;
+            dados={ data:document.getElementById("eData").value, titulo:document.getElementById("eTitulo").value };
         }
-
         dados.criadoEm = firebase.firestore.FieldValue.serverTimestamp();
-
-        if(id) {
-            await db.collection(colecao).doc(id).update(dados);
-        } else {
-            await db.collection(colecao).add(dados);
-        }
-        alert("Salvo com sucesso!");
-        location.reload();
+        if(id) await db.collection(colecao).doc(id).update(dados); else await db.collection(colecao).add(dados);
+        alert("Sucesso!");
+        limparCampos();
     }
 
-    function deletar(col, id) { if(confirm("Deseja excluir?")) db.collection(col).doc(id).delete().then(() => location.reload()); }
+    function limparCampos() {
+        document.querySelectorAll('input, textarea').forEach(i => i.value = "");
+        pautasParaSalvar = []; document.getElementById("listaPautasTemp").innerHTML = "";
+        const tabAtiva = document.querySelector('.tab-btn.active').id.replace('tab-','');
+        switchTab(null, tabAtiva);
+    }
 
-    // Listagem Lideranças
+    function editarPed(id,dt,nm,br,zn,ld,gs,ds) {
+        document.getElementById("pId").value=id; document.getElementById("pData").value=dt; document.getElementById("pNome").value=nm;
+        document.getElementById("pBairro").value=br; document.getElementById("pZona").value=zn; document.getElementById("pLider").value=ld;
+        document.getElementById("pGasto").value=gs; document.getElementById("pDesc").value=ds; window.scrollTo(0,0);
+    }
+
+    function editarLid(id,nm,fn,zn,gs) {
+        document.getElementById("lId").value=id; document.getElementById("lNome").value=nm; document.getElementById("lFone").value=fn;
+        document.getElementById("lZona").value=zn; document.getElementById("lGastoFixo").value=gs; window.scrollTo(0,0);
+    }
+
+    function editarReu(id,dt,lc,cq,pts) {
+        document.getElementById("aId").value=id; document.getElementById("aData").value=dt; document.getElementById("aLocal").value=lc;
+        document.getElementById("aCom").value=cq; pautasParaSalvar = pts || []; renderPautasTemp(); window.scrollTo(0,0);
+    }
+
+    // LISTAGENS (RESTAURADAS)
     db.collection("liderancas").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas");
         const select = document.getElementById("pLider");
         lista.innerHTML = ""; select.innerHTML = '<option value="">Direto com Vereador</option>';
         snap.forEach(doc => {
-            const l = doc.data();
-            select.innerHTML += `<option value="${l.nome}">${l.nome}</option>`;
+            const l = doc.data(); select.innerHTML += `<option value="${l.nome}">${l.nome}</option>`;
             lista.innerHTML += `<div class="card-controle">
-                <div class="acoes-card"><i class="material-icons btn-del" onclick="deletar('liderancas','${doc.id}')">delete</i></div>
-                <div class="label-topo">${l.zona}</div><strong>${l.nome}</strong>
+                <div class="acoes-card">
+                    <i class="material-icons btn-edit" onclick="editarLid('${doc.id}','${l.nome}','${l.fone}','${l.zona}',${l.gastoFixo})">edit</i>
+                    <i class="material-icons btn-del" onclick="deletar('liderancas','${doc.id}')">delete</i>
+                </div>
+                <div class="label-topo">${l.zona}</div><strong>${l.nome}</strong><br><small>WhatsApp: ${l.fone}</small>
+                <div class="badge-valor">Fixo: R$ ${parseFloat(l.gastoFixo).toFixed(2)}</div>
             </div>`;
         });
     });
 
-    // Listagem Pedidos
     db.collection("crm_pedidos").orderBy("criadoEm", "desc").onSnapshot(snap => {
-        const lista = document.getElementById("listaPedidos");
-        lista.innerHTML = "";
+        const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
         snap.forEach(doc => {
             const d = doc.data();
             lista.innerHTML += `<div class="card-controle">
-                <div class="acoes-card"><i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i></div>
-                <div class="label-topo">${d.dataPedido || 'Sem data'} | ${d.zona}</div>
-                <strong>${d.nome}</strong><br><small>Líder: ${d.lideranca}</small>
+                <div class="acoes-card">
+                    <i class="material-icons btn-edit" onclick="editarPed('${doc.id}','${d.dataPedido}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}',${d.gasto},'${d.descricao}')">edit</i>
+                    <i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i>
+                </div>
+                <div class="label-topo">${d.dataPedido} | ${d.zona}</div>
+                <strong>${d.nome}</strong><br><small>📍 ${d.bairro} | Líder: ${d.lideranca}</small>
+                <div style="font-size:12px; margin-top:5px;">${d.descricao}</div>
+                <div class="badge-valor">Gasto: R$ ${parseFloat(d.gasto).toFixed(2)}</div>
             </div>`;
         });
     });
 
-    // Listagem Reuniões
-    db.collection("agenda_vereador").orderBy("criadoEm", "desc").onSnapshot(snap => {
-        const lista = document.getElementById("listaAgenda");
-        lista.innerHTML = "";
+    db.collection("agenda_vereador").orderBy("data", "desc").onSnapshot(snap => {
+        const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
         snap.forEach(doc => {
-            const d = doc.data();
-            let pautasHTML = "";
-            if(d.pautas) d.pautas.forEach(p => {
-                pautasHTML += `<div style="font-size:12px; margin-top:5px; padding:5px; background:#f1f5f9; border-radius:5px;">
-                    <b>${p.status}:</b> ${p.texto}
-                </div>`;
-            });
+            const d = doc.data(); let pHTML = ""; d.pautas?.forEach(p => pHTML += `<div style="font-size:11px; margin-top:3px;">• <b>${p.status}:</b> ${p.texto}</div>`);
             lista.innerHTML += `<div class="card-controle">
-                <div class="acoes-card"><i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i></div>
+                <div class="acoes-card">
+                    <i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')})">edit</i>
+                    <i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i>
+                </div>
                 <div class="label-topo">${d.dataReuniao} | Local: ${d.local}</div>
-                <strong>${d.comQuem}</strong>
-                <div style="margin-top:10px;">${pautasHTML}</div>
+                <strong>${d.comQuem}</strong><div style="margin-top:5px;">${pHTML}</div>
             </div>`;
         });
     });
 
-    // Listagem Eventos
-    db.collection("eventos_externos").onSnapshot(snap => {
-        const lista = document.getElementById("listaEventos");
-        lista.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            lista.innerHTML += `<div class="card-controle">
-                <div class="acoes-card"><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div>
-                <div class="label-topo">${d.data}</div><strong>${d.titulo}</strong>
-            </div>`;
-        });
-    });
+    function deletar(col, id) { if(confirm("Excluir?")) db.collection(col).doc(id).delete(); }
 </script>
 </body>
 </html>
