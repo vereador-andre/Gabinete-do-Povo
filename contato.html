@@ -15,13 +15,12 @@
         .card-form { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
         label { display: block; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 8px; margin-top: 15px; }
         input, textarea, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: inherit; box-sizing: border-box; font-size: 14px; outline: none; }
-        input:focus, textarea:focus, select:focus { border-color: #1e3a8a; }
         textarea { height: 100px; resize: none; }
         #camposMelhoria { display: none; border-top: 1px dashed #cbd5e1; margin-top: 15px; padding-top: 5px; }
         .btn-gps { background: #e2e8f0; color: #1e3a8a; border: none; padding: 10px; border-radius: 10px; width: 100%; font-weight: 600; font-size: 12px; cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-enviar { width: 100%; background: #22c55e; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 600; font-size: 16px; margin-top: 25px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        .btn-enviar { width: 100%; background: #22c55e; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 600; font-size: 16px; margin-top: 25px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .sucesso-msg { display: none; text-align: center; color: #166534; font-weight: 600; margin-top: 20px; padding: 15px; background: #dcfce7; border-radius: 10px; border: 1px solid #bbf7d0; }
-        #preview { width: 100%; border-radius: 10px; margin-top: 10px; display: none; }
+        #preview { width: 100%; border-radius: 10px; margin-top: 10px; display: none; border: 2px solid #1e3a8a; }
     </style>
 </head>
 <body>
@@ -32,10 +31,10 @@
 
 <div class="form-container">
     <div class="card-form">
-        <p style="font-size: 14px; color: #475569; margin-top: 0; line-height: 1.5;">Utilize este canal para falar diretamente com nosso gabinete.</p>
+        <p style="font-size: 14px; color: #475569; margin-top: 0;">Utilize este canal para falar conosco.</p>
         
         <label>Seu Nome</label>
-        <input type="text" id="nome" placeholder="Como podemos te chamar?">
+        <input type="text" id="nome" placeholder="Seu nome">
 
         <label>Seu WhatsApp</label>
         <input type="tel" id="whatsapp" placeholder="(00) 00000-0000">
@@ -45,31 +44,31 @@
             <option value="Sugestão">Sugestão</option>
             <option value="Pedido de Melhoria">Pedido de Melhoria</option>
             <option value="Elogio">Elogio</option>
+            <option value="Crítica">Crítica</option>
             <option value="Solicitação de Visita">Solicitação de Visita</option>
         </select>
 
         <div id="camposMelhoria">
-            <label>Foto do Local</label>
-            <input type="file" id="fotoInput" accept="image/*" capture="environment" onchange="previewImagem()">
+            <label>Foto do Local (Câmera ou Galeria)</label>
+            <input type="file" id="fotoInput" accept="image/*" onchange="processarImagem()">
             <img id="preview">
 
             <label>Localização (GPS)</label>
             <input type="text" id="endereco" placeholder="Endereço ou link do mapa">
             <button type="button" class="btn-gps" onclick="pegarLocalizacao()">
-                <i class="material-icons" style="font-size:18px">location_on</i> Enviar minha Localização Atual
+                <i class="material-icons" style="font-size:18px">location_on</i> Fixar Localização Atual
             </button>
         </div>
 
         <label>Mensagem</label>
-        <textarea id="mensagem" placeholder="Escreva aqui os detalhes..."></textarea>
+        <textarea id="mensagem" placeholder="Detalhes da sua demanda..."></textarea>
 
         <button class="btn-enviar" id="btnEnviar" onclick="enviar()">
             <i class="material-icons">send</i> Enviar Mensagem
         </button>
 
         <div id="msgSucesso" class="sucesso-msg">
-            <i class="material-icons" style="vertical-align: middle;">check_circle</i> 
-            Mensagem enviada com sucesso!
+            <i class="material-icons">check_circle</i> Mensagem enviada!
         </div>
     </div>
 </div>
@@ -81,23 +80,40 @@ const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", auth
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-let fotoBase64 = "";
+let fotoFinal = "";
 
 function verificarTipo() {
     const tipo = document.getElementById("tipo").value;
     document.getElementById("camposMelhoria").style.display = (tipo === "Pedido de Melhoria") ? "block" : "none";
 }
 
-function previewImagem() {
+// FUNÇÃO PARA COMPRIMIR E PROCESSAR IMAGEM (MAIS RÁPIDO)
+function processarImagem() {
     const file = document.getElementById("fotoInput").files[0];
+    if (!file) return;
+
     const reader = new FileReader();
-    reader.onloadend = function() {
-        fotoBase64 = reader.result;
-        const preview = document.getElementById("preview");
-        preview.src = fotoBase64;
-        preview.style.display = "block";
-    }
-    if (file) reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
+    reader.onload = function (event) {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = function () {
+            const canvas = document.createElement("canvas");
+            const MAX_WIDTH = 600; // Reduz o tamanho para ser instantâneo
+            const scaleSize = MAX_WIDTH / img.width;
+            canvas.width = MAX_WIDTH;
+            canvas.height = img.height * scaleSize;
+
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            // Converte para JPEG com qualidade 0.7 (Leve e boa)
+            fotoFinal = canvas.toDataURL("image/jpeg", 0.7);
+            const preview = document.getElementById("preview");
+            preview.src = fotoFinal;
+            preview.style.display = "block";
+        };
+    };
 }
 
 function pegarLocalizacao() {
@@ -105,34 +121,39 @@ function pegarLocalizacao() {
         navigator.geolocation.getCurrentPosition((pos) => {
             const urlMapa = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
             document.getElementById("endereco").value = urlMapa;
-            alert("Localização capturada!");
-        });
+            alert("📍 Localização fixada!");
+        }, () => { alert("Ative o GPS do seu celular."); });
     }
 }
 
 async function enviar() {
+    const nome = document.getElementById("nome").value;
+    const msg = document.getElementById("mensagem").value;
     const btn = document.getElementById("btnEnviar");
-    const dados = {
-        nome: document.getElementById("nome").value,
+
+    if(!nome || !msg) return alert("Preencha nome e mensagem.");
+
+    btn.disabled = true;
+    btn.innerHTML = "<i class='material-icons'>sync</i> Enviando...";
+
+    db.collection("contatos").add({
+        nome: nome,
         whatsapp: document.getElementById("whatsapp").value,
         tipo: document.getElementById("tipo").value,
-        mensagem: document.getElementById("mensagem").value,
+        mensagem: msg,
         localizacao: document.getElementById("endereco").value || "",
-        foto: fotoBase64 || "",
+        foto: fotoFinal || "",
         lida: false,
         criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
         data: new Date().toLocaleDateString('pt-BR')
-    };
-
-    if(!dados.nome || !dados.mensagem) return alert("Preencha o nome e a mensagem.");
-
-    btn.disabled = true;
-    btn.innerText = "Enviando...";
-
-    db.collection("contatos").add(dados).then(() => {
+    }).then(() => {
         document.getElementById("msgSucesso").style.display = "block";
         btn.style.display = "none";
-        setTimeout(() => history.back(), 3000);
+        setTimeout(() => history.back(), 2500);
+    }).catch(() => {
+        alert("Erro ao enviar. Tente novamente.");
+        btn.disabled = false;
+        btn.innerHTML = "<i class='material-icons'>send</i> Enviar Mensagem";
     });
 }
 </script>
