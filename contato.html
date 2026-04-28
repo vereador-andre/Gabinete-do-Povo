@@ -11,40 +11,17 @@
         .topo-interna { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; position: sticky; top:0; z-index:1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 0 0 25px 25px; }
         .btn-voltar { cursor:pointer; display:flex; align-items:center; justify-content:center; background: rgba(255,255,255,0.15); border-radius: 12px; padding: 8px; }
         .titulo-pagina { font-weight:600; font-size:18px; }
-
         .form-container { padding: 20px; }
         .card-form { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-        
         label { display: block; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 8px; margin-top: 15px; }
-        input, textarea, select { 
-            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; 
-            background: #f8fafc; font-family: inherit; box-sizing: border-box; font-size: 14px;
-            outline: none;
-        }
+        input, textarea, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: inherit; box-sizing: border-box; font-size: 14px; outline: none; }
         input:focus, textarea:focus, select:focus { border-color: #1e3a8a; }
         textarea { height: 100px; resize: none; }
-        
-        /* Campos Especiais de Melhoria */
         #camposMelhoria { display: none; border-top: 1px dashed #cbd5e1; margin-top: 15px; padding-top: 5px; }
-        .btn-gps { 
-            background: #e2e8f0; color: #1e3a8a; border: none; padding: 10px; border-radius: 10px; 
-            width: 100%; font-weight: 600; font-size: 12px; cursor: pointer; margin-top: 8px;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-
-        .btn-enviar { 
-            width: 100%; background: #22c55e; color: white; border: none; padding: 15px; 
-            border-radius: 12px; font-weight: 600; font-size: 16px; margin-top: 25px; 
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: 0.3s;
-        }
-        .btn-enviar:active { transform: scale(0.98); opacity: 0.9; }
-
+        .btn-gps { background: #e2e8f0; color: #1e3a8a; border: none; padding: 10px; border-radius: 10px; width: 100%; font-weight: 600; font-size: 12px; cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-enviar { width: 100%; background: #22c55e; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 600; font-size: 16px; margin-top: 25px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
         .sucesso-msg { display: none; text-align: center; color: #166534; font-weight: 600; margin-top: 20px; padding: 15px; background: #dcfce7; border-radius: 10px; border: 1px solid #bbf7d0; }
-        
-        /* Estilo para input de arquivo */
-        .file-input-wrapper { position: relative; margin-top: 8px; }
-        input[type="file"] { padding: 8px; background: #f1f5f9; border: 1px dashed #1e3a8a; }
+        #preview { width: 100%; border-radius: 10px; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
@@ -66,21 +43,20 @@
         <label>Tipo de Mensagem</label>
         <select id="tipo" onchange="verificarTipo()">
             <option value="Sugestão">Sugestão</option>
-            <option value="Elogio">Elogio</option>
-            <option value="Crítica">Crítica</option>
-            <option value="Solicitação de Visita">Solicitação de Visita</option>
             <option value="Pedido de Melhoria">Pedido de Melhoria</option>
-            <option value="Outros">Outros</option>
+            <option value="Elogio">Elogio</option>
+            <option value="Solicitação de Visita">Solicitação de Visita</option>
         </select>
 
         <div id="camposMelhoria">
-            <label>Anexar Foto do Local (Opcional)</label>
-            <input type="file" id="foto" accept="image/*" capture="environment">
+            <label>Foto do Local</label>
+            <input type="file" id="fotoInput" accept="image/*" capture="environment" onchange="previewImagem()">
+            <img id="preview">
 
-            <label>Localização/Endereço</label>
-            <input type="text" id="endereco" placeholder="Rua, número ou ponto de referência">
+            <label>Localização (GPS)</label>
+            <input type="text" id="endereco" placeholder="Endereço ou link do mapa">
             <button type="button" class="btn-gps" onclick="pegarLocalizacao()">
-                <i class="material-icons" style="font-size:18px">location_on</i> Fixar Localização via GPS
+                <i class="material-icons" style="font-size:18px">location_on</i> Enviar minha Localização Atual
             </button>
         </div>
 
@@ -105,62 +81,58 @@ const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", auth
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Mostra ou esconde os campos de Reivindicação
+let fotoBase64 = "";
+
 function verificarTipo() {
     const tipo = document.getElementById("tipo").value;
-    const campos = document.getElementById("camposMelhoria");
-    campos.style.display = (tipo === "Pedido de Melhoria") ? "block" : "none";
+    document.getElementById("camposMelhoria").style.display = (tipo === "Pedido de Melhoria") ? "block" : "none";
 }
 
-// Pega coordenadas de GPS
+function previewImagem() {
+    const file = document.getElementById("fotoInput").files[0];
+    const reader = new FileReader();
+    reader.onloadend = function() {
+        fotoBase64 = reader.result;
+        const preview = document.getElementById("preview");
+        preview.src = fotoBase64;
+        preview.style.display = "block";
+    }
+    if (file) reader.readAsDataURL(file);
+}
+
 function pegarLocalizacao() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((pos) => {
-            const lat = pos.coords.latitude;
-            const long = pos.coords.longitude;
-            document.getElementById("endereco").value = `Lat: ${lat}, Long: ${long}`;
-            alert("Localização capturada com sucesso!");
-        }, () => {
-            alert("Não foi possível pegar sua localização automaticamente.");
+            const urlMapa = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            document.getElementById("endereco").value = urlMapa;
+            alert("Localização capturada!");
         });
     }
 }
 
 async function enviar() {
-    const nome = document.getElementById("nome").value;
-    const zap = document.getElementById("whatsapp").value;
-    const tipo = document.getElementById("tipo").value;
-    const msg = document.getElementById("mensagem").value;
-    const endereco = document.getElementById("endereco").value;
     const btn = document.getElementById("btnEnviar");
-
-    if(!nome || !msg) { 
-        alert("Por favor, preencha seu nome e a mensagem."); 
-        return; 
-    }
-
-    btn.disabled = true;
-    btn.innerHTML = "Enviando...";
-
-    // Nota: Para subir imagem real requer Firebase Storage. 
-    // Como estamos simplificando, vamos salvar os dados e o endereço.
-    db.collection("contatos").add({
-        nome: nome,
-        whatsapp: zap,
-        tipo: tipo,
-        mensagem: msg,
-        endereco: endereco || "Não informado",
+    const dados = {
+        nome: document.getElementById("nome").value,
+        whatsapp: document.getElementById("whatsapp").value,
+        tipo: document.getElementById("tipo").value,
+        mensagem: document.getElementById("mensagem").value,
+        localizacao: document.getElementById("endereco").value || "",
+        foto: fotoBase64 || "",
         lida: false,
         criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
         data: new Date().toLocaleDateString('pt-BR')
-    }).then(() => {
+    };
+
+    if(!dados.nome || !dados.mensagem) return alert("Preencha o nome e a mensagem.");
+
+    btn.disabled = true;
+    btn.innerText = "Enviando...";
+
+    db.collection("contatos").add(dados).then(() => {
         document.getElementById("msgSucesso").style.display = "block";
         btn.style.display = "none";
         setTimeout(() => history.back(), 3000);
-    }).catch(error => {
-        alert("Erro ao enviar.");
-        btn.disabled = false;
-        btn.innerHTML = "<i class='material-icons'>send</i> Enviar Mensagem";
     });
 }
 </script>
