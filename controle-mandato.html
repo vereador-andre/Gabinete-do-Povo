@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Mandato - André de Dedé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 40px; }
+        .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; position: sticky; top:0; z-index:100; }
+        .tabs { display: flex; background: white; padding: 10px; gap: 10px; border-bottom: 1px solid #e2e8f0; }
+        .tab-btn { flex:1; padding: 10px; border-radius: 12px; border: none; background: #f1f5f9; color: #64748b; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .tab-btn.active { background: #1e3a8a; color: white; }
+        
+        .container { padding: 15px; }
+        .secao { display: none; }
+        .secao.active { display: block; }
+        
+        .card-controle { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .form-controle { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: 'Poppins'; font-size: 14px; }
+        .btn-acao { background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer; }
+        
+        .badge-status { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .status-pendente { background: #fee2e2; color: #991b1b; }
+        .status-atendido { background: #dcfce7; color: #166534; }
+        .status-tratado { background: #fef3c7; color: #92400e; }
+        
+        .info-card { font-size: 13px; color: #475569; margin-top: 8px; border-top: 1px solid #f1f5f9; padding-top: 8px; }
+        .label-topo { font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div class="topo">
+    <i class="material-icons" onclick="location.href='admin.html'" style="cursor:pointer">arrow_back</i>
+    <span style="font-weight:600">Controle de Mandato</span>
+</div>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(event, 'demandas')"><i class="material-icons">handshake</i> Pedidos</button>
+    <button class="tab-btn" onclick="switchTab(event, 'agenda')"><i class="material-icons">event</i> Agenda</button>
+</div>
+
+<div class="container">
+    
+    <div id="demandas" class="secao active">
+        <div class="card-controle">
+            <h4 style="margin:0 0 10px 0">Registrar Ajuda/Pedido</h4>
+            <input type="text" id="pessoaNome" class="form-controle" placeholder="Nome de quem pediu">
+            <input type="text" id="pessoaBairro" class="form-controle" placeholder="Bairro">
+            <select id="pessoaZona" class="form-controle">
+                <option value="Urbana">Zona Urbana</option>
+                <option value="Rural">Zona Rural</option>
+            </select>
+            <select id="liderancaVinculo" class="form-controle">
+                <option value="">Nenhuma Liderança Vinculada</option>
+                </select>
+            <textarea id="pedidoDescricao" class="form-controle" style="height:80px" placeholder="O que foi pedido ou como ajudou?"></textarea>
+            <button class="btn-acao" onclick="salvarPedido()">Salvar Registro</button>
+        </div>
+        <div id="listaPedidos"></div>
+    </div>
+
+    <div id="agenda" class="secao">
+        <div class="card-controle">
+            <h4 style="margin:0 0 10px 0">Nova Reunião/Compromisso</h4>
+            <input type="date" id="agendaData" class="form-controle">
+            <input type="text" id="agendaComQuem" class="form-controle" placeholder="Com quem? (Ex: Moradores do Centro)">
+            <textarea id="agendaAssunto" class="form-controle" placeholder="Assuntos a discutir"></textarea>
+            <select id="agendaStatus" class="form-controle">
+                <option value="Pendente">⏳ Pendente</option>
+                <option value="Tratado">⚙️ Em Tratativa</option>
+                <option value="Atendido">✅ Atendido</option>
+            </select>
+            <button class="btn-acao" onclick="salvarAgenda()" style="background:#0f172a">Agendar</button>
+        </div>
+        <div id="listaAgenda"></div>
+    </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function switchTab(evt, tabName) {
+        document.querySelectorAll('.secao').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+
+    // Carregar Lideranças no Select
+    db.collection("liderancas").orderBy("nome").onSnapshot(snap => {
+        const select = document.getElementById("liderancaVinculo");
+        select.innerHTML = '<option value="">Nenhuma Liderança Vinculada</option>';
+        snap.forEach(doc => {
+            select.innerHTML += `<option value="${doc.data().nome}">${doc.data().nome}</option>`;
+        });
+    });
+
+    // Funções de Pedidos
+    function salvarPedido() {
+        const dados = {
+            nome: document.getElementById("pessoaNome").value,
+            bairro: document.getElementById("pessoaBairro").value,
+            zona: document.getElementById("pessoaZona").value,
+            lideranca: document.getElementById("liderancaVinculo").value,
+            descricao: document.getElementById("pedidoDescricao").value,
+            data: new Date().toLocaleDateString('pt-BR'),
+            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        if(!dados.nome) return alert("Preencha o nome");
+        db.collection("crm_pedidos").add(dados).then(() => { alert("Registrado!"); location.reload(); });
+    }
+
+    db.collection("crm_pedidos").orderBy("criadoEm", "desc").onSnapshot(snap => {
+        const lista = document.getElementById("listaPedidos");
+        lista.innerHTML = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            lista.innerHTML += `
+                <div class="card-controle">
+                    <div class="label-topo">${d.data} | 📍 ${d.bairro} (${d.zona})</div>
+                    <strong style="color:#1e3a8a; display:block; margin:5px 0;">${d.nome}</strong>
+                    <div style="font-size:13px;">${d.descricao}</div>
+                    <div class="info-card">
+                        <i class="material-icons" style="font-size:14px; vertical-align:middle">person</i>
+                        Liderança: <strong>${d.lideranca || 'Direto'}</strong>
+                    </div>
+                </div>`;
+        });
+    });
+
+    // Funções de Agenda
+    function salvarAgenda() {
+        const dados = {
+            dataCompromisso: document.getElementById("agendaData").value,
+            comQuem: document.getElementById("agendaComQuem").value,
+            assunto: document.getElementById("agendaAssunto").value,
+            status: document.getElementById("agendaStatus").value,
+            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        db.collection("agenda_vereador").add(dados).then(() => { alert("Agendado!"); });
+    }
+
+    db.collection("agenda_vereador").orderBy("dataCompromisso", "asc").onSnapshot(snap => {
+        const lista = document.getElementById("listaAgenda");
+        lista.innerHTML = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            const dataFmt = d.dataCompromisso.split('-').reverse().join('/');
+            lista.innerHTML += `
+                <div class="card-controle" style="border-right: 4px solid #1e3a8a">
+                    <div style="display:flex; justify-content:space-between">
+                        <span class="label-topo">${dataFmt}</span>
+                        <span class="badge-status status-${d.status.toLowerCase()}">${d.status}</span>
+                    </div>
+                    <strong style="display:block; margin:5px 0;">${d.comQuem}</strong>
+                    <div style="font-size:13px; color:#64748b">${d.assunto}</div>
+                    <button onclick="db.collection('agenda_vereador').doc('${doc.id}').delete()" style="background:none; border:none; color:#ef4444; font-size:11px; margin-top:10px; cursor:pointer">Remover</button>
+                </div>`;
+        });
+    });
+</script>
+</body>
+</html>
