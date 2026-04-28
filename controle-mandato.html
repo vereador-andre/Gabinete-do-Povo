@@ -17,6 +17,12 @@
         .secao { display: none; }
         .secao.active { display: block; }
         
+        /* Dashboard */
+        .dash-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .dash-card { background: white; padding: 10px; border-radius: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 3px solid #1e3a8a; }
+        .dash-card small { font-size: 9px; color: #64748b; text-transform: uppercase; display: block; }
+        .dash-card span { font-size: 16px; font-weight: 600; color: #1e3a8a; }
+
         .card-controle { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .form-controle { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: 'Poppins'; font-size: 14px; }
         .btn-acao { background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer; }
@@ -26,15 +32,15 @@
         .status-atendido { background: #dcfce7; color: #166534; }
         .status-tratado { background: #fef3c7; color: #92400e; }
         
-        .info-card { font-size: 13px; color: #475569; margin-top: 8px; border-top: 1px solid #f1f5f9; padding-top: 8px; }
-        .label-topo { font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
+        .busca-container { margin-bottom: 15px; }
+        .info-card { font-size: 13px; color: #475569; margin-top: 8px; border-top: 1px solid #f1f5f9; padding-top: 8px; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
 
 <div class="topo">
     <i class="material-icons" onclick="location.href='admin.html'" style="cursor:pointer">arrow_back</i>
-    <span style="font-weight:600">Controle de Mandato</span>
+    <span style="font-weight:600">Controle Estratégico</span>
 </div>
 
 <div class="tabs">
@@ -45,29 +51,40 @@
 <div class="container">
     
     <div id="demandas" class="secao active">
+        <div class="dash-container">
+            <div class="dash-card"><small>Total</small><span id="totalPedidos">0</span></div>
+            <div class="dash-card"><small>Urbana</small><span id="totalUrbana">0</span></div>
+            <div class="dash-card"><small>Rural</small><span id="totalRural">0</span></div>
+        </div>
+
         <div class="card-controle">
-            <h4 style="margin:0 0 10px 0">Registrar Ajuda/Pedido</h4>
-            <input type="text" id="pessoaNome" class="form-controle" placeholder="Nome de quem pediu">
-            <input type="text" id="pessoaBairro" class="form-controle" placeholder="Bairro">
+            <h4 style="margin:0">Novo Registro</h4>
+            <input type="text" id="pessoaNome" class="form-controle" placeholder="Nome do Cidadão">
+            <input type="text" id="pessoaBairro" class="form-controle" placeholder="Bairro/Comunidade">
             <select id="pessoaZona" class="form-controle">
                 <option value="Urbana">Zona Urbana</option>
                 <option value="Rural">Zona Rural</option>
             </select>
             <select id="liderancaVinculo" class="form-controle">
-                <option value="">Nenhuma Liderança Vinculada</option>
-                </select>
-            <textarea id="pedidoDescricao" class="form-controle" style="height:80px" placeholder="O que foi pedido ou como ajudou?"></textarea>
+                <option value="">Liderança Indicadora</option>
+            </select>
+            <textarea id="pedidoDescricao" class="form-controle" style="height:80px" placeholder="Detalhes do pedido ou ajuda realizada..."></textarea>
             <button class="btn-acao" onclick="salvarPedido()">Salvar Registro</button>
         </div>
+
+        <div class="busca-container">
+            <input type="text" id="buscaCrm" class="form-controle" placeholder="🔍 Buscar por nome ou bairro..." onkeyup="filtrarCrm()">
+        </div>
+
         <div id="listaPedidos"></div>
     </div>
 
     <div id="agenda" class="secao">
         <div class="card-controle">
-            <h4 style="margin:0 0 10px 0">Nova Reunião/Compromisso</h4>
+            <h4 style="margin:0 0 10px 0">Novo Compromisso</h4>
             <input type="date" id="agendaData" class="form-controle">
-            <input type="text" id="agendaComQuem" class="form-controle" placeholder="Com quem? (Ex: Moradores do Centro)">
-            <textarea id="agendaAssunto" class="form-controle" placeholder="Assuntos a discutir"></textarea>
+            <input type="text" id="agendaComQuem" class="form-controle" placeholder="Pessoa ou Órgão">
+            <textarea id="agendaAssunto" class="form-controle" placeholder="Pauta da reunião"></textarea>
             <select id="agendaStatus" class="form-controle">
                 <option value="Pendente">⏳ Pendente</option>
                 <option value="Tratado">⚙️ Em Tratativa</option>
@@ -85,7 +102,7 @@
 
 <script>
     const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
     function switchTab(evt, tabName) {
@@ -95,78 +112,115 @@
         evt.currentTarget.classList.add('active');
     }
 
-    // Carregar Lideranças no Select
+    // Carregar Lideranças
     db.collection("liderancas").orderBy("nome").onSnapshot(snap => {
         const select = document.getElementById("liderancaVinculo");
-        select.innerHTML = '<option value="">Nenhuma Liderança Vinculada</option>';
+        select.innerHTML = '<option value="">Direto com Vereador</option>';
         snap.forEach(doc => {
             select.innerHTML += `<option value="${doc.data().nome}">${doc.data().nome}</option>`;
         });
     });
 
-    // Funções de Pedidos
     function salvarPedido() {
-        const dados = {
+        const d = {
             nome: document.getElementById("pessoaNome").value,
             bairro: document.getElementById("pessoaBairro").value,
             zona: document.getElementById("pessoaZona").value,
-            lideranca: document.getElementById("liderancaVinculo").value,
+            lideranca: document.getElementById("liderancaVinculo").value || "Direto",
             descricao: document.getElementById("pedidoDescricao").value,
             data: new Date().toLocaleDateString('pt-BR'),
             criadoEm: firebase.firestore.FieldValue.serverTimestamp()
         };
-        if(!dados.nome) return alert("Preencha o nome");
-        db.collection("crm_pedidos").add(dados).then(() => { alert("Registrado!"); location.reload(); });
+        if(!d.nome || !d.descricao) return alert("Preencha os dados");
+        db.collection("crm_pedidos").add(d).then(() => { 
+            alert("Sucesso!");
+            limparCrm();
+        });
     }
 
-    db.collection("crm_pedidos").orderBy("criadoEm", "desc").onSnapshot(snap => {
-        const lista = document.getElementById("listaPedidos");
-        lista.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            lista.innerHTML += `
-                <div class="card-controle">
-                    <div class="label-topo">${d.data} | 📍 ${d.bairro} (${d.zona})</div>
-                    <strong style="color:#1e3a8a; display:block; margin:5px 0;">${d.nome}</strong>
-                    <div style="font-size:13px;">${d.descricao}</div>
+    function ouvirCrm() {
+        db.collection("crm_pedidos").orderBy("criadoEm", "desc").onSnapshot(snap => {
+            const lista = document.getElementById("listaPedidos");
+            let urb = 0, rur = 0, total = 0;
+            lista.innerHTML = "";
+            
+            snap.forEach(doc => {
+                const d = doc.data();
+                total++;
+                if(d.zona === "Urbana") urb++; else rur++;
+
+                lista.innerHTML += `
+                <div class="card-controle item-crm">
+                    <div style="font-size:10px; color:#94a3b8; font-weight:600">${d.data} | ${d.zona}</div>
+                    <strong class="busca-nome" style="color:#1e3a8a; display:block; margin:5px 0;">${d.nome}</strong>
+                    <div style="font-size:13px; color:#475569">${d.descricao}</div>
                     <div class="info-card">
-                        <i class="material-icons" style="font-size:14px; vertical-align:middle">person</i>
-                        Liderança: <strong>${d.lideranca || 'Direto'}</strong>
+                        <span>📍 <small class="busca-bairro">${d.bairro}</small></span>
+                        <span>👤 <small>Líder: ${d.lideranca}</small></span>
+                        <i class="material-icons" style="font-size:16px; color:#ef4444; cursor:pointer" onclick="excluirItem('crm_pedidos', '${doc.id}')">delete</i>
                     </div>
                 </div>`;
+            });
+            document.getElementById("totalPedidos").innerText = total;
+            document.getElementById("totalUrbana").innerText = urb;
+            document.getElementById("totalRural").innerText = rur;
         });
-    });
+    }
+
+    function filtrarCrm() {
+        const termo = document.getElementById("buscaCrm").value.toLowerCase();
+        document.querySelectorAll('.item-crm').forEach(item => {
+            const texto = item.innerText.toLowerCase();
+            item.style.display = texto.includes(termo) ? "block" : "none";
+        });
+    }
 
     // Funções de Agenda
     function salvarAgenda() {
-        const dados = {
-            dataCompromisso: document.getElementById("agendaData").value,
+        const d = {
+            dataComp: document.getElementById("agendaData").value,
             comQuem: document.getElementById("agendaComQuem").value,
             assunto: document.getElementById("agendaAssunto").value,
             status: document.getElementById("agendaStatus").value,
             criadoEm: firebase.firestore.FieldValue.serverTimestamp()
         };
-        db.collection("agenda_vereador").add(dados).then(() => { alert("Agendado!"); });
+        db.collection("agenda_vereador").add(d).then(() => alert("Agendado!"));
     }
 
-    db.collection("agenda_vereador").orderBy("dataCompromisso", "asc").onSnapshot(snap => {
-        const lista = document.getElementById("listaAgenda");
-        lista.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            const dataFmt = d.dataCompromisso.split('-').reverse().join('/');
-            lista.innerHTML += `
-                <div class="card-controle" style="border-right: 4px solid #1e3a8a">
+    function ouvirAgenda() {
+        db.collection("agenda_vereador").orderBy("dataComp", "asc").onSnapshot(snap => {
+            const lista = document.getElementById("listaAgenda");
+            lista.innerHTML = "";
+            snap.forEach(doc => {
+                const d = doc.data();
+                const dataFmt = d.dataComp.split('-').reverse().join('/');
+                lista.innerHTML += `
+                <div class="card-controle" style="border-right: 5px solid #1e3a8a">
                     <div style="display:flex; justify-content:space-between">
-                        <span class="label-topo">${dataFmt}</span>
-                        <span class="badge-status status-${d.status.toLowerCase()}">${d.status}</span>
+                        <span style="font-size:11px; font-weight:600">${dataFmt}</span>
+                        <span class="badge-status status-${d.status.toLowerCase().replace(' ', '')}">${d.status}</span>
                     </div>
                     <strong style="display:block; margin:5px 0;">${d.comQuem}</strong>
-                    <div style="font-size:13px; color:#64748b">${d.assunto}</div>
-                    <button onclick="db.collection('agenda_vereador').doc('${doc.id}').delete()" style="background:none; border:none; color:#ef4444; font-size:11px; margin-top:10px; cursor:pointer">Remover</button>
+                    <div style="font-size:12px; color:#64748b">${d.assunto}</div>
+                    <div style="text-align:right; margin-top:10px">
+                        <i class="material-icons" style="font-size:18px; color:#ef4444; cursor:pointer" onclick="excluirItem('agenda_vereador', '${doc.id}')">delete</i>
+                    </div>
                 </div>`;
+            });
         });
-    });
+    }
+
+    function excluirItem(colecao, id) {
+        if(confirm("Deseja remover este registro?")) db.collection(colecao).doc(id).delete();
+    }
+
+    function limparCrm() {
+        document.getElementById("pessoaNome").value = "";
+        document.getElementById("pessoaBairro").value = "";
+        document.getElementById("pedidoDescricao").value = "";
+    }
+
+    window.onload = () => { ouvirCrm(); ouvirAgenda(); };
 </script>
 </body>
 </html>
