@@ -46,7 +46,7 @@
         <div class="card-controle">
             <h4 id="titPedido">Novo Pedido</h4>
             <input type="hidden" id="pId">
-            <input type="date" id="pData" class="form-controle">
+            <input type="date" id="pData" class="form-controle" placeholder="Data">
             <input type="text" id="pNome" class="form-controle" placeholder="Nome do Cidadão">
             <input type="text" id="pBairro" class="form-controle" placeholder="Bairro/Comunidade">
             <select id="pZona" class="form-controle"><option value="Urbana">Zona Urbana</option><option value="Rural">Zona Rural</option></select>
@@ -75,12 +75,12 @@
         <div class="card-controle">
             <h4 id="titAgenda">Nova Reunião</h4>
             <input type="hidden" id="aId">
-            <input type="date" id="aData" class="form-controle">
+            <input type="date" id="aData" class="form-controle" placeholder="Data">
             <input type="text" id="aLocal" class="form-controle" placeholder="Local">
             <input type="text" id="aCom" class="form-controle" placeholder="Com quem?">
             <div style="margin-top:10px; background:#f1f5f9; padding:10px; border-radius:10px;">
                 <div style="display:flex; gap:5px;">
-                    <input type="text" id="tempPauta" class="form-controle" style="margin-top:0" placeholder="Pauta...">
+                    <input type="text" id="tempPauta" class="form-controle" style="margin-top:0" placeholder="Digite uma Pauta...">
                     <button onclick="addPautaLista()" style="background:#1e3a8a; color:white; border:none; padding:0 15px; border-radius:10px;">+</button>
                 </div>
                 <div id="listaPautasTemp"></div>
@@ -94,7 +94,8 @@
         <div class="card-controle">
             <h4 id="titEvento">Novo Evento</h4>
             <input type="hidden" id="eId">
-            <input type="date" id="eData" class="form-controle">
+            <input type="date" id="eData" class="form-controle" placeholder="Data">
+            <input type="text" id="aLocal" class="form-controle" placeholder="Local">
             <input type="text" id="eTitulo" class="form-controle" placeholder="Evento">
             <button class="btn-acao" id="btnSalvarE" onclick="salvarItem('eventos_externos')">Salvar Evento</button>
         </div>
