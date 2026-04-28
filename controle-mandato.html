@@ -12,18 +12,18 @@
         .tabs { display: flex; background: white; padding: 10px; gap: 5px; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
         .tab-btn { flex:none; min-width: 100px; padding: 10px; border-radius: 12px; border: none; background: #f1f5f9; color: #64748b; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .tab-btn.active { background: #1e3a8a; color: white; }
-        
         .container { padding: 15px; }
         .secao { display: none; }
         .secao.active { display: block; }
-        
         .card-controle { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; }
         .form-controle { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: 'Poppins'; font-size: 14px; outline: none; }
         .btn-acao { background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer; }
-        
         .badge-valor { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
         .label-topo { font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
         .info-linha { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 13px; border-top: 1px solid #f1f5f9; padding-top: 8px; }
+        .acoes-card { position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; }
+        .btn-edit { color: #1e3a8a; cursor: pointer; font-size: 20px; }
+        .btn-del { color: #ef4444; cursor: pointer; font-size: 20px; }
     </style>
 </head>
 <body>
@@ -44,57 +44,54 @@
     
     <div id="demandas" class="secao active">
         <div class="card-controle">
-            <h4 style="margin:0">Novo Registro de Pedido/Ajuda</h4>
+            <h4 id="titPedido">Novo Registro de Pedido</h4>
+            <input type="hidden" id="pId">
             <input type="text" id="pNome" class="form-controle" placeholder="Nome do Cidadão">
             <input type="text" id="pBairro" class="form-controle" placeholder="Bairro/Comunidade">
-            <select id="pZona" class="form-controle">
-                <option value="Urbana">Zona Urbana</option>
-                <option value="Rural">Zona Rural</option>
-            </select>
-            <select id="pLider" class="form-controle"><option value="">Vincular Liderança...</option></select>
-            <input type="number" id="pGasto" class="form-controle" placeholder="Valor gasto neste pedido (R$)">
+            <select id="pZona" class="form-controle"><option value="Urbana">Zona Urbana</option><option value="Rural">Zona Rural</option></select>
+            <select id="pLider" class="form-controle"><option value="">Direto com Vereador</option></select>
+            <input type="number" id="pGasto" class="form-controle" placeholder="Valor gasto (R$)">
             <textarea id="pDesc" class="form-controle" style="height:70px" placeholder="O que foi solicitado?"></textarea>
-            <button class="btn-acao" onclick="salvarPedido()">Salvar Registro</button>
+            <button class="btn-acao" id="btnSalvarP" onclick="salvarItem('crm_pedidos')">Salvar Registro</button>
         </div>
         <div id="listaPedidos"></div>
     </div>
 
     <div id="liderancas" class="secao">
         <div class="card-controle" style="border-top: 4px solid #1e3a8a;">
-            <h4 style="margin:0">Cadastrar Nova Liderança</h4>
+            <h4 id="titLider">Cadastrar Nova Liderança</h4>
+            <input type="hidden" id="lId">
             <input type="text" id="lNome" class="form-controle" placeholder="Nome da Liderança">
-            <input type="tel" id="lFone" class="form-controle" placeholder="WhatsApp/Contato">
-            <select id="lZona" class="form-controle">
-                <option value="Urbana">Atuação: Zona Urbana</option>
-                <option value="Rural">Atuação: Zona Rural</option>
-            </select>
+            <input type="tel" id="lFone" class="form-controle" placeholder="WhatsApp">
+            <select id="lZona" class="form-controle"><option value="Urbana">Zona Urbana</option><option value="Rural">Zona Rural</option></select>
             <input type="number" id="lGastoFixo" class="form-controle" placeholder="Gasto Fixo Mensal (R$)">
-            <button class="btn-acao" onclick="salvarLideranca()">Cadastrar Líder</button>
+            <button class="btn-acao" id="btnSalvarL" onclick="salvarItem('liderancas')">Salvar Líder</button>
         </div>
         <div id="listaLiderancas"></div>
     </div>
 
     <div id="agenda" class="secao">
         <div class="card-controle">
-            <h4 style="margin:0">Agendar Reunião</h4>
+            <h4 id="titAgenda">Nova Reunião</h4>
+            <input type="hidden" id="aId">
             <input type="date" id="aData" class="form-controle">
             <input type="text" id="aCom" class="form-controle" placeholder="Com quem?">
             <textarea id="aAssunto" class="form-controle" placeholder="Pauta"></textarea>
-            <button class="btn-acao" onclick="salvarAgenda()">Salvar Reunião</button>
+            <button class="btn-acao" id="btnSalvarA" onclick="salvarItem('agenda_vereador')">Salvar Reunião</button>
         </div>
         <div id="listaAgenda"></div>
     </div>
 
     <div id="eventos" class="secao">
         <div class="card-controle">
-            <h4 style="margin:0">Novo Evento Externo</h4>
+            <h4 id="titEvento">Novo Evento</h4>
+            <input type="hidden" id="eId">
             <input type="date" id="eData" class="form-controle">
             <input type="text" id="eTitulo" class="form-controle" placeholder="Evento">
-            <button class="btn-acao" onclick="salvarEvento()">Registrar Evento</button>
+            <button class="btn-acao" id="btnSalvarE" onclick="salvarItem('eventos_externos')">Salvar Evento</button>
         </div>
         <div id="listaEventos"></div>
     </div>
-
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -112,69 +109,71 @@
         evt.currentTarget.classList.add('active');
     }
 
-    // --- LIDERANÇAS ---
-    function salvarLideranca() {
-        const d = {
-            nome: document.getElementById("lNome").value,
-            fone: document.getElementById("lFone").value,
-            zona: document.getElementById("lZona").value,
-            gastoFixo: parseFloat(document.getElementById("lGastoFixo").value) || 0,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        db.collection("liderancas").add(d).then(() => { alert("Liderança salva!"); location.reload(); });
-    }
+    async function salvarItem(colecao) {
+        let dados = {};
+        let id = "";
 
-    // --- PEDIDOS COM VINCULO DE GASTO ---
-    async function salvarPedido() {
-        const liderNome = document.getElementById("pLider").value;
-        const valorGasto = parseFloat(document.getElementById("pGasto").value) || 0;
+        if(colecao === 'liderancas') {
+            id = document.getElementById("lId").value;
+            dados = { nome: document.getElementById("lNome").value, fone: document.getElementById("lFone").value, zona: document.getElementById("lZona").value, gastoFixo: parseFloat(document.getElementById("lGastoFixo").value) || 0 };
+        } else if(colecao === 'crm_pedidos') {
+            id = document.getElementById("pId").value;
+            dados = { nome: document.getElementById("pNome").value, bairro: document.getElementById("pBairro").value, zona: document.getElementById("pZona").value, lideranca: document.getElementById("pLider").value || "Direto", gasto: parseFloat(document.getElementById("pGasto").value) || 0, descricao: document.getElementById("pDesc").value, data: new Date().toLocaleDateString('pt-BR') };
+        } else if(colecao === 'agenda_vereador') {
+            id = document.getElementById("aId").value;
+            dados = { dataComp: document.getElementById("aData").value, comQuem: document.getElementById("aCom").value, assunto: document.getElementById("aAssunto").value };
+        } else if(colecao === 'eventos_externos') {
+            id = document.getElementById("eId").value;
+            dados = { data: document.getElementById("eData").value, titulo: document.getElementById("eTitulo").value };
+        }
 
-        const d = {
-            nome: document.getElementById("pNome").value,
-            bairro: document.getElementById("pBairro").value,
-            zona: document.getElementById("pZona").value,
-            lideranca: liderNome || "Direto",
-            gasto: valorGasto,
-            descricao: document.getElementById("pDesc").value,
-            data: new Date().toLocaleDateString('pt-BR'),
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        };
+        dados.criadoEm = firebase.firestore.FieldValue.serverTimestamp();
 
-        await db.collection("crm_pedidos").add(d);
-        alert("Pedido registrado!");
+        if(id) {
+            await db.collection(colecao).doc(id).update(dados);
+            alert("Atualizado!");
+        } else {
+            await db.collection(colecao).add(dados);
+            alert("Salvo!");
+        }
         location.reload();
     }
 
-    // --- RENDERIZAÇÃO DAS LISTAS ---
-    
-    // Lista Lideranças com soma de gastos
-    db.collection("liderancas").onSnapshot(async snapLider => {
+    function deletar(col, id) { if(confirm("Excluir definitivamente?")) db.collection(col).doc(id).delete(); }
+
+    function editarLider(id, n, f, z, g) { 
+        document.getElementById("lId").value = id; document.getElementById("lNome").value = n; document.getElementById("lFone").value = f; 
+        document.getElementById("lZona").value = z; document.getElementById("lGastoFixo").value = g;
+        document.getElementById("titLider").innerText = "Editar Liderança"; document.getElementById("btnSalvarL").innerText = "Atualizar";
+        window.scrollTo(0,0);
+    }
+
+    function editarPedido(id, n, b, z, l, g, d) {
+        document.getElementById("pId").value = id; document.getElementById("pNome").value = n; document.getElementById("pBairro").value = b;
+        document.getElementById("pZona").value = z; document.getElementById("pLider").value = l; document.getElementById("pGasto").value = g;
+        document.getElementById("pDesc").value = d; document.getElementById("titPedido").innerText = "Editar Pedido";
+        document.getElementById("btnSalvarP").innerText = "Atualizar"; window.scrollTo(0,0);
+    }
+
+    // Carregar Listas e preencher SELETOR DE LÍDERES
+    db.collection("liderancas").orderBy("nome").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas");
         const select = document.getElementById("pLider");
         lista.innerHTML = "";
         select.innerHTML = '<option value="">Direto com Vereador</option>';
 
-        snapLider.forEach(async doc => {
+        snap.forEach(doc => {
             const l = doc.data();
             select.innerHTML += `<option value="${l.nome}">${l.nome}</option>`;
-            
-            // Busca gastos vinculados a esta liderança na coleção de pedidos
-            const pedidosSnap = await db.collection("crm_pedidos").where("lideranca", "==", l.nome).get();
-            let gastoExtra = 0;
-            pedidosSnap.forEach(p => gastoExtra += (p.data().gasto || 0));
-
             lista.innerHTML += `
                 <div class="card-controle">
+                    <div class="acoes-card">
+                        <i class="material-icons btn-edit" onclick="editarLider('${doc.id}','${l.nome}','${l.fone}','${l.zona}',${l.gastoFixo})">edit</i>
+                        <i class="material-icons btn-del" onclick="deletar('liderancas','${doc.id}')">delete</i>
+                    </div>
                     <div class="label-topo">${l.zona}</div>
-                    <strong style="color:#1e3a8a; font-size:16px;">${l.nome}</strong>
-                    <div style="font-size:13px; color:#64748b;">📞 ${l.fone}</div>
-                    <div class="info-linha">
-                        <span>Gasto Fixo: <strong>R$ ${l.gastoFixo.toFixed(2)}</strong></span>
-                        <span class="badge-valor">Total Pedidos: R$ ${gastoExtra.toFixed(2)}</span>
-                    </div>
-                    <div style="margin-top:10px; font-size:12px; font-weight:600; color:#1e3a8a;">
-                        Gasto Acumulado: R$ ${(l.gastoFixo + gastoExtra).toFixed(2)}
-                    </div>
+                    <strong>${l.nome}</strong><br><small>📞 ${l.fone}</small>
+                    <div class="info-linha"><span>Gasto Fixo: R$ ${l.gastoFixo.toFixed(2)}</span></div>
                 </div>`;
         });
     });
@@ -186,18 +185,41 @@
             const d = doc.data();
             lista.innerHTML += `
                 <div class="card-controle">
-                    <div class="label-topo">${d.data} | ${d.zona}</div>
-                    <strong>${d.nome}</strong>
-                    <div style="font-size:13px; margin:5px 0;">${d.descricao}</div>
-                    <div class="info-linha">
-                        <span>👤 Líder: ${d.lideranca}</span>
-                        ${d.gasto > 0 ? `<span class="badge-valor">R$ ${d.gasto.toFixed(2)}</span>` : ''}
+                    <div class="acoes-card">
+                        <i class="material-icons btn-edit" onclick="editarPedido('${doc.id}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}',${d.gasto},'${d.descricao}')">edit</i>
+                        <i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i>
                     </div>
+                    <div class="label-topo">${d.data} | ${d.zona}</div>
+                    <strong>${d.nome}</strong><br><small>📍 ${d.bairro} | Líder: ${d.lideranca}</small>
+                    <div style="font-size:13px; margin:5px 0;">${d.descricao}</div>
+                    ${d.gasto > 0 ? `<span class="badge-valor">Gasto: R$ ${d.gasto.toFixed(2)}</span>` : ''}
                 </div>`;
         });
     });
 
-    // (As funções de agenda e eventos permanecem as mesmas do código anterior)
+    db.collection("agenda_vereador").onSnapshot(snap => {
+        const lista = document.getElementById("listaAgenda");
+        lista.innerHTML = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            lista.innerHTML += `<div class="card-controle">
+                <div class="acoes-card"><i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i></div>
+                <div class="label-topo">${d.dataComp}</div><strong>${d.comQuem}</strong><div style="font-size:12px;">${d.assunto}</div>
+            </div>`;
+        });
+    });
+
+    db.collection("eventos_externos").onSnapshot(snap => {
+        const lista = document.getElementById("listaEventos");
+        lista.innerHTML = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            lista.innerHTML += `<div class="card-controle">
+                <div class="acoes-card"><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div>
+                <div class="label-topo">${d.data}</div><strong>${d.titulo}</strong>
+            </div>`;
+        });
+    });
 </script>
 </body>
 </html>
