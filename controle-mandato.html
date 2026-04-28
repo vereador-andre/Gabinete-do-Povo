@@ -21,10 +21,12 @@
         .card-mini span { display: block; font-size: 16px; font-weight: 600; color: #1e3a8a; }
         .card-mini label { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
         
-        /* Estilo para os sub-valores no dashboard */
         .dash-detalhe { font-size: 9px; display: flex; justify-content: space-around; margin-top: 5px; border-top: 1px solid #f1f5f9; padding-top: 5px; }
         .det-res { color: #166534; font-weight: 600; }
         .det-pen { color: #991b1b; font-weight: 600; }
+        /* Estilo para as zonas Urbana/Rural no dashboard */
+        .det-urb { color: #1e3a8a; font-weight: 600; }
+        .det-rur { color: #854d0e; font-weight: 600; }
 
         .filtro-periodo { background: #e2e8f0; padding: 12px; border-radius: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: space-between; }
         .filtro-periodo label { font-size: 10px; font-weight: 700; color: #1e3a8a; text-transform: uppercase; display: block; }
@@ -66,7 +68,14 @@
                 <div class="det-pen">⏳ <span id="dashPedPen">0</span></div>
             </div>
         </div>
-        <div class="card-mini"><label>Pautas Abertas</label><span id="dashPautas">0</span></div>
+        <div class="card-mini">
+            <label>Pedidos por Zona</label>
+            <span id="dashPedidosZona">0</span>
+            <div class="dash-detalhe">
+                <div class="det-urb">🏙 <span id="dashPedUrb">0</span></div>
+                <div class="det-rur">🚜 <span id="dashPedRur">0</span></div>
+            </div>
+        </div>
         <div class="card-mini">
             <label>Investimento</label>
             <span id="dashInvest">R$ 0</span>
@@ -75,7 +84,14 @@
                 <div class="det-pen">⏳ <span id="dashInvPen">R$ 0</span></div>
             </div>
         </div>
-        <div class="card-mini"><label>Eventos</label><span id="dashEventos">0</span></div>
+        <div class="card-mini">
+            <label>Lideranças</label>
+            <span id="dashLiderancas">0</span>
+            <div class="dash-detalhe">
+                <div class="det-urb">🏙 <span id="dashLidUrb">0</span></div>
+                <div class="det-rur">🚜 <span id="dashLidRur">0</span></div>
+            </div>
+        </div>
     </div>
 
     <div class="filtro-periodo">
@@ -252,11 +268,12 @@
     async function atualizarParticipacao(id, valor) { await db.collection("eventos_externos").doc(id).update({ participou: valor }); }
 
     function renderizarTudo(ini = "", fim = "") {
-        // PEDIDOS
+        // PEDIDOS E DASHBOARD DE PEDIDOS (STATUS E ZONA)
         db.collection("crm_pedidos").orderBy("dataPedido", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
             let totalGasto = 0, totalRes = 0, totalPen = 0;
             let contTotal = 0, contRes = 0, contPen = 0;
+            let contUrb = 0, contRur = 0;
             
             snap.forEach(doc => {
                 const d = doc.data();
@@ -264,6 +281,7 @@
                     contTotal++;
                     totalGasto += d.gasto || 0;
                     
+                    // Contagem por Status
                     if(d.status === 'Resolvido') {
                         contRes++;
                         totalRes += d.gasto || 0;
@@ -271,6 +289,9 @@
                         contPen++;
                         totalPen += d.gasto || 0;
                     }
+
+                    // Contagem por Zona
+                    if(d.zona === 'Urbana') contUrb++; else contRur++;
 
                     const corStatus = d.status === 'Resolvido' ? '#166534' : (d.status === 'Encaminhado' ? '#854d0e' : '#991b1b');
                     lista.innerHTML += `<div class="card-controle">
@@ -284,25 +305,28 @@
                     </div>`;
                 }
             });
-            // Update Dashboard Pedidos
+            // Dashboard Pedidos: Status
             document.getElementById("dashPedidos").innerText = contTotal;
             document.getElementById("dashPedRes").innerText = contRes;
             document.getElementById("dashPedPen").innerText = contPen;
-            // Update Dashboard Investimento
+            // Dashboard Pedidos: Zona
+            document.getElementById("dashPedidosZona").innerText = contTotal;
+            document.getElementById("dashPedUrb").innerText = contUrb;
+            document.getElementById("dashPedRur").innerText = contRur;
+            // Dashboard Investimento
             document.getElementById("dashInvest").innerText = "R$ " + totalGasto.toLocaleString('pt-BR');
             document.getElementById("dashInvRes").innerText = "R$ " + totalRes.toLocaleString('pt-BR');
             document.getElementById("dashInvPen").innerText = "R$ " + totalPen.toLocaleString('pt-BR');
         });
 
-        // REUNIÕES
+        // REUNIÕES (Listagem)
         db.collection("agenda_vereador").orderBy("dataReuniao", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
-            let pautasPendentes = 0;
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.dataReuniao >= ini) && (!fim || d.dataReuniao <= fim)) {
                     let pHTML = ""; 
-                    d.pautas?.forEach(p => { if(p.status !== "Atendido total") pautasPendentes++; pHTML += `<div style="font-size:11px; margin-top:3px;">• <b>${p.status}:</b> ${p.texto}</div>`; });
+                    d.pautas?.forEach(p => { pHTML += `<div style="font-size:11px; margin-top:3px;">• <b>${p.status}:</b> ${p.texto}</div>`; });
                     lista.innerHTML += `<div class="card-controle">
                         <div class="acoes-card">
                             <i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')})">edit</i>
@@ -313,17 +337,14 @@
                     </div>`;
                 }
             });
-            document.getElementById("dashPautas").innerText = pautasPendentes;
         });
 
-        // EVENTOS
+        // EVENTOS (Listagem)
         db.collection("eventos_externos").orderBy("data", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
-            let contadorEv = 0;
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.data >= ini) && (!fim || d.data <= fim)) {
-                    contadorEv++;
                     lista.innerHTML += `<div class="card-controle">
                         <div class="acoes-card">
                             <i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}')">edit</i>
@@ -338,16 +359,24 @@
                     </div>`;
                 }
             });
-            document.getElementById("dashEventos").innerText = contadorEv;
         });
     }
 
-    db.collection("liderancas").onSnapshot(snap => {
+    // LIDERANÇAS E DASHBOARD DE LIDERANÇAS (POR ZONA)
+    db.collection("liderancas").orderBy("nome").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas");
         const select = document.getElementById("pLider");
         lista.innerHTML = ""; select.innerHTML = '<option value="">Direto com Vereador</option>';
+        
+        let contLidTotal = 0, contLidUrb = 0, contLidRur = 0;
+        
         snap.forEach(doc => {
-            const l = doc.data(); select.innerHTML += `<option value="${l.nome}">${l.nome}</option>`;
+            const l = doc.data(); 
+            select.innerHTML += `<option value="${l.nome}">${l.nome}</option>`;
+            
+            contLidTotal++;
+            if(l.zona === 'Urbana') contLidUrb++; else contLidRur++;
+
             lista.innerHTML += `<div class="card-controle">
                 <div class="acoes-card">
                     <i class="material-icons btn-edit" onclick="editarLid('${doc.id}','${l.nome}','${l.fone}','${l.zona}',${l.gastoFixo})">edit</i>
@@ -357,6 +386,11 @@
                 <div class="badge-valor">Fixo: R$ ${parseFloat(l.gastoFixo).toFixed(2)}</div>
             </div>`;
         });
+        
+        // Atualiza Dashboard Lideranças
+        document.getElementById("dashLiderancas").innerText = contLidTotal;
+        document.getElementById("dashLidUrb").innerText = contLidUrb;
+        document.getElementById("dashLidRur").innerText = contLidRur;
     });
 
     function deletar(col, id) { if(confirm("Excluir?")) db.collection(col).doc(id).delete(); }
