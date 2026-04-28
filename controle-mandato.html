@@ -102,6 +102,8 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    let lideresNomes = []; // Array para controle de duplicidade
+
     function switchTab(evt, tabName) {
         document.querySelectorAll('.secao').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -115,10 +117,31 @@
 
         if(colecao === 'liderancas') {
             id = document.getElementById("lId").value;
-            dados = { nome: document.getElementById("lNome").value, fone: document.getElementById("lFone").value, zona: document.getElementById("lZona").value, gastoFixo: parseFloat(document.getElementById("lGastoFixo").value) || 0 };
+            const nome = document.getElementById("lNome").value.trim();
+            
+            // Trava contra duplicidade (apenas se for novo cadastro)
+            if(!id && lideresNomes.includes(nome.toLowerCase())) {
+                alert("Esta liderança já está cadastrada!");
+                return;
+            }
+
+            dados = { 
+                nome: nome, 
+                fone: document.getElementById("lFone").value, 
+                zona: document.getElementById("lZona").value, 
+                gastoFixo: parseFloat(document.getElementById("lGastoFixo").value) || 0 
+            };
         } else if(colecao === 'crm_pedidos') {
             id = document.getElementById("pId").value;
-            dados = { nome: document.getElementById("pNome").value, bairro: document.getElementById("pBairro").value, zona: document.getElementById("pZona").value, lideranca: document.getElementById("pLider").value || "Direto", gasto: parseFloat(document.getElementById("pGasto").value) || 0, descricao: document.getElementById("pDesc").value, data: new Date().toLocaleDateString('pt-BR') };
+            dados = { 
+                nome: document.getElementById("pNome").value, 
+                bairro: document.getElementById("pBairro").value, 
+                zona: document.getElementById("pZona").value, 
+                lideranca: document.getElementById("pLider").value || "Direto", 
+                gasto: parseFloat(document.getElementById("pGasto").value) || 0, 
+                descricao: document.getElementById("pDesc").value, 
+                data: new Date().toLocaleDateString('pt-BR') 
+            };
         } else if(colecao === 'agenda_vereador') {
             id = document.getElementById("aId").value;
             dados = { dataComp: document.getElementById("aData").value, comQuem: document.getElementById("aCom").value, assunto: document.getElementById("aAssunto").value };
@@ -129,42 +152,63 @@
 
         dados.criadoEm = firebase.firestore.FieldValue.serverTimestamp();
 
-        if(id) {
-            await db.collection(colecao).doc(id).update(dados);
-            alert("Atualizado!");
-        } else {
-            await db.collection(colecao).add(dados);
-            alert("Salvo!");
+        try {
+            if(id) {
+                await db.collection(colecao).doc(id).update(dados);
+                alert("Registro atualizado com sucesso!");
+            } else {
+                await db.collection(colecao).add(dados);
+                alert("Registro salvo com sucesso!");
+            }
+            location.reload();
+        } catch(e) {
+            alert("Erro ao salvar: " + e.message);
         }
-        location.reload();
     }
 
-    function deletar(col, id) { if(confirm("Excluir definitivamente?")) db.collection(col).doc(id).delete(); }
+    function deletar(col, id) { 
+        if(confirm("Deseja excluir definitivamente este registro?")) {
+            db.collection(col).doc(id).delete().then(() => location.reload());
+        }
+    }
 
     function editarLider(id, n, f, z, g) { 
-        document.getElementById("lId").value = id; document.getElementById("lNome").value = n; document.getElementById("lFone").value = f; 
-        document.getElementById("lZona").value = z; document.getElementById("lGastoFixo").value = g;
-        document.getElementById("titLider").innerText = "Editar Liderança"; document.getElementById("btnSalvarL").innerText = "Atualizar";
+        document.getElementById("lId").value = id; 
+        document.getElementById("lNome").value = n; 
+        document.getElementById("lFone").value = f; 
+        document.getElementById("lZona").value = z; 
+        document.getElementById("lGastoFixo").value = g;
+        document.getElementById("titLider").innerText = "Editar Liderança"; 
+        document.getElementById("btnSalvarL").innerText = "Atualizar Cadastro";
         window.scrollTo(0,0);
     }
 
     function editarPedido(id, n, b, z, l, g, d) {
-        document.getElementById("pId").value = id; document.getElementById("pNome").value = n; document.getElementById("pBairro").value = b;
-        document.getElementById("pZona").value = z; document.getElementById("pLider").value = l; document.getElementById("pGasto").value = g;
-        document.getElementById("pDesc").value = d; document.getElementById("titPedido").innerText = "Editar Pedido";
-        document.getElementById("btnSalvarP").innerText = "Atualizar"; window.scrollTo(0,0);
+        document.getElementById("pId").value = id; 
+        document.getElementById("pNome").value = n; 
+        document.getElementById("pBairro").value = b;
+        document.getElementById("pZona").value = z; 
+        document.getElementById("pLider").value = l; 
+        document.getElementById("pGasto").value = g;
+        document.getElementById("pDesc").value = d; 
+        document.getElementById("titPedido").innerText = "Editar Pedido";
+        document.getElementById("btnSalvarP").innerText = "Atualizar Pedido"; 
+        window.scrollTo(0,0);
     }
 
-    // Carregar Listas e preencher SELETOR DE LÍDERES
-    db.collection("liderancas").orderBy("nome").onSnapshot(snap => {
+    // LISTAGEM DE LIDERANÇAS E SELETOR
+    db.collection("liderancas").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas");
         const select = document.getElementById("pLider");
         lista.innerHTML = "";
         select.innerHTML = '<option value="">Direto com Vereador</option>';
+        lideresNomes = [];
 
         snap.forEach(doc => {
             const l = doc.data();
+            lideresNomes.push(l.nome.toLowerCase());
             select.innerHTML += `<option value="${l.nome}">${l.nome}</option>`;
+            
             lista.innerHTML += `
                 <div class="card-controle">
                     <div class="acoes-card">
@@ -172,12 +216,16 @@
                         <i class="material-icons btn-del" onclick="deletar('liderancas','${doc.id}')">delete</i>
                     </div>
                     <div class="label-topo">${l.zona}</div>
-                    <strong>${l.nome}</strong><br><small>📞 ${l.fone}</small>
-                    <div class="info-linha"><span>Gasto Fixo: R$ ${l.gastoFixo.toFixed(2)}</span></div>
+                    <strong>${l.nome}</strong><br>
+                    <small>📞 ${l.fone}</small>
+                    <div class="info-linha">
+                        <span>Gasto Fixo: R$ ${parseFloat(l.gastoFixo).toFixed(2)}</span>
+                    </div>
                 </div>`;
         });
     });
 
+    // LISTAGEM DE PEDIDOS
     db.collection("crm_pedidos").orderBy("criadoEm", "desc").onSnapshot(snap => {
         const lista = document.getElementById("listaPedidos");
         lista.innerHTML = "";
@@ -190,13 +238,15 @@
                         <i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i>
                     </div>
                     <div class="label-topo">${d.data} | ${d.zona}</div>
-                    <strong>${d.nome}</strong><br><small>📍 ${d.bairro} | Líder: ${d.lideranca}</small>
+                    <strong>${d.nome}</strong><br>
+                    <small>📍 ${d.bairro} | Líder: ${d.lideranca}</small>
                     <div style="font-size:13px; margin:5px 0;">${d.descricao}</div>
-                    ${d.gasto > 0 ? `<span class="badge-valor">Gasto: R$ ${d.gasto.toFixed(2)}</span>` : ''}
+                    ${d.gasto > 0 ? `<span class="badge-valor">Gasto: R$ ${parseFloat(d.gasto).toFixed(2)}</span>` : ''}
                 </div>`;
         });
     });
 
+    // LISTAGEM DE AGENDA
     db.collection("agenda_vereador").onSnapshot(snap => {
         const lista = document.getElementById("listaAgenda");
         lista.innerHTML = "";
@@ -209,6 +259,7 @@
         });
     });
 
+    // LISTAGEM DE EVENTOS
     db.collection("eventos_externos").onSnapshot(snap => {
         const lista = document.getElementById("listaEventos");
         lista.innerHTML = "";
