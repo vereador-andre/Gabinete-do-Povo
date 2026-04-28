@@ -22,9 +22,6 @@
         .card-mini label { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
         
         .dash-detalhe { font-size: 9px; display: flex; justify-content: space-around; margin-top: 5px; border-top: 1px solid #f1f5f9; padding-top: 5px; }
-        .det-res { color: #166534; font-weight: 600; }
-        .det-pen { color: #991b1b; font-weight: 600; }
-        /* Estilo para as zonas Urbana/Rural no dashboard */
         .det-urb { color: #1e3a8a; font-weight: 600; }
         .det-rur { color: #854d0e; font-weight: 600; }
 
@@ -35,12 +32,11 @@
         .card-controle { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; }
         .form-controle { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: 'Poppins'; font-size: 14px; outline: none; display: block; min-height: 45px; }
         .btn-acao { background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer; }
-        .badge-valor { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 5px; display: inline-block; }
+        .badge-bairro { background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 5px; display: inline-block; }
         .label-topo { font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
         .acoes-card { position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; }
         .btn-edit { color: #1e3a8a; cursor: pointer; font-size: 20px; }
         .btn-del { color: #ef4444; cursor: pointer; font-size: 20px; }
-        .pauta-item { display: flex; flex-direction: column; gap: 5px; background: #f8fafc; padding: 10px; border-radius: 10px; margin-top: 5px; border-left: 3px solid #1e3a8a; }
     </style>
 </head>
 <body>
@@ -61,36 +57,23 @@
     
     <div class="dash-resumo">
         <div class="card-mini">
-            <label>Pedidos</label>
-            <span id="dashPedidos">0</span>
+            <label>Total Lideranças</label>
+            <span id="dashLidTotal">0</span>
+        </div>
+        <div class="card-mini">
+            <label>Por Zona</label>
             <div class="dash-detalhe">
-                <div class="det-res">✔ <span id="dashPedRes">0</span></div>
-                <div class="det-pen">⏳ <span id="dashPedPen">0</span></div>
+                <div class="det-urb">🏙 Urb: <span id="dashLidUrb">0</span></div>
+                <div class="det-rur">🚜 Rur: <span id="dashLidRur">0</span></div>
             </div>
         </div>
         <div class="card-mini">
-            <label>Pedidos por Zona</label>
-            <span id="dashPedidosZona">0</span>
-            <div class="dash-detalhe">
-                <div class="det-urb">🏙 <span id="dashPedUrb">0</span></div>
-                <div class="det-rur">🚜 <span id="dashPedRur">0</span></div>
-            </div>
+            <label>Bairros Atendidos</label>
+            <span id="dashLidBairros">0</span>
         </div>
         <div class="card-mini">
-            <label>Investimento</label>
-            <span id="dashInvest">R$ 0</span>
-            <div class="dash-detalhe">
-                <div class="det-res">✔ <span id="dashInvRes">R$ 0</span></div>
-                <div class="det-pen">⏳ <span id="dashInvPen">R$ 0</span></div>
-            </div>
-        </div>
-        <div class="card-mini">
-            <label>Lideranças</label>
-            <span id="dashLiderancas">0</span>
-            <div class="dash-detalhe">
-                <div class="det-urb">🏙 <span id="dashLidUrb">0</span></div>
-                <div class="det-rur">🚜 <span id="dashLidRur">0</span></div>
-            </div>
+            <label>Status Geral</label>
+            <span style="font-size: 10px; color: #166534;">ATIVO</span>
         </div>
     </div>
 
@@ -128,7 +111,7 @@
             <input type="text" id="lNome" class="form-controle" placeholder="Nome">
             <input type="tel" id="lFone" class="form-controle" placeholder="WhatsApp">
             <select id="lZona" class="form-controle"><option value="Urbana">Zona Urbana</option><option value="Rural">Zona Rural</option></select>
-            <input type="number" id="lGastoFixo" class="form-controle" placeholder="Gasto Fixo Mensal">
+            <input type="text" id="lSetor" class="form-controle" placeholder="Bairro/Setor de Atuação">
             <button class="btn-acao" id="btnSalvarL" onclick="salvarItem('liderancas')">Salvar Líder</button>
         </div>
         <div id="listaLiderancas"></div>
@@ -195,26 +178,6 @@
         renderizarTudo();
     }
 
-    function addPautaLista() {
-        const txt = document.getElementById("tempPauta").value;
-        if(txt) { pautasParaSalvar.push({ texto: txt, status: "Não discutido" }); document.getElementById("tempPauta").value = ""; renderPautasTemp(); }
-    }
-
-    function renderPautasTemp() {
-        const div = document.getElementById("listaPautasTemp"); div.innerHTML = "";
-        pautasParaSalvar.forEach((p, i) => {
-            div.innerHTML += `<div class="pauta-item">
-                <div style="display:flex; justify-content:space-between"><span>${p.texto}</span><i class="material-icons" style="color:red; font-size:18px" onclick="pautasParaSalvar.splice(${i},1); renderPautasTemp();">delete</i></div>
-                <select class="form-controle" style="padding:5px" onchange="pautasParaSalvar[${i}].status=this.value">
-                    <option value="Não discutido" ${p.status=='Não discutido'?'selected':''}>Não discutido</option>
-                    <option value="Atendido total" ${p.status=='Atendido total'?'selected':''}>Atendido total</option>
-                    <option value="Atendido parcial" ${p.status=='Atendido parcial'?'selected':''}>Atendido parcial</option>
-                    <option value="Não atendido" ${p.status=='Não atendido'?'selected':''}>Não atendido</option>
-                </select>
-            </div>`;
-        });
-    }
-
     async function salvarItem(colecao) {
         let dados = {}; let id = "";
         if(colecao==='crm_pedidos'){
@@ -222,14 +185,13 @@
             dados={ dataPedido:document.getElementById("pData").value, nome:document.getElementById("pNome").value, bairro:document.getElementById("pBairro").value, zona:document.getElementById("pZona").value, lideranca:document.getElementById("pLider").value, status:document.getElementById("pStatus").value, gasto:parseFloat(document.getElementById("pGasto").value)||0, descricao:document.getElementById("pDesc").value };
         } else if(colecao==='liderancas'){
             id=document.getElementById("lId").value;
-            dados={ nome:document.getElementById("lNome").value, fone:document.getElementById("lFone").value, zona:document.getElementById("lZona").value, gastoFixo:parseFloat(document.getElementById("lGastoFixo").value)||0 };
+            dados={ nome:document.getElementById("lNome").value, fone:document.getElementById("lFone").value, zona:document.getElementById("lZona").value, setor:document.getElementById("lSetor").value };
         } else if(colecao==='agenda_vereador'){
             id=document.getElementById("aId").value;
             dados={ dataReuniao:document.getElementById("aData").value, local:document.getElementById("aLocal").value, comQuem:document.getElementById("aCom").value, pautas:pautasParaSalvar };
         } else if(colecao==='eventos_externos'){
             id=document.getElementById("eId").value;
             dados={ data:document.getElementById("eData").value, local:document.getElementById("eLocal").value, titulo:document.getElementById("eTitulo").value };
-            if(!id) dados.participou = "Não";
         }
         dados.criadoEm = firebase.firestore.FieldValue.serverTimestamp();
         if(id) await db.collection(colecao).doc(id).update(dados); else await db.collection(colecao).add(dados);
@@ -239,60 +201,23 @@
 
     function limparCampos() {
         document.querySelectorAll('input, textarea').forEach(i => i.value = "");
-        pautasParaSalvar = []; document.getElementById("listaPautasTemp").innerHTML = "";
+        pautasParaSalvar = [];
         document.getElementById("pId").value = ""; document.getElementById("lId").value = "";
         document.getElementById("aId").value = ""; document.getElementById("eId").value = "";
     }
 
-    function editarPed(id,dt,nm,br,zn,ld,st,gs,ds) {
-        document.getElementById("pId").value=id; document.getElementById("pData").value=dt; document.getElementById("pNome").value=nm;
-        document.getElementById("pBairro").value=br; document.getElementById("pZona").value=zn; document.getElementById("pLider").value=ld;
-        document.getElementById("pStatus").value=st; document.getElementById("pGasto").value=gs; document.getElementById("pDesc").value=ds; window.scrollTo(0,0);
-    }
-
-    function editarLid(id,nm,fn,zn,gs) {
+    function editarLid(id,nm,fn,zn,st) {
         document.getElementById("lId").value=id; document.getElementById("lNome").value=nm; document.getElementById("lFone").value=fn;
-        document.getElementById("lZona").value=zn; document.getElementById("lGastoFixo").value=gs; window.scrollTo(0,0);
+        document.getElementById("lZona").value=zn; document.getElementById("lSetor").value=st; window.scrollTo(0,0);
     }
-
-    function editarReu(id,dt,lc,cq,pts) {
-        document.getElementById("aId").value=id; document.getElementById("aData").value=dt; document.getElementById("aLocal").value=lc;
-        document.getElementById("aCom").value=cq; pautasParaSalvar = pts || []; renderPautasTemp(); window.scrollTo(0,0);
-    }
-
-    function editarEve(id,dt,lc,tt) {
-        document.getElementById("eId").value=id; document.getElementById("eData").value=dt; document.getElementById("eLocal").value=lc;
-        document.getElementById("eTitulo").value=tt; window.scrollTo(0,0);
-    }
-
-    async function atualizarParticipacao(id, valor) { await db.collection("eventos_externos").doc(id).update({ participou: valor }); }
 
     function renderizarTudo(ini = "", fim = "") {
-        // PEDIDOS E DASHBOARD DE PEDIDOS (STATUS E ZONA)
+        // Listagem de Pedidos
         db.collection("crm_pedidos").orderBy("dataPedido", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
-            let totalGasto = 0, totalRes = 0, totalPen = 0;
-            let contTotal = 0, contRes = 0, contPen = 0;
-            let contUrb = 0, contRur = 0;
-            
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.dataPedido >= ini) && (!fim || d.dataPedido <= fim)) {
-                    contTotal++;
-                    totalGasto += d.gasto || 0;
-                    
-                    // Contagem por Status
-                    if(d.status === 'Resolvido') {
-                        contRes++;
-                        totalRes += d.gasto || 0;
-                    } else {
-                        contPen++;
-                        totalPen += d.gasto || 0;
-                    }
-
-                    // Contagem por Zona
-                    if(d.zona === 'Urbana') contUrb++; else contRur++;
-
                     const corStatus = d.status === 'Resolvido' ? '#166534' : (d.status === 'Encaminhado' ? '#854d0e' : '#991b1b');
                     lista.innerHTML += `<div class="card-controle">
                         <div class="acoes-card">
@@ -300,75 +225,38 @@
                             <i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i>
                         </div>
                         <div class="label-topo">${d.dataPedido} | <span style="color:${corStatus}; font-weight:700">● ${d.status}</span></div>
-                        <strong>${d.nome}</strong><br><small>📍 ${d.bairro} | Líder: ${d.lideranca}</small>
-                        <div class="badge-valor">Investimento: R$ ${parseFloat(d.gasto).toFixed(2)}</div>
+                        <strong>${d.nome}</strong><br><small>📍 ${d.bairro}</small>
                     </div>`;
                 }
             });
-            // Dashboard Pedidos: Status
-            document.getElementById("dashPedidos").innerText = contTotal;
-            document.getElementById("dashPedRes").innerText = contRes;
-            document.getElementById("dashPedPen").innerText = contPen;
-            // Dashboard Pedidos: Zona
-            document.getElementById("dashPedidosZona").innerText = contTotal;
-            document.getElementById("dashPedUrb").innerText = contUrb;
-            document.getElementById("dashPedRur").innerText = contRur;
-            // Dashboard Investimento
-            document.getElementById("dashInvest").innerText = "R$ " + totalGasto.toLocaleString('pt-BR');
-            document.getElementById("dashInvRes").innerText = "R$ " + totalRes.toLocaleString('pt-BR');
-            document.getElementById("dashInvPen").innerText = "R$ " + totalPen.toLocaleString('pt-BR');
         });
 
-        // REUNIÕES (Listagem)
+        // Listagem de Reuniões
         db.collection("agenda_vereador").orderBy("dataReuniao", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.dataReuniao >= ini) && (!fim || d.dataReuniao <= fim)) {
-                    let pHTML = ""; 
-                    d.pautas?.forEach(p => { pHTML += `<div style="font-size:11px; margin-top:3px;">• <b>${p.status}:</b> ${p.texto}</div>`; });
                     lista.innerHTML += `<div class="card-controle">
                         <div class="acoes-card">
-                            <i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')})">edit</i>
+                            <i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas)})">edit</i>
                             <i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i>
                         </div>
-                        <div class="label-topo">${d.dataReuniao} | Local: ${d.local}</div>
-                        <strong>${d.comQuem}</strong><div style="margin-top:5px;">${pHTML}</div>
-                    </div>`;
-                }
-            });
-        });
-
-        // EVENTOS (Listagem)
-        db.collection("eventos_externos").orderBy("data", "desc").onSnapshot(snap => {
-            const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
-            snap.forEach(doc => {
-                const d = doc.data();
-                if ((!ini || d.data >= ini) && (!fim || d.data <= fim)) {
-                    lista.innerHTML += `<div class="card-controle">
-                        <div class="acoes-card">
-                            <i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}')">edit</i>
-                            <i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i>
-                        </div>
-                        <div class="label-topo">${d.data} | Local: ${d.local}</div>
-                        <strong>${d.titulo}</strong>
-                        <select class="form-controle" style="padding:5px; margin-top:10px; background:${d.participou=='Sim'?'#dcfce7':'#fee2e2'}; color:${d.participou=='Sim'?'#166534':'#991b1b'}; font-weight:bold; border:none;" onchange="atualizarParticipacao('${doc.id}', this.value)">
-                            <option value="Não" ${d.participou=='Não'?'selected':''}>Não participei</option>
-                            <option value="Sim" ${d.participou=='Sim'?'selected':''}>Participei</option>
-                        </select>
+                        <strong>${d.comQuem}</strong>
                     </div>`;
                 }
             });
         });
     }
 
-    // LIDERANÇAS E DASHBOARD DE LIDERANÇAS (POR ZONA)
+    // LIDERANÇAS E DASHBOARD EXCLUSIVO
     db.collection("liderancas").orderBy("nome").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas");
         const select = document.getElementById("pLider");
         lista.innerHTML = ""; select.innerHTML = '<option value="">Direto com Vereador</option>';
         
         let contLidTotal = 0, contLidUrb = 0, contLidRur = 0;
+        let setores = new Set();
         
         snap.forEach(doc => {
             const l = doc.data(); 
@@ -376,21 +264,25 @@
             
             contLidTotal++;
             if(l.zona === 'Urbana') contLidUrb++; else contLidRur++;
+            if(l.setor) setores.add(l.setor);
 
             lista.innerHTML += `<div class="card-controle">
                 <div class="acoes-card">
-                    <i class="material-icons btn-edit" onclick="editarLid('${doc.id}','${l.nome}','${l.fone}','${l.zona}',${l.gastoFixo})">edit</i>
+                    <i class="material-icons btn-edit" onclick="editarLid('${doc.id}','${l.nome}','${l.fone}','${l.zona}','${l.setor}')">edit</i>
                     <i class="material-icons btn-del" onclick="deletar('liderancas','${doc.id}')">delete</i>
                 </div>
-                <div class="label-topo">${l.zona}</div><strong>${l.nome}</strong><br><small>WhatsApp: ${l.fone}</small>
-                <div class="badge-valor">Fixo: R$ ${parseFloat(l.gastoFixo).toFixed(2)}</div>
+                <div class="label-topo">${l.zona}</div>
+                <strong>${l.nome}</strong><br>
+                <small>WhatsApp: ${l.fone}</small><br>
+                <div class="badge-bairro">📍 ${l.setor || 'Não informado'}</div>
             </div>`;
         });
         
-        // Atualiza Dashboard Lideranças
-        document.getElementById("dashLiderancas").innerText = contLidTotal;
+        // Atualiza Dashboard exclusivo de Lideranças
+        document.getElementById("dashLidTotal").innerText = contLidTotal;
         document.getElementById("dashLidUrb").innerText = contLidUrb;
         document.getElementById("dashLidRur").innerText = contLidRur;
+        document.getElementById("dashLidBairros").innerText = setores.size;
     });
 
     function deletar(col, id) { if(confirm("Excluir?")) db.collection(col).doc(id).delete(); }
