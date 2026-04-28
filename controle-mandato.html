@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Mandato - André de Dedé</title>
+    <title>Controle Estratégico - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
@@ -15,8 +15,14 @@
         .container { padding: 15px; }
         .secao { display: none; }
         .secao.active { display: block; }
+        
+        /* CSS DOS INDICADORES DE IMPACTO */
+        .dash-resumo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .card-mini { background: white; padding: 12px; border-radius: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 3px solid #1e3a8a; }
+        .card-mini span { display: block; font-size: 18px; font-weight: 600; color: #1e3a8a; }
+        .card-mini label { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 600; }
+
         .card-controle { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; }
-        /* Ajuste do campo data para alinhar com os outros */
         .form-controle { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: 'Poppins'; font-size: 14px; outline: none; display: block; min-height: 45px; }
         .btn-acao { background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer; }
         .badge-valor { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 5px; display: inline-block; }
@@ -31,7 +37,7 @@
 
 <div class="topo">
     <i class="material-icons" onclick="location.href='admin.html'" style="cursor:pointer">arrow_back</i>
-    <span style="font-weight:600">Controle Estratégico</span>
+    <span style="font-weight:600">Gabinete Estratégico</span>
 </div>
 
 <div class="tabs">
@@ -43,6 +49,13 @@
 
 <div class="container">
     
+    <div class="dash-resumo">
+        <div class="card-mini"><span id="dashPedidos">0</span><label>Pedidos</label></div>
+        <div class="card-mini"><span id="dashPautas">0</span><label>Pautas Abertas</label></div>
+        <div class="card-mini"><span id="dashInvest">R$ 0</span><label>Investimento</label></div>
+        <div class="card-mini"><span id="dashEventos">0</span><label>Eventos</label></div>
+    </div>
+
     <div id="demandas" class="secao active">
         <div class="card-controle">
             <h4 id="titPedido">Novo Pedido</h4>
@@ -52,6 +65,11 @@
             <input type="text" id="pBairro" class="form-controle" placeholder="Bairro/Comunidade">
             <select id="pZona" class="form-controle"><option value="Urbana">Zona Urbana</option><option value="Rural">Zona Rural</option></select>
             <select id="pLider" class="form-controle"><option value="">Direto com Vereador</option></select>
+            <select id="pStatus" class="form-controle">
+                <option value="Pendente">🔴 Pendente</option>
+                <option value="Encaminhado">🟡 Encaminhado</option>
+                <option value="Resolvido">🟢 Resolvido</option>
+            </select>
             <input type="number" id="pGasto" class="form-controle" placeholder="Valor gasto (R$)">
             <textarea id="pDesc" class="form-controle" style="height:70px" placeholder="O que foi solicitado?"></textarea>
             <button class="btn-acao" id="btnSalvarP" onclick="salvarItem('crm_pedidos')">Salvar Pedido</button>
@@ -117,10 +135,8 @@
     const db = firebase.firestore();
 
     let pautasParaSalvar = [];
-    let abaAtual = "demandas";
 
     function switchTab(evt, tabName) {
-        abaAtual = tabName;
         document.querySelectorAll('.secao').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabName).classList.add('active');
@@ -152,7 +168,7 @@
         let dados = {}; let id = "";
         if(colecao==='crm_pedidos'){
             id=document.getElementById("pId").value;
-            dados={ dataPedido:document.getElementById("pData").value, nome:document.getElementById("pNome").value, bairro:document.getElementById("pBairro").value, zona:document.getElementById("pZona").value, lideranca:document.getElementById("pLider").value, gasto:parseFloat(document.getElementById("pGasto").value)||0, descricao:document.getElementById("pDesc").value };
+            dados={ dataPedido:document.getElementById("pData").value, nome:document.getElementById("pNome").value, bairro:document.getElementById("pBairro").value, zona:document.getElementById("pZona").value, lideranca:document.getElementById("pLider").value, status:document.getElementById("pStatus").value, gasto:parseFloat(document.getElementById("pGasto").value)||0, descricao:document.getElementById("pDesc").value };
         } else if(colecao==='liderancas'){
             id=document.getElementById("lId").value;
             dados={ nome:document.getElementById("lNome").value, fone:document.getElementById("lFone").value, zona:document.getElementById("lZona").value, gastoFixo:parseFloat(document.getElementById("lGastoFixo").value)||0 };
@@ -172,14 +188,16 @@
     function limparCampos() {
         document.querySelectorAll('input, textarea').forEach(i => i.value = "");
         pautasParaSalvar = []; document.getElementById("listaPautasTemp").innerHTML = "";
-        const tabAtiva = document.querySelector('.tab-btn.active').id.replace('tab-','');
-        switchTab(null, tabAtiva);
+        document.getElementById("pId").value = "";
+        document.getElementById("lId").value = "";
+        document.getElementById("aId").value = "";
+        document.getElementById("eId").value = "";
     }
 
-    function editarPed(id,dt,nm,br,zn,ld,gs,ds) {
+    function editarPed(id,dt,nm,br,zn,ld,st,gs,ds) {
         document.getElementById("pId").value=id; document.getElementById("pData").value=dt; document.getElementById("pNome").value=nm;
         document.getElementById("pBairro").value=br; document.getElementById("pZona").value=zn; document.getElementById("pLider").value=ld;
-        document.getElementById("pGasto").value=gs; document.getElementById("pDesc").value=ds; window.scrollTo(0,0);
+        document.getElementById("pStatus").value=st; document.getElementById("pGasto").value=gs; document.getElementById("pDesc").value=ds; window.scrollTo(0,0);
     }
 
     function editarLid(id,nm,fn,zn,gs) {
@@ -197,6 +215,65 @@
         document.getElementById("eTitulo").value=tt; document.getElementById("eParticipou").value=pt; window.scrollTo(0,0);
     }
 
+    // LISTAGENS COM DASHBOARD INTEGRADO
+    db.collection("crm_pedidos").orderBy("criadoEm", "desc").onSnapshot(snap => {
+        const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
+        let totalGasto = 0;
+        document.getElementById("dashPedidos").innerText = snap.size;
+        snap.forEach(doc => {
+            const d = doc.data(); totalGasto += d.gasto || 0;
+            const corStatus = d.status === 'Resolvido' ? '#166534' : (d.status === 'Encaminhado' ? '#854d0e' : '#991b1b');
+            lista.innerHTML += `<div class="card-controle">
+                <div class="acoes-card">
+                    <i class="material-icons btn-edit" onclick="editarPed('${doc.id}','${d.dataPedido}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}','${d.status}',${d.gasto},'${d.descricao}')">edit</i>
+                    <i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i>
+                </div>
+                <div class="label-topo">${d.dataPedido} | <span style="color:${corStatus}; font-weight:700">● ${d.status}</span></div>
+                <strong>${d.nome}</strong><br><small>📍 ${d.bairro} | Líder: ${d.lideranca}</small>
+                <div class="badge-valor">Investimento: R$ ${parseFloat(d.gasto).toFixed(2)}</div>
+            </div>`;
+        });
+        document.getElementById("dashInvest").innerText = "R$ " + totalGasto.toLocaleString();
+    });
+
+    db.collection("agenda_vereador").orderBy("criadoEm", "desc").onSnapshot(snap => {
+        const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
+        let pautasPendentes = 0;
+        snap.forEach(doc => {
+            const d = doc.data(); let pHTML = ""; 
+            d.pautas?.forEach(p => {
+                if(p.status !== "Atendido total") pautasPendentes++;
+                pHTML += `<div style="font-size:11px; margin-top:3px;">• <b>${p.status}:</b> ${p.texto}</div>`;
+            });
+            lista.innerHTML += `<div class="card-controle">
+                <div class="acoes-card">
+                    <i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')})">edit</i>
+                    <i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i>
+                </div>
+                <div class="label-topo">${d.dataReuniao} | Local: ${d.local}</div>
+                <strong>${d.comQuem}</strong><div style="margin-top:5px;">${pHTML}</div>
+            </div>`;
+        });
+        document.getElementById("dashPautas").innerText = pautasPendentes;
+    });
+
+    db.collection("eventos_externos").orderBy("criadoEm", "desc").onSnapshot(snap => {
+        document.getElementById("dashEventos").innerText = snap.size;
+        const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            lista.innerHTML += `<div class="card-controle">
+                <div class="acoes-card">
+                    <i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}','${d.participou}')">edit</i>
+                    <i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i>
+                </div>
+                <div class="label-topo">${d.data} | Local: ${d.local}</div>
+                <strong>${d.titulo}</strong><br>
+                <div class="badge-valor" style="background:${d.participou=='Sim'?'#dcfce7':'#fee2e2'}; color:${d.participou=='Sim'?'#166534':'#991b1b'}">Participou: ${d.participou}</div>
+            </div>`;
+        });
+    });
+
     db.collection("liderancas").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas");
         const select = document.getElementById("pLider");
@@ -210,54 +287,6 @@
                 </div>
                 <div class="label-topo">${l.zona}</div><strong>${l.nome}</strong><br><small>WhatsApp: ${l.fone}</small>
                 <div class="badge-valor">Fixo: R$ ${parseFloat(l.gastoFixo).toFixed(2)}</div>
-            </div>`;
-        });
-    });
-
-    db.collection("crm_pedidos").orderBy("criadoEm", "desc").onSnapshot(snap => {
-        const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            lista.innerHTML += `<div class="card-controle">
-                <div class="acoes-card">
-                    <i class="material-icons btn-edit" onclick="editarPed('${doc.id}','${d.dataPedido}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}',${d.gasto},'${d.descricao}')">edit</i>
-                    <i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i>
-                </div>
-                <div class="label-topo">${d.dataPedido} | ${d.zona}</div>
-                <strong>${d.nome}</strong><br><small>📍 ${d.bairro} | Líder: ${d.lideranca}</small>
-                <div style="font-size:12px; margin-top:5px;">${d.descricao}</div>
-                <div class="badge-valor">Gasto: R$ ${parseFloat(d.gasto).toFixed(2)}</div>
-            </div>`;
-        });
-    });
-
-    db.collection("agenda_vereador").orderBy("criadoEm", "desc").onSnapshot(snap => {
-        const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data(); let pHTML = ""; d.pautas?.forEach(p => pHTML += `<div style="font-size:11px; margin-top:3px;">• <b>${p.status}:</b> ${p.texto}</div>`);
-            lista.innerHTML += `<div class="card-controle">
-                <div class="acoes-card">
-                    <i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')})">edit</i>
-                    <i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i>
-                </div>
-                <div class="label-topo">${d.dataReuniao} | Local: ${d.local}</div>
-                <strong>${d.comQuem}</strong><div style="margin-top:5px;">${pHTML}</div>
-            </div>`;
-        });
-    });
-
-    db.collection("eventos_externos").orderBy("criadoEm", "desc").onSnapshot(snap => {
-        const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            lista.innerHTML += `<div class="card-controle">
-                <div class="acoes-card">
-                    <i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}','${d.participou}')">edit</i>
-                    <i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i>
-                </div>
-                <div class="label-topo">${d.data} | Local: ${d.local}</div>
-                <strong>${d.titulo}</strong><br>
-                <div class="badge-valor" style="background:${d.participou=='Sim'?'#dcfce7':'#fee2e2'}; color:${d.participou=='Sim'?'#166534':'#991b1b'}">Participou: ${d.participou}</div>
             </div>`;
         });
     });
