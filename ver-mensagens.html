@@ -11,6 +11,15 @@
         .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; }
         .container { padding: 15px; }
         .card-msg { background:white; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid #cbd5e1; }
+        
+        /* Estilos para Foto e Localização */
+        .foto-anexo { width: 100%; border-radius: 10px; margin-top: 10px; display: block; border: 1px solid #e2e8f0; }
+        .btn-localizacao { 
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: #3b82f6; color: white; text-decoration: none; padding: 10px;
+            border-radius: 10px; margin-top: 10px; font-weight: 600; font-size: 13px;
+        }
+
         .status-select { 
             width: 100%; padding: 10px; border-radius: 8px; margin-top: 10px; 
             font-family: inherit; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0;
@@ -25,7 +34,7 @@
 </head>
 <body>
 <div class="topo">
-    <i class="material-icons" onclick="location.href='admin.html'">arrow_back</i>
+    <i class="material-icons" onclick="location.href='admin.html'" style="cursor:pointer">arrow_back</i>
     <span>Mensagens do Público</span>
 </div>
 <div class="container" id="lista">Carregando...</div>
@@ -48,16 +57,29 @@
             const m = doc.data();
             const id = doc.id;
             const status = m.status || "Pendente";
-            // Limpa o número de celular para o link do zap (remove parênteses e traços)
             const zapLimpo = m.whatsapp ? m.whatsapp.replace(/\D/g, '') : "";
+
+            // Verifica se existe foto e localização para montar o HTML extra
+            const htmlFoto = m.foto ? `<img src="${m.foto}" class="foto-anexo">` : "";
+            const htmlLocal = m.localizacao ? `
+                <a href="${m.localizacao}" target="_blank" class="btn-localizacao">
+                    <i class="material-icons">location_on</i> Ver Localização no Mapa
+                </a>` : "";
 
             lista.innerHTML += `
                 <div class="card-msg">
                     <div style="display:flex; justify-content:space-between; font-size:12px;">
-                        <strong style="color:#1e3a8a;">${m.nome}</strong> <span>${m.data}</span>
+                        <strong style="color:#1e3a8a;">${m.nome}</strong> 
+                        <span class="badge" style="background:#f1f5f9; padding:2px 8px; border-radius:5px; color:#64748b;">${m.tipo || 'Mensagem'}</span>
                     </div>
+                    
                     <p style="font-size:14px; margin:10px 0; color:#475569;">${m.mensagem}</p>
                     
+                    ${htmlFoto}
+                    ${htmlLocal}
+                    
+                    <div style="margin-top:10px; font-size:11px; color:#94a3b8; text-align:right;">Enviado em: ${m.data}</div>
+
                     <select class="status-select" onchange="mudarStatus('${id}', this.value)">
                         <option value="Pendente" ${status=='Pendente'?'selected':''}>⏳ Pendente</option>
                         <option value="Em andamento" ${status=='Em andamento'?'selected':''}>⚙️ Em andamento</option>
