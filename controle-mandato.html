@@ -16,7 +16,8 @@
         .secao { display: none; }
         .secao.active { display: block; }
         .card-controle { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; }
-        .form-controle { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: 'Poppins'; font-size: 14px; outline: none; display: block; }
+        /* Ajuste do campo data para alinhar com os outros */
+        .form-controle { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; box-sizing: border-box; font-family: 'Poppins'; font-size: 14px; outline: none; display: block; min-height: 45px; }
         .btn-acao { background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer; }
         .badge-valor { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 5px; display: inline-block; }
         .label-topo { font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
@@ -46,7 +47,7 @@
         <div class="card-controle">
             <h4 id="titPedido">Novo Pedido</h4>
             <input type="hidden" id="pId">
-            <input type="date" id="pData" class="form-controle" placeholder="Data">
+            <input type="date" id="pData" class="form-controle">
             <input type="text" id="pNome" class="form-controle" placeholder="Nome do Cidadão">
             <input type="text" id="pBairro" class="form-controle" placeholder="Bairro/Comunidade">
             <select id="pZona" class="form-controle"><option value="Urbana">Zona Urbana</option><option value="Rural">Zona Rural</option></select>
@@ -75,7 +76,7 @@
         <div class="card-controle">
             <h4 id="titAgenda">Nova Reunião</h4>
             <input type="hidden" id="aId">
-            <input type="date" id="aData" class="form-controle" placeholder="Data">
+            <input type="date" id="aData" class="form-controle">
             <input type="text" id="aLocal" class="form-controle" placeholder="Local">
             <input type="text" id="aCom" class="form-controle" placeholder="Com quem?">
             <div style="margin-top:10px; background:#f1f5f9; padding:10px; border-radius:10px;">
@@ -94,9 +95,13 @@
         <div class="card-controle">
             <h4 id="titEvento">Novo Evento</h4>
             <input type="hidden" id="eId">
-            <input type="date" id="eData" class="form-controle" placeholder="Data">
-            <input type="text" id="aLocal" class="form-controle" placeholder="Local">
+            <input type="date" id="eData" class="form-controle">
+            <input type="text" id="eLocal" class="form-controle" placeholder="Local">
             <input type="text" id="eTitulo" class="form-controle" placeholder="Evento">
+            <select id="eParticipou" class="form-controle">
+                <option value="Sim">Participei</option>
+                <option value="Não">Não participei</option>
+            </select>
             <button class="btn-acao" id="btnSalvarE" onclick="salvarItem('eventos_externos')">Salvar Evento</button>
         </div>
         <div id="listaEventos"></div>
@@ -156,7 +161,7 @@
             dados={ dataReuniao:document.getElementById("aData").value, local:document.getElementById("aLocal").value, comQuem:document.getElementById("aCom").value, pautas:pautasParaSalvar };
         } else if(colecao==='eventos_externos'){
             id=document.getElementById("eId").value;
-            dados={ data:document.getElementById("eData").value, titulo:document.getElementById("eTitulo").value };
+            dados={ data:document.getElementById("eData").value, local:document.getElementById("eLocal").value, titulo:document.getElementById("eTitulo").value, participou:document.getElementById("eParticipou").value };
         }
         dados.criadoEm = firebase.firestore.FieldValue.serverTimestamp();
         if(id) await db.collection(colecao).doc(id).update(dados); else await db.collection(colecao).add(dados);
@@ -187,7 +192,11 @@
         document.getElementById("aCom").value=cq; pautasParaSalvar = pts || []; renderPautasTemp(); window.scrollTo(0,0);
     }
 
-    // LISTAGENS (RESTAURADAS)
+    function editarEve(id,dt,lc,tt,pt) {
+        document.getElementById("eId").value=id; document.getElementById("eData").value=dt; document.getElementById("eLocal").value=lc;
+        document.getElementById("eTitulo").value=tt; document.getElementById("eParticipou").value=pt; window.scrollTo(0,0);
+    }
+
     db.collection("liderancas").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas");
         const select = document.getElementById("pLider");
@@ -222,7 +231,7 @@
         });
     });
 
-    db.collection("agenda_vereador").orderBy("data", "desc").onSnapshot(snap => {
+    db.collection("agenda_vereador").orderBy("criadoEm", "desc").onSnapshot(snap => {
         const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
         snap.forEach(doc => {
             const d = doc.data(); let pHTML = ""; d.pautas?.forEach(p => pHTML += `<div style="font-size:11px; margin-top:3px;">• <b>${p.status}:</b> ${p.texto}</div>`);
@@ -233,6 +242,22 @@
                 </div>
                 <div class="label-topo">${d.dataReuniao} | Local: ${d.local}</div>
                 <strong>${d.comQuem}</strong><div style="margin-top:5px;">${pHTML}</div>
+            </div>`;
+        });
+    });
+
+    db.collection("eventos_externos").orderBy("criadoEm", "desc").onSnapshot(snap => {
+        const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            lista.innerHTML += `<div class="card-controle">
+                <div class="acoes-card">
+                    <i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}','${d.participou}')">edit</i>
+                    <i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i>
+                </div>
+                <div class="label-topo">${d.data} | Local: ${d.local}</div>
+                <strong>${d.titulo}</strong><br>
+                <div class="badge-valor" style="background:${d.participou=='Sim'?'#dcfce7':'#fee2e2'}; color:${d.participou=='Sim'?'#166534':'#991b1b'}">Participou: ${d.participou}</div>
             </div>`;
         });
     });
