@@ -42,7 +42,6 @@
         .pauta-item { display: flex; flex-direction: column; gap: 5px; background: #f8fafc; padding: 10px; border-radius: 10px; margin-top: 5px; border-left: 3px solid #1e3a8a; }
         .dash-unica { grid-template-columns: 1fr !important; }
 
-        /* Estilos Relatórios */
         .relatorio-area { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
         .relatorio-area h3 { color: #1e3a8a; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-top: 0; font-size: 16px; }
         .btn-print { background: #64748b; color: white; border: none; padding: 12px; border-radius: 10px; flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; }
@@ -202,7 +201,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -213,8 +211,6 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     let pautasParaSalvar = [];
-
-    // Lógica Global de Totais para Relatórios
     let totaisRel = { ped:0, pedR:0, lid:0, reu:0, pau:0, eve:0, inv:0 };
 
     function switchTab(evt, tabName) {
@@ -291,7 +287,6 @@
     }
 
     function renderizarTudo(ini = "", fim = "") {
-        // PEDIDOS
         db.collection("crm_pedidos").orderBy("dataPedido", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
             let tG=0, tR=0, tP=0, cT=0, cR=0, cP=0, cU=0, cRu=0;
@@ -309,7 +304,6 @@
             document.getElementById("dashInvest").innerText="R$ "+tG.toLocaleString(); totaisRel.ped=cT; totaisRel.pedR=cR; totaisRel.inv=tG; atualizarRel();
         });
 
-        // AGENDA
         db.collection("agenda_vereador").orderBy("dataReuniao", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
             let rT=0, pT=0, pTo=0, pPa=0, pNa=0;
@@ -318,7 +312,7 @@
                 if ((!ini || d.dataReuniao >= ini) && (!fim || d.dataReuniao <= fim)) {
                     rT++; 
                     d.pautas?.forEach(p => { pT++; if(p.status==='Atendido total') pTo++; else if(p.status==='Atendido parcial') pPa++; else pNa++; });
-                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')},'${d.observacoes||""}')">edit</i></div><div class="label-topo">${d.dataReuniao}</div><strong>${d.comQuem}</strong></div>`;
+                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')},'${d.observacoes||""}')">edit</i><i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i></div><div class="label-topo">${d.dataReuniao}</div><strong>${d.comQuem}</strong></div>`;
                 }
             });
             document.getElementById("dashTotalReu").innerText=rT; document.getElementById("dashTotalPau").innerText=pT;
@@ -326,7 +320,6 @@
             totaisRel.reu=rT; totaisRel.pau=pT; atualizarRel();
         });
 
-        // EVENTOS
         db.collection("eventos_externos").orderBy("data", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
             let eT=0, eS=0, eN=0;
@@ -334,7 +327,7 @@
                 const d = doc.data();
                 if ((!ini || d.data >= ini) && (!fim || d.data <= fim)) {
                     eT++; if(d.participou==='Sim') eS++; else eN++;
-                    lista.innerHTML += `<div class="card-controle"><div class="label-topo">${d.data}</div><strong>${d.titulo}</strong><select class="form-controle" onchange="db.collection('eventos_externos').doc('${doc.id}').update({participou:this.value})"><option value="Não" ${d.participou=='Não'?'selected':''}>Não</option><option value="Sim" ${d.participou=='Sim'?'selected':''}>Sim</option></select></div>`;
+                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}')">edit</i><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div><div class="label-topo">${d.data}</div><strong>${d.titulo}</strong><select class="form-controle" onchange="db.collection('eventos_externos').doc('${doc.id}').update({participou:this.value})"><option value="Não" ${d.participou=='Não'?'selected':''}>Não</option><option value="Sim" ${d.participou=='Sim'?'selected':''}>Sim</option></select></div>`;
                 }
             });
             document.getElementById("dashTotalEve").innerText=eT; document.getElementById("dashEveSim").innerText=eS; document.getElementById("dashEveNao").innerText=eN;
@@ -342,7 +335,6 @@
         });
     }
 
-    // LIDERANÇAS (Não filtráveis por data conforme regra de negócio)
     db.collection("liderancas").orderBy("nome").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas"); const sel = document.getElementById("pLider");
         lista.innerHTML = ""; sel.innerHTML = '<option value="">Direto com Vereador</option>';
@@ -350,19 +342,23 @@
         snap.forEach(doc => {
             const l = doc.data(); sel.innerHTML += `<option value="${l.nome}">${l.nome}</option>`;
             lT++; if(l.zona==='Urbana') lU++; else lR++;
-            lista.innerHTML += `<div class="card-controle"><strong>${l.nome}</strong><br><small>${l.bairroSetor}</small></div>`;
+            lista.innerHTML += `<div class="card-controle">
+                <div class="acoes-card">
+                    <i class="material-icons btn-edit" onclick="editarLid('${doc.id}','${l.nome}','${l.fone}','${l.zona}','${l.bairroSetor}')">edit</i>
+                    <i class="material-icons btn-del" onclick="deletar('liderancas','${doc.id}')">delete</i>
+                </div>
+                <div class="label-topo">${l.zona} | ${l.bairroSetor}</div>
+                <strong>${l.nome}</strong><br><small>WhatsApp: ${l.fone}</small>
+            </div>`;
         });
         document.getElementById("dashLiderancas").innerText=lT; document.getElementById("dashLidUrb").innerText=lU; document.getElementById("dashLidRur").innerText=lR;
         totaisRel.lid=lT; atualizarRel();
     });
 
     function atualizarRel() {
-        document.getElementById("relPedT").innerText = totaisRel.ped;
-        document.getElementById("relPedR").innerText = totaisRel.pedR;
-        document.getElementById("relLidT").innerText = totaisRel.lid;
-        document.getElementById("relReuT").innerText = totaisRel.reu;
-        document.getElementById("relPauT").innerText = totaisRel.pau;
-        document.getElementById("relEveT").innerText = totaisRel.eve;
+        document.getElementById("relPedT").innerText = totaisRel.ped; document.getElementById("relPedR").innerText = totaisRel.pedR;
+        document.getElementById("relLidT").innerText = totaisRel.lid; document.getElementById("relReuT").innerText = totaisRel.reu;
+        document.getElementById("relPauT").innerText = totaisRel.pau; document.getElementById("relEveT").innerText = totaisRel.eve;
         document.getElementById("relInvT").innerText = "R$ " + totaisRel.inv.toLocaleString('pt-BR', {minimumFractionDigits: 2});
     }
 
@@ -373,10 +369,10 @@
     }
 
     function deletar(c, id) { if(confirm("Excluir?")) db.collection(c).doc(id).delete(); }
-
-    // Funções de Edição (Resumidas para o código caber)
     function editarPed(id,dt,nm,br,zn,ld,st,gs,ds) { document.getElementById("pId").value=id; document.getElementById("pData").value=dt; document.getElementById("pNome").value=nm; document.getElementById("pBairro").value=br; document.getElementById("pZona").value=zn; document.getElementById("pLider").value=ld; document.getElementById("pStatus").value=st; document.getElementById("pGasto").value=gs; document.getElementById("pDesc").value=ds; window.scrollTo(0,0); }
+    function editarLid(id,nm,fn,zn,bs) { document.getElementById("lId").value=id; document.getElementById("lNome").value=nm; document.getElementById("lFone").value=fn; document.getElementById("lZona").value=zn; document.getElementById("lBairroSetor").value=bs; window.scrollTo(0,0); }
     function editarReu(id,dt,lc,cq,pts,obs) { document.getElementById("aId").value=id; document.getElementById("aData").value=dt; document.getElementById("aLocal").value=lc; document.getElementById("aCom").value=cq; document.getElementById("aObs").value=obs||""; pautasParaSalvar=pts||[]; renderPautasTemp(); window.scrollTo(0,0); }
+    function editarEve(id,dt,lc,tt) { document.getElementById("eId").value=id; document.getElementById("eData").value=dt; document.getElementById("eLocal").value=lc; document.getElementById("eTitulo").value=tt; window.scrollTo(0,0); }
 
     renderizarTudo();
 </script>
