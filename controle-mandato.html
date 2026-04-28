@@ -16,7 +16,6 @@
         .secao { display: none; }
         .secao.active { display: block; }
         
-        /* CSS DOS INDICADORES DE IMPACTO */
         .dash-resumo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .card-mini { background: white; padding: 12px; border-radius: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 3px solid #1e3a8a; }
         .card-mini span { display: block; font-size: 18px; font-weight: 600; color: #1e3a8a; }
@@ -116,10 +115,6 @@
             <input type="date" id="eData" class="form-controle">
             <input type="text" id="eLocal" class="form-controle" placeholder="Local">
             <input type="text" id="eTitulo" class="form-controle" placeholder="Evento">
-            <select id="eParticipou" class="form-controle">
-                <option value="Sim">Participei</option>
-                <option value="Não">Não participei</option>
-            </select>
             <button class="btn-acao" id="btnSalvarE" onclick="salvarItem('eventos_externos')">Salvar Evento</button>
         </div>
         <div id="listaEventos"></div>
@@ -177,7 +172,8 @@
             dados={ dataReuniao:document.getElementById("aData").value, local:document.getElementById("aLocal").value, comQuem:document.getElementById("aCom").value, pautas:pautasParaSalvar };
         } else if(colecao==='eventos_externos'){
             id=document.getElementById("eId").value;
-            dados={ data:document.getElementById("eData").value, local:document.getElementById("eLocal").value, titulo:document.getElementById("eTitulo").value, participou:document.getElementById("eParticipou").value };
+            dados={ data:document.getElementById("eData").value, local:document.getElementById("eLocal").value, titulo:document.getElementById("eTitulo").value };
+            if(!id) dados.participou = "Não"; // Valor inicial ao criar
         }
         dados.criadoEm = firebase.firestore.FieldValue.serverTimestamp();
         if(id) await db.collection(colecao).doc(id).update(dados); else await db.collection(colecao).add(dados);
@@ -188,10 +184,8 @@
     function limparCampos() {
         document.querySelectorAll('input, textarea').forEach(i => i.value = "");
         pautasParaSalvar = []; document.getElementById("listaPautasTemp").innerHTML = "";
-        document.getElementById("pId").value = "";
-        document.getElementById("lId").value = "";
-        document.getElementById("aId").value = "";
-        document.getElementById("eId").value = "";
+        document.getElementById("pId").value = ""; document.getElementById("lId").value = "";
+        document.getElementById("aId").value = ""; document.getElementById("eId").value = "";
     }
 
     function editarPed(id,dt,nm,br,zn,ld,st,gs,ds) {
@@ -210,12 +204,15 @@
         document.getElementById("aCom").value=cq; pautasParaSalvar = pts || []; renderPautasTemp(); window.scrollTo(0,0);
     }
 
-    function editarEve(id,dt,lc,tt,pt) {
+    function editarEve(id,dt,lc,tt) {
         document.getElementById("eId").value=id; document.getElementById("eData").value=dt; document.getElementById("eLocal").value=lc;
-        document.getElementById("eTitulo").value=tt; document.getElementById("eParticipou").value=pt; window.scrollTo(0,0);
+        document.getElementById("eTitulo").value=tt; window.scrollTo(0,0);
     }
 
-    // LISTAGENS COM DASHBOARD INTEGRADO
+    async function atualizarParticipacao(id, valor) {
+        await db.collection("eventos_externos").doc(id).update({ participou: valor });
+    }
+
     db.collection("crm_pedidos").orderBy("criadoEm", "desc").onSnapshot(snap => {
         const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
         let totalGasto = 0;
@@ -241,10 +238,7 @@
         let pautasPendentes = 0;
         snap.forEach(doc => {
             const d = doc.data(); let pHTML = ""; 
-            d.pautas?.forEach(p => {
-                if(p.status !== "Atendido total") pautasPendentes++;
-                pHTML += `<div style="font-size:11px; margin-top:3px;">• <b>${p.status}:</b> ${p.texto}</div>`;
-            });
+            d.pautas?.forEach(p => { if(p.status !== "Atendido total") pautasPendentes++; pHTML += `<div style="font-size:11px; margin-top:3px;">• <b>${p.status}:</b> ${p.texto}</div>`; });
             lista.innerHTML += `<div class="card-controle">
                 <div class="acoes-card">
                     <i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')})">edit</i>
@@ -264,12 +258,15 @@
             const d = doc.data();
             lista.innerHTML += `<div class="card-controle">
                 <div class="acoes-card">
-                    <i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}','${d.participou}')">edit</i>
+                    <i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}')">edit</i>
                     <i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i>
                 </div>
                 <div class="label-topo">${d.data} | Local: ${d.local}</div>
-                <strong>${d.titulo}</strong><br>
-                <div class="badge-valor" style="background:${d.participou=='Sim'?'#dcfce7':'#fee2e2'}; color:${d.participou=='Sim'?'#166534':'#991b1b'}">Participou: ${d.participou}</div>
+                <strong>${d.titulo}</strong>
+                <select class="form-controle" style="padding:5px; margin-top:10px; background:${d.participou=='Sim'?'#dcfce7':'#fee2e2'}; color:${d.participou=='Sim'?'#166534':'#991b1b'}; font-weight:bold; border:none;" onchange="atualizarParticipacao('${doc.id}', this.value)">
+                    <option value="Não" ${d.participou=='Não'?'selected':''}>Não participei</option>
+                    <option value="Sim" ${d.participou=='Sim'?'selected':''}>Participei</option>
+                </select>
             </div>`;
         });
     });
