@@ -24,6 +24,13 @@
         .acoes-card { position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; }
         .btn-edit { color: #1e3a8a; cursor: pointer; font-size: 20px; }
         .btn-del { color: #ef4444; cursor: pointer; font-size: 20px; }
+        
+        /* Estilo para Pautas */
+        .badge-status { padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: 600; text-transform: uppercase; margin-left: 5px; }
+        .status-nao-discutido { background: #e2e8f0; color: #475569; }
+        .status-total { background: #dcfce7; color: #166534; }
+        .status-parcial { background: #fef9c3; color: #854d0e; }
+        .status-negado { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body>
@@ -75,8 +82,15 @@
             <h4 id="titAgenda">Nova Reunião</h4>
             <input type="hidden" id="aId">
             <input type="date" id="aData" class="form-controle">
+            <input type="text" id="aLocal" class="form-controle" placeholder="Local da Reunião">
             <input type="text" id="aCom" class="form-controle" placeholder="Com quem?">
-            <textarea id="aAssunto" class="form-controle" placeholder="Pauta"></textarea>
+            <textarea id="aAssunto" class="form-controle" placeholder="Descreva as pautas..."></textarea>
+            <select id="aStatusPauta" class="form-controle">
+                <option value="Não discutido">⚪ Não discutido</option>
+                <option value="Atendido Total">🟢 Atendido Total</option>
+                <option value="Atendido Parcial">🟡 Atendido Parcial</option>
+                <option value="Não Atendido">🔴 Não Atendido</option>
+            </select>
             <button class="btn-acao" id="btnSalvarA" onclick="salvarItem('agenda_vereador')">Salvar Reunião</button>
         </div>
         <div id="listaAgenda"></div>
@@ -102,7 +116,7 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let lideresNomes = []; // Array para controle de duplicidade
+    let lideresNomes = [];
 
     function switchTab(evt, tabName) {
         document.querySelectorAll('.secao').forEach(s => s.classList.remove('active'));
@@ -118,33 +132,14 @@
         if(colecao === 'liderancas') {
             id = document.getElementById("lId").value;
             const nome = document.getElementById("lNome").value.trim();
-            
-            // Trava contra duplicidade (apenas se for novo cadastro)
-            if(!id && lideresNomes.includes(nome.toLowerCase())) {
-                alert("Esta liderança já está cadastrada!");
-                return;
-            }
-
-            dados = { 
-                nome: nome, 
-                fone: document.getElementById("lFone").value, 
-                zona: document.getElementById("lZona").value, 
-                gastoFixo: parseFloat(document.getElementById("lGastoFixo").value) || 0 
-            };
+            if(!id && lideresNomes.includes(nome.toLowerCase())) return alert("Liderança já cadastrada!");
+            dados = { nome: nome, fone: document.getElementById("lFone").value, zona: document.getElementById("lZona").value, gastoFixo: parseFloat(document.getElementById("lGastoFixo").value) || 0 };
         } else if(colecao === 'crm_pedidos') {
             id = document.getElementById("pId").value;
-            dados = { 
-                nome: document.getElementById("pNome").value, 
-                bairro: document.getElementById("pBairro").value, 
-                zona: document.getElementById("pZona").value, 
-                lideranca: document.getElementById("pLider").value || "Direto", 
-                gasto: parseFloat(document.getElementById("pGasto").value) || 0, 
-                descricao: document.getElementById("pDesc").value, 
-                data: new Date().toLocaleDateString('pt-BR') 
-            };
+            dados = { nome: document.getElementById("pNome").value, bairro: document.getElementById("pBairro").value, zona: document.getElementById("pZona").value, lideranca: document.getElementById("pLider").value || "Direto", gasto: parseFloat(document.getElementById("pGasto").value) || 0, descricao: document.getElementById("pDesc").value, data: new Date().toLocaleDateString('pt-BR') };
         } else if(colecao === 'agenda_vereador') {
             id = document.getElementById("aId").value;
-            dados = { dataComp: document.getElementById("aData").value, comQuem: document.getElementById("aCom").value, assunto: document.getElementById("aAssunto").value };
+            dados = { dataComp: document.getElementById("aData").value, local: document.getElementById("aLocal").value, comQuem: document.getElementById("aCom").value, assunto: document.getElementById("aAssunto").value, statusPauta: document.getElementById("aStatusPauta").value };
         } else if(colecao === 'eventos_externos') {
             id = document.getElementById("eId").value;
             dados = { data: document.getElementById("eData").value, titulo: document.getElementById("eTitulo").value };
@@ -152,114 +147,93 @@
 
         dados.criadoEm = firebase.firestore.FieldValue.serverTimestamp();
 
-        try {
-            if(id) {
-                await db.collection(colecao).doc(id).update(dados);
-                alert("Registro atualizado com sucesso!");
-            } else {
-                await db.collection(colecao).add(dados);
-                alert("Registro salvo com sucesso!");
-            }
-            location.reload();
-        } catch(e) {
-            alert("Erro ao salvar: " + e.message);
-        }
+        if(id) await db.collection(colecao).doc(id).update(dados);
+        else await db.collection(colecao).add(dados);
+        
+        alert("Salvo com sucesso!");
+        location.reload();
     }
 
     function deletar(col, id) { 
-        if(confirm("Deseja excluir definitivamente este registro?")) {
-            db.collection(col).doc(id).delete().then(() => location.reload());
-        }
+        if(confirm("Excluir registro?")) db.collection(col).doc(id).delete().then(() => location.reload());
+    }
+
+    // Funções de Edição
+    function editarAgenda(id, dt, lc, cq, as, st) {
+        document.getElementById("aId").value = id;
+        document.getElementById("aData").value = dt;
+        document.getElementById("aLocal").value = lc;
+        document.getElementById("aCom").value = cq;
+        document.getElementById("aAssunto").value = as;
+        document.getElementById("aStatusPauta").value = st;
+        document.getElementById("titAgenda").innerText = "Editar Reunião";
+        document.getElementById("btnSalvarA").innerText = "Atualizar";
+        window.scrollTo(0,0);
     }
 
     function editarLider(id, n, f, z, g) { 
-        document.getElementById("lId").value = id; 
-        document.getElementById("lNome").value = n; 
-        document.getElementById("lFone").value = f; 
-        document.getElementById("lZona").value = z; 
-        document.getElementById("lGastoFixo").value = g;
-        document.getElementById("titLider").innerText = "Editar Liderança"; 
-        document.getElementById("btnSalvarL").innerText = "Atualizar Cadastro";
+        document.getElementById("lId").value = id; document.getElementById("lNome").value = n; document.getElementById("lFone").value = f; 
+        document.getElementById("lZona").value = z; document.getElementById("lGastoFixo").value = g;
+        document.getElementById("titLider").innerText = "Editar Liderança"; document.getElementById("btnSalvarL").innerText = "Atualizar";
         window.scrollTo(0,0);
     }
 
     function editarPedido(id, n, b, z, l, g, d) {
-        document.getElementById("pId").value = id; 
-        document.getElementById("pNome").value = n; 
-        document.getElementById("pBairro").value = b;
-        document.getElementById("pZona").value = z; 
-        document.getElementById("pLider").value = l; 
-        document.getElementById("pGasto").value = g;
-        document.getElementById("pDesc").value = d; 
-        document.getElementById("titPedido").innerText = "Editar Pedido";
-        document.getElementById("btnSalvarP").innerText = "Atualizar Pedido"; 
-        window.scrollTo(0,0);
+        document.getElementById("pId").value = id; document.getElementById("pNome").value = n; document.getElementById("pBairro").value = b;
+        document.getElementById("pZona").value = z; document.getElementById("pLider").value = l; document.getElementById("pGasto").value = g;
+        document.getElementById("pDesc").value = d; document.getElementById("titPedido").innerText = "Editar Pedido";
+        document.getElementById("btnSalvarP").innerText = "Atualizar"; window.scrollTo(0,0);
     }
 
-    // LISTAGEM DE LIDERANÇAS E SELETOR
+    // Listeners do Banco
     db.collection("liderancas").onSnapshot(snap => {
-        const lista = document.getElementById("listaLiderancas");
         const select = document.getElementById("pLider");
-        lista.innerHTML = "";
-        select.innerHTML = '<option value="">Direto com Vereador</option>';
+        const lista = document.getElementById("listaLiderancas");
+        lista.innerHTML = ""; select.innerHTML = '<option value="">Direto com Vereador</option>';
         lideresNomes = [];
-
         snap.forEach(doc => {
-            const l = doc.data();
-            lideresNomes.push(l.nome.toLowerCase());
+            const l = doc.data(); lideresNomes.push(l.nome.toLowerCase());
             select.innerHTML += `<option value="${l.nome}">${l.nome}</option>`;
-            
-            lista.innerHTML += `
-                <div class="card-controle">
-                    <div class="acoes-card">
-                        <i class="material-icons btn-edit" onclick="editarLider('${doc.id}','${l.nome}','${l.fone}','${l.zona}',${l.gastoFixo})">edit</i>
-                        <i class="material-icons btn-del" onclick="deletar('liderancas','${doc.id}')">delete</i>
-                    </div>
-                    <div class="label-topo">${l.zona}</div>
-                    <strong>${l.nome}</strong><br>
-                    <small>📞 ${l.fone}</small>
-                    <div class="info-linha">
-                        <span>Gasto Fixo: R$ ${parseFloat(l.gastoFixo).toFixed(2)}</span>
-                    </div>
-                </div>`;
+            lista.innerHTML += `<div class="card-controle">
+                <div class="acoes-card"><i class="material-icons btn-edit" onclick="editarLider('${doc.id}','${l.nome}','${l.fone}','${l.zona}',${l.gastoFixo})">edit</i><i class="material-icons btn-del" onclick="deletar('liderancas','${doc.id}')">delete</i></div>
+                <div class="label-topo">${l.zona}</div><strong>${l.nome}</strong><br><small>📞 ${l.fone} | Gasto: R$ ${parseFloat(l.gastoFixo).toFixed(2)}</small></div>`;
         });
     });
 
-    // LISTAGEM DE PEDIDOS
     db.collection("crm_pedidos").orderBy("criadoEm", "desc").onSnapshot(snap => {
         const lista = document.getElementById("listaPedidos");
         lista.innerHTML = "";
         snap.forEach(doc => {
             const d = doc.data();
-            lista.innerHTML += `
-                <div class="card-controle">
-                    <div class="acoes-card">
-                        <i class="material-icons btn-edit" onclick="editarPedido('${doc.id}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}',${d.gasto},'${d.descricao}')">edit</i>
-                        <i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i>
-                    </div>
-                    <div class="label-topo">${d.data} | ${d.zona}</div>
-                    <strong>${d.nome}</strong><br>
-                    <small>📍 ${d.bairro} | Líder: ${d.lideranca}</small>
-                    <div style="font-size:13px; margin:5px 0;">${d.descricao}</div>
-                    ${d.gasto > 0 ? `<span class="badge-valor">Gasto: R$ ${parseFloat(d.gasto).toFixed(2)}</span>` : ''}
-                </div>`;
+            lista.innerHTML += `<div class="card-controle">
+                <div class="acoes-card"><i class="material-icons btn-edit" onclick="editarPedido('${doc.id}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}',${d.gasto},'${d.descricao}')">edit</i><i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i></div>
+                <div class="label-topo">${d.data}</div><strong>${d.nome}</strong><br><small>📍 ${d.bairro}</small>
+                <div style="font-size:12px; margin-top:5px;">${d.descricao}</div></div>`;
         });
     });
 
-    // LISTAGEM DE AGENDA
     db.collection("agenda_vereador").onSnapshot(snap => {
         const lista = document.getElementById("listaAgenda");
         lista.innerHTML = "";
         snap.forEach(doc => {
             const d = doc.data();
+            let classe = d.statusPauta === "Atendido Total" ? "status-total" : d.statusPauta === "Atendido Parcial" ? "status-parcial" : d.statusPauta === "Não Atendido" ? "status-negado" : "status-nao-discutido";
+            
             lista.innerHTML += `<div class="card-controle">
-                <div class="acoes-card"><i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i></div>
-                <div class="label-topo">${d.dataComp}</div><strong>${d.comQuem}</strong><div style="font-size:12px;">${d.assunto}</div>
+                <div class="acoes-card">
+                    <i class="material-icons btn-edit" onclick="editarAgenda('${doc.id}','${d.dataComp}','${d.local}','${d.comQuem}','${d.assunto}','${d.statusPauta}')">edit</i>
+                    <i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i>
+                </div>
+                <div class="label-topo">📅 ${d.dataComp.split('-').reverse().join('/')} | 📍 ${d.local}</div>
+                <strong style="display:block; margin:5px 0;">Com: ${d.comQuem}</strong>
+                <div style="font-size:13px; color:#475569; background:#f8fafc; padding:10px; border-radius:8px;">
+                    ${d.assunto}
+                    <div style="margin-top:8px;"><span class="badge-status ${classe}">${d.statusPauta}</span></div>
+                </div>
             </div>`;
         });
     });
 
-    // LISTAGEM DE EVENTOS
     db.collection("eventos_externos").onSnapshot(snap => {
         const lista = document.getElementById("listaEventos");
         lista.innerHTML = "";
@@ -267,8 +241,7 @@
             const d = doc.data();
             lista.innerHTML += `<div class="card-controle">
                 <div class="acoes-card"><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div>
-                <div class="label-topo">${d.data}</div><strong>${d.titulo}</strong>
-            </div>`;
+                <div class="label-topo">${d.data}</div><strong>${d.titulo}</strong></div>`;
         });
     });
 </script>
