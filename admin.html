@@ -3,89 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - André de Dedé</title>
+    <title>Painel Admin - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; color:#0f172a; }
-        .header-admin { background:#1e3a8a; color:white; padding:30px 20px; text-align:center; border-radius: 0 0 30px 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .header-admin h1 { margin:0; font-size:22px; font-weight:600; }
-        .header-admin p { margin:5px 0 0; font-size:14px; opacity:0.8; }
-
-        .menu-grid { padding: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 40px; }
+        .header-admin { background:#1e3a8a; color:white; padding:40px 20px; text-align:center; border-radius:0 0 30px 30px; position: relative; }
+        .header-admin h1 { margin:0; font-size:22px; }
         
-        .menu-item { 
-            background: white; padding: 20px; border-radius: 20px; text-align: center; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; transition: 0.3s;
-            display: flex; flex-direction: column; align-items: center; gap: 10px;
-            text-decoration: none; color: inherit; border: 1px solid transparent;
+        .grid-admin { display:grid; grid-template-columns: 1fr; gap:12px; padding:20px; margin-top: -20px; }
+        .admin-row { display: flex; gap: 8px; }
+        
+        .btn-item { 
+            flex: 1; background:white; padding:18px; border-radius:15px; display:flex; align-items:center; gap:15px; 
+            text-decoration:none; color:#1e3a8a; font-weight:600; box-shadow:0 4px 10px rgba(0,0,0,0.05);
+            transition: 0.3s; position: relative;
         }
-        .menu-item:active { transform: scale(0.95); background: #f8fafc; }
-        .menu-item i { font-size: 32px; color: #1e3a8a; }
-        .menu-item span { font-size: 13px; font-weight: 600; color: #475569; }
+        .btn-item i { background: #eff6ff; padding: 10px; border-radius: 10px; }
+        .btn-manage { background: #cbd5e1; color: #1e293b; width: 55px; border-radius: 15px; display: flex; align-items: center; justify-content: center; text-decoration: none; }
 
-        /* Destaque para o Controle Estratégico */
-        .item-destaque { background: #1e3a8a; border: none; }
-        .item-destaque i, .item-destaque span { color: white; }
-
-        .btn-logout { 
-            margin: 20px; padding: 15px; text-align: center; color: #ef4444; 
-            font-weight: 600; font-size: 14px; cursor: pointer; border: 1px solid #fee2e2;
-            border-radius: 15px; background: white; display: flex; align-items: center; justify-content: center; gap: 8px;
+        /* NOTIFICAÇÃO ESTILO BADGE */
+        .badge-alerta { 
+            position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; 
+            width: 24px; height: 24px; border-radius: 50%; display: none; 
+            align-items: center; justify-content: center; font-size: 11px; font-weight: bold;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); animation: pulse 1.5s infinite;
         }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+        .banner-aviso { display: none; background: #fee2e2; color: #b91c1c; padding: 10px; border-radius: 10px; margin: 0 20px 15px; font-size: 12px; text-align: center; font-weight: 600; }
+
+        .btn-logout { margin: 30px 20px; padding: 15px; border-radius: 12px; border: 1px solid #f87171; color: #f87171; text-align: center; cursor: pointer; font-weight: 600; }
     </style>
 </head>
 <body>
 
 <div class="header-admin">
-    <h1>Gabinete Digital</h1>
-    <p>Gestão de Mandato - André de Dedé</p>
+    <h1>Painel de Controle</h1>
+    <p style="opacity:0.8; font-size:12px;">Gestão de Conteúdo</p>
 </div>
 
-<div class="menu-grid">
-    <a href="controle-mandato.html" class="menu-item item-destaque">
-        <i class="material-icons">insights</i>
-        <span>Controle Estratégico</span>
+<div id="avisoMensagem" class="banner-aviso">⚠️ Você tem novas interações pendentes!</div>
+
+<div class="grid-admin">
+    <div class="admin-row"><a href="cad-noticia.html" class="btn-item"><i class="material-icons">newspaper</i> Notícia</a><a href="gerenciar.html?col=noticias" class="btn-manage"><i class="material-icons">settings</i></a></div>
+    <div class="admin-row"><a href="cad-acao.html" class="btn-item"><i class="material-icons">task_alt</i> Ação Atendida</a><a href="gerenciar.html?col=acoes-atendidas" class="btn-manage"><i class="material-icons">settings</i></a></div>
+    <div class="admin-row"><a href="cad-indicacao.html" class="btn-item"><i class="material-icons">assignment</i> Indicação</a><a href="gerenciar.html?col=indicacoes" class="btn-manage"><i class="material-icons">settings</i></a></div>
+    <div class="admin-row"><a href="cad-requerimento.html" class="btn-item"><i class="material-icons">description</i> Requerimento</a><a href="gerenciar.html?col=requerimentos" class="btn-manage"><i class="material-icons">settings</i></a></div>
+    <div class="admin-row"><a href="cad-projeto.html" class="btn-item"><i class="material-icons">gavel</i> Projeto de Lei</a><a href="gerenciar.html?col=projetos" class="btn-manage"><i class="material-icons">settings</i></a></div>
+    <div class="admin-row"><a href="cad-sessao.html" class="btn-item"><i class="material-icons">videocam</i> Sessão</a><a href="gerenciar.html?col=sessoes" class="btn-manage"><i class="material-icons">settings</i></a></div>
+    
+    <a href="controle-mandato.html" class="btn-item" style="background:#1e3a8a; color:white; margin-top: 10px;">
+        <i class="material-icons" style="background:rgba(255,255,255,0.1); color:white;">insights</i> 
+        Controle Estratégico (CRM)
     </a>
 
-    <a href="ver-mensagens.html" class="menu-item">
-        <i class="material-icons">chat</i>
-        <span>Mensagens do Público</span>
+    <div class="admin-row" style="margin-top: 5px;">
+        <a href="gerenciar-liderancas.html" class="btn-item">
+            <i class="material-icons">groups</i> Bases e Lideranças
+        </a>
+    </div>
+
+    <a href="ver-mensagens.html" class="btn-item" style="background:#f0fdf4; color:#16a34a; margin-top: 10px;">
+        <i class="material-icons" style="background:#dcfce7;">mail</i> Mensagens Recebidas
+        <div id="notifBadge" class="badge-alerta">!</div>
+    </a>
+    
+    <a href="ver-avaliacoes.html" class="btn-item" style="background:#f0fdf4; color:#16a34a; margin-top: 5px;">
+        <i class="material-icons" style="background:#dcfce7; color:#f59e0b;">stars</i> Avaliações do Público
+        <div id="notifBadgeAval" class="badge-alerta">!</div>
     </a>
 
-    <a href="gerenciar-noticias.html" class="menu-item">
-        <i class="material-icons">newspaper</i>
-        <span>Notícias</span>
+    <a href="gestao-interna.html" class="btn-item" style="background:#f8fafc; color:#475569; margin-top: 5px; border: 1px solid #e2e8f0;">
+        <i class="material-icons" style="background:#f1f5f9; color:#1e293b;">analytics</i> Gestão Interna do Mandato
     </a>
-
-    <a href="gerenciar-requerimentos.html" class="menu-item">
-        <i class="material-icons">description</i>
-        <span>Requerimentos</span>
-    </a>
-
-    <a href="gerenciar-liderancas.html" class="menu-item">
-        <i class="material-icons">groups</i>
-        <span>Bases/Lideranças</span>
-    </a>
-
-    <a href="configuracoes.html" class="menu-item">
-        <i class="material-icons">settings</i>
-        <span>Configurações</span>
-    </a>
+    
 </div>
 
-<div class="btn-logout" onclick="logout()">
-    <i class="material-icons">logout</i> Sair do Painel
-</div>
+<div class="btn-logout" onclick="logout()">Sair do Sistema</div>
 
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
-    function logout() {
-        // Aqui você pode adicionar a lógica de limpar sessão se usar Firebase Auth
-        if(confirm("Deseja realmente sair?")) {
-            location.href = 'index.html';
+    if(localStorage.getItem("logado") !== "true") { window.location.href = "login.html"; }
+    
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
+
+    // Notificações de Mensagens (Coleção 'contatos')
+    db.collection("contatos").where("status", "==", "Pendente").onSnapshot(snapshot => {
+        const badge = document.getElementById("notifBadge");
+        const aviso = document.getElementById("avisoMensagem");
+        
+        if (snapshot.size > 0) {
+            badge.style.display = "flex";
+            badge.innerText = snapshot.size;
+            aviso.style.display = "block";
+        } else {
+            badge.style.display = "none";
+            verificarAvisosGerais();
+        }
+    });
+
+    // Notificações de Avaliações (Coleção 'avaliacoes_mandato')
+    db.collection("avaliacoes_mandato").where("status", "==", "Novo").onSnapshot(snapshot => {
+        const badgeAval = document.getElementById("notifBadgeAval");
+        const aviso = document.getElementById("avisoMensagem");
+        
+        if (snapshot.size > 0) {
+            badgeAval.style.display = "flex";
+            badgeAval.innerText = snapshot.size;
+            aviso.style.display = "block";
+        } else {
+            badgeAval.style.display = "none";
+            verificarAvisosGerais();
+        }
+    });
+
+    function verificarAvisosGerais() {
+        const aviso = document.getElementById("avisoMensagem");
+        const b1 = document.getElementById("notifBadge").style.display;
+        const b2 = document.getElementById("notifBadgeAval").style.display;
+        if (b1 === "none" && b2 === "none") {
+            aviso.style.display = "none";
         }
     }
-</script>
 
+    function logout() { localStorage.removeItem("logado"); window.location.href = "login.html"; }
+</script>
 </body>
 </html>
