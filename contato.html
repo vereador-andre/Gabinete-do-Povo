@@ -31,10 +31,14 @@
 
 <div class="form-container">
     <div class="card-form">
+        <p style="font-size: 14px; color: #475569; margin-top: 0; margin-bottom: 20px;">Utilize este canal para falar conosco.</p>
+        
         <label>Seu Nome</label>
         <input type="text" id="nome" placeholder="Seu nome">
+        
         <label>Seu WhatsApp</label>
         <input type="tel" id="whatsapp" placeholder="(00) 00000-0000">
+        
         <label>Tipo de Mensagem</label>
         <select id="tipo" onchange="verificarTipo()">
             <option value="Sugestão">Sugestão</option>
@@ -43,6 +47,7 @@
             <option value="Crítica">Crítica</option>
             <option value="Solicitação de Visita">Solicitação de Visita</option>
         </select>
+        
         <div id="camposMelhoria">
             <label>Foto do Local</label>
             <input type="file" id="fotoInput" accept="image/*" onchange="processarImagem()">
@@ -51,10 +56,17 @@
             <input type="text" id="endereco" placeholder="Link do mapa">
             <button type="button" class="btn-gps" onclick="pegarLocalizacao()"><i class="material-icons">location_on</i> Fixar GPS</button>
         </div>
+        
         <label>Mensagem</label>
-        <textarea id="mensagem" placeholder="Detalhes..."></textarea>
-        <button class="btn-enviar" id="btnEnviar" onclick="enviar()">Enviar Mensagem</button>
-        <div id="msgSucesso" class="sucesso-msg">Mensagem enviada com sucesso!</div>
+        <textarea id="mensagem" placeholder="Detalhes da sua demanda..."></textarea>
+        
+        <button class="btn-enviar" id="btnEnviar" onclick="enviar()">
+            <i class="material-icons">send</i> Enviar Mensagem
+        </button>
+        
+        <div id="msgSucesso" class="sucesso-msg">
+            <i class="material-icons" style="vertical-align: middle;">check_circle</i> Mensagem enviada com sucesso!
+        </div>
     </div>
 </div>
 
@@ -66,9 +78,14 @@ if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const db = firebase.firestore();
 
 let fotoFinal = "";
-function verificarTipo() { document.getElementById("camposMelhoria").style.display = (document.getElementById("tipo").value === "Pedido de Melhoria") ? "block" : "none"; }
+
+function verificarTipo() { 
+    document.getElementById("camposMelhoria").style.display = (document.getElementById("tipo").value === "Pedido de Melhoria") ? "block" : "none"; 
+}
+
 function processarImagem() {
     const file = document.getElementById("fotoInput").files[0];
+    if (!file) return;
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = (e) => { 
@@ -77,26 +94,45 @@ function processarImagem() {
         document.getElementById("preview").style.display = "block";
     };
 }
+
 function pegarLocalizacao() {
-    navigator.geolocation.getCurrentPosition((pos) => {
-        document.getElementById("endereco").value = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-    });
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+            document.getElementById("endereco").value = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            alert("📍 GPS fixado!");
+        });
+    }
 }
+
 function enviar() {
     const btn = document.getElementById("btnEnviar");
+    const nome = document.getElementById("nome").value;
+    const msg = document.getElementById("mensagem").value;
+
+    if(!nome || !msg) return alert("Por favor, preencha o nome e a mensagem.");
+
     btn.disabled = true;
+    btn.innerHTML = "<i class='material-icons'>sync</i> Enviando...";
+
     db.collection("contatos").add({
-        nome: document.getElementById("nome").value,
+        nome: nome,
         whatsapp: document.getElementById("whatsapp").value,
         tipo: document.getElementById("tipo").value,
-        mensagem: document.getElementById("mensagem").value,
+        mensagem: msg,
         localizacao: document.getElementById("endereco").value || "",
         foto: fotoFinal || "",
-        data: new Date().toLocaleDateString('pt-BR')
+        lida: false,
+        data: new Date().toLocaleDateString('pt-BR'),
+        timestamp: firebase.firestore.Timestamp.fromDate(new Date())
     }).then(() => {
         document.getElementById("msgSucesso").style.display = "block";
-        setTimeout(() => history.back(), 2000);
-    }).catch((e) => { alert("Erro: " + e.message); btn.disabled = false; });
+        btn.style.display = "none";
+        setTimeout(() => history.back(), 2500);
+    }).catch((e) => { 
+        alert("Erro ao enviar: " + e.message); 
+        btn.disabled = false; 
+        btn.innerHTML = "<i class='material-icons'>send</i> Enviar Mensagem";
+    });
 }
 </script>
 </body>
