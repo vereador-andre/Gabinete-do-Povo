@@ -185,7 +185,41 @@
     </div>
 
     <div id="relatorios" class="secao">
+        <div class="rel-container">
+            <div class="rel-card-master">
+                <div class="rel-header">
+                    <h2>Análise de Mandato</h2>
+                    <i class="material-icons" style="color:#1e3a8a">insights</i>
+                </div>
+                
+                <div class="rel-grid">
+                    <div class="rel-stat"><label>Eficiência Geral</label><b id="relEfi">0%</b><div class="barra-progresso"><div id="progEfi" class="prog-cor" style="background:#166534; width:0%"></div></div></div>
+                    <div class="rel-stat"><label>Presença em Eventos</label><b id="relPres">0%</b><div class="barra-progresso"><div id="progPres" class="prog-cor" style="background:#1e3a8a; width:0%"></div></div></div>
+                    <div class="rel-stat"><label>Pedidos Totais</label><b id="relPedT">0</b></div>
+                    <div class="rel-stat"><label>Investimento / Gasto</label><b id="relInvT">R$ 0</b></div>
+                    <div class="rel-stat"><label>Lideranças</label><b id="relLidT">0</b></div>
+                    <div class="rel-stat"><label>Reuniões</label><b id="relReuT">0</b></div>
+                </div>
+
+                <div style="margin-top:20px; border-top:1px solid #f1f5f9; padding-top:15px;">
+                    <label class="label-topo">Foco Geográfico (Pedidos)</label>
+                    <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:12px;">
+                        <span>🏙 Urbana: <b id="relUrbP">0%</b></span>
+                        <span>🚜 Rural: <b id="relRurP">0%</b></span>
+                    </div>
+                    <div class="barra-progresso">
+                        <div id="progUrb" class="prog-cor" style="background:#1e3a8a; width:0%"></div>
+                        <div id="progRur" class="prog-cor" style="background:#854d0e; width:0%"></div>
+                    </div>
+                </div>
+
+                <div class="btn-rel-float">
+                    <button class="btn-print" onclick="window.print()"><i class="material-icons">print</i> Imprimir</button>
+                    <button class="btn-whatsapp" onclick="enviarRelatorioZap()"><i class="material-icons">share</i> Enviar via WhatsApp</button>
+                </div>
+            </div>
         </div>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -219,6 +253,7 @@
     }
 
     function renderizarTudo(ini = "", fim = "") {
+        // PEDIDOS
         db.collection("crm_pedidos").orderBy("dataPedido", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
             let tG=0, cT=0, cR=0, cP=0, cU=0, cRu=0;
@@ -236,6 +271,7 @@
             totaisRel.ped=cT; totaisRel.pedR=cR; totaisRel.inv=tG; totaisRel.urb=cU; totaisRel.rur=cRu; atualizarRel();
         });
 
+        // REUNIÕES
         db.collection("agenda_vereador").orderBy("dataReuniao", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
             let rT=0, pT=0, pTo=0, pPa=0, pNa=0, pDi=0;
@@ -255,6 +291,7 @@
             totaisRel.reu=rT; totaisRel.pau=pT; atualizarRel();
         });
 
+        // EVENTOS
         db.collection("eventos_externos").orderBy("data", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
             let eT=0, eS=0, eN=0;
@@ -282,6 +319,7 @@
         totaisRel.lid=lT; atualizarRel();
     });
 
+    // LÓGICA ESTRATÉGICA DE RELATÓRIO
     function atualizarRel() {
         document.getElementById("relPedT").innerText = totaisRel.ped;
         document.getElementById("relInvT").innerText = "R$ " + totaisRel.inv.toLocaleString('pt-BR');
@@ -289,10 +327,32 @@
         document.getElementById("relReuT").innerText = totaisRel.reu;
         document.getElementById("relPauT").innerText = totaisRel.pau;
         document.getElementById("relEveT").innerText = totaisRel.eve;
+
         const efi = totaisRel.ped > 0 ? Math.round((totaisRel.pedR / totaisRel.ped) * 100) : 0;
         document.getElementById("relEfi").innerText = efi + "%";
+        document.getElementById("progEfi").style.width = efi + "%";
+
         const pres = totaisRel.eve > 0 ? Math.round((totaisRel.eveSim / totaisRel.eve) * 100) : 0;
         document.getElementById("relPres").innerText = pres + "%";
+        document.getElementById("progPres").style.width = pres + "%";
+
+        const pUrb = totaisRel.ped > 0 ? Math.round((totaisRel.urb / totaisRel.ped) * 100) : 0;
+        const pRur = totaisRel.ped > 0 ? (100 - pUrb) : 0;
+        document.getElementById("relUrbP").innerText = pUrb + "%";
+        document.getElementById("relRurP").innerText = pRur + "%";
+        document.getElementById("progUrb").style.width = pUrb + "%";
+        document.getElementById("progRur").style.width = pRur + "%";
+    }
+
+    function enviarRelatorioZap() {
+        const msg = `📊 *RESUMO ESTRATÉGICO DO MANDATO*%0A%0A` +
+                    `✅ *Eficiência:* ${document.getElementById("relEfi").innerText}%0A` +
+                    `📍 *Pedidos:* ${totaisRel.ped} (${totaisRel.pedR} resolvidos)%0A` +
+                    `👥 *Lideranças:* ${totaisRel.lid}%0A` +
+                    `📅 *Reuniões:* ${totaisRel.reu}%0A` +
+                    `💰 *Investimento:* ${document.getElementById("relInvT").innerText}%0A%0A` +
+                    `_Gerado pelo sistema Gabinete Estratégico_`;
+        window.open(`https://api.whatsapp.com/send?text=${msg}`);
     }
 
     function deletar(c, id) { if(confirm("Excluir?")) db.collection(c).doc(id).delete(); }
@@ -311,7 +371,7 @@
         else if(c==='eventos_externos') { d = { data: document.getElementById("eData").value, local: document.getElementById("eLocal").value, titulo: document.getElementById("eTitulo").value, participou: "Não", observacoes: document.getElementById("eObs").value }; }
         try {
             if(id) { await db.collection(c).doc(id).set(d, {merge:true}); } else { await db.collection(c).add(d); }
-            alert("Salvo com sucesso!");
+            alert("Salvo!");
             if(c==='crm_pedidos') { document.getElementById("pId").value=""; document.querySelectorAll("#demandas input, #demandas textarea").forEach(i => i.value=""); }
             else if(c==='liderancas') { document.getElementById("lId").value=""; document.querySelectorAll("#liderancas input").forEach(i => i.value=""); }
             else if(c==='agenda_vereador') { document.getElementById("aId").value=""; pautasParaSalvar=[]; renderPautasTemp(); document.querySelectorAll("#agenda input, #agenda textarea").forEach(i => i.value=""); }
