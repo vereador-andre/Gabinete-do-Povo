@@ -29,47 +29,93 @@
 <div id="listaItens"></div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<script>
-    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
 
-    // Pega o nome da coleção pela URL (ex: ?col=noticias)
+<script>
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
+        authDomain: "gabinete-do-povo.firebaseapp.com", 
+        projectId: "gabinete-do-povo" 
+    };
+
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // Pega o nome da coleção pela URL
     const urlParams = new URLSearchParams(window.location.search);
     const col = urlParams.get('col');
-    document.getElementById("nomeColecao").innerText = col.replace(/-/g, ' ');
+    if (col) {
+        document.getElementById("nomeColecao").innerText = col.replace(/-/g, ' ');
+    }
 
-    // Carrega os itens
-    db.collection(col).orderBy("data", "desc").onSnapshot(s => {
-        const lista = document.getElementById("listaItens");
-        lista.innerHTML = "";
-        s.forEach(doc => {
-            const data = doc.data();
-            lista.innerHTML += `
-                <div class="card-item">
-                    <div class="info">
-                        <h4>${data.titulo}</h4>
-                        <p>${data.data.split('-').reverse().join('/')}</p>
-                    </div>
-                    <div class="actions">
-                        <i class="material-icons btn-edit" onclick="editar('${doc.id}')">edit</i>
-                        <i class="material-icons btn-del" onclick="excluir('${doc.id}')">delete</i>
-                    </div>
-                </div>`;
+    // Carrega os itens e atualiza em tempo real
+    function carregarDados() {
+        if (!col) return;
+        
+        db.collection(col).orderBy("data", "desc").onSnapshot(s => {
+            const lista = document.getElementById("listaItens");
+            lista.innerHTML = "";
+            s.forEach(doc => {
+                const data = doc.data();
+                // Formatação simples da data para exibição
+                const dataExibicao = data.data ? data.data.split('-').reverse().join('/') : '--/--/----';
+                
+                lista.innerHTML += `
+                    <div class="card-item">
+                        <div class="info">
+                            <h4>${data.titulo || 'Sem título'}</h4>
+                            <p>${dataExibicao}</p>
+                        </div>
+                        <div class="actions">
+                            <i class="material-icons btn-edit" onclick="editar('${doc.id}')">edit</i>
+                            <i class="material-icons btn-del" onclick="excluir('${doc.id}')">delete</i>
+                        </div>
+                    </div>`;
+            });
+        }, error => {
+            console.error("Erro ao carregar dados:", error);
+            if (error.code === 'permission-denied') {
+                alert("Você não tem permissão para ver estes dados. Verifique se está logado.");
+            }
         });
-    });
+    }
 
-    function excluir(id) {
+    async function excluir(id) {
+        // Verifica se o usuário está logado antes de tentar deletar
+        const user = auth.currentUser;
+        if (!user) {
+            alert("Sessão expirada. Faça login novamente.");
+            window.location.href = "login.html";
+            return;
+        }
+
         if(confirm("Tem certeza que deseja excluir permanentemente?")) {
-            db.collection(col).doc(id).delete();
+            try {
+                await db.collection(col).doc(id).delete();
+                alert("Excluído com sucesso!");
+            } catch (error) {
+                console.error("Erro ao excluir:", error);
+                alert("Erro ao excluir: " + error.message);
+            }
         }
     }
 
     function editar(id) {
-        // Redireciona para uma página de edição passando a coleção e o ID
         window.location.href = `editar.html?col=${col}&id=${id}`;
     }
+
+    // Só inicia o carregamento quando o Firebase confirmar o estado da autenticação
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            carregarDados();
+        } else {
+            // Se não estiver logado pelo Firebase, mas o localStorage diz que sim, 
+            // ainda assim precisamos do login do Firebase para as permissões
+            window.location.href = "login.html";
+        }
+    });
 </script>
 </body>
 </html>
