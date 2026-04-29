@@ -19,10 +19,9 @@
     <style>
         body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 140px; }
         
-        .topo-container { background:#1e3a8a; padding:15px; position:sticky; top:0; z-index:1000; border-radius:0 0-25px 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .topo-container { background:#1e3a8a; padding:15px; position:sticky; top:0; z-index:1000; border-radius:0 0 25px 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .topo-nav { display:flex; align-items:center; gap:15px; color:white; margin-bottom: 15px; }
         
-        /* Abas de Filtro */
         .abas-filtro { display: flex; gap: 10px; margin-bottom: 15px; }
         .aba { flex: 1; padding: 10px; text-align: center; background: rgba(255,255,255,0.1); color: white; border-radius: 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); }
         .aba.ativa { background: #22c55e; border-color: #22c55e; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3); }
@@ -89,10 +88,10 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    let filtroTipo = "Ordinária";
+    let filtroAtual = "Ordinária";
 
     function mudarAba(tipo) {
-        filtroTipo = tipo;
+        filtroAtual = tipo;
         document.getElementById('abaOrdinaria').classList.toggle('ativa', tipo === 'Ordinária');
         document.getElementById('abaExtraordinaria').classList.toggle('ativa', tipo === 'Extraordinária');
         carregarSessoes();
@@ -100,17 +99,19 @@
 
     function carregarSessoes() {
         const lista = document.getElementById("lista-publica");
-        // Filtra pela coleção sessoes onde o titulo contém o tipo
+        
         db.collection("sessoes").orderBy("data", "desc").onSnapshot(snapshot => {
             lista.innerHTML = "";
             let encontrou = false;
 
             snapshot.forEach(doc => {
                 const item = doc.data();
-                const titulo = item.titulo || '';
                 
-                // Filtro lógico: só mostra se o título bater com a aba selecionada (Ordinária ou Extraordinária)
-                if (titulo.toLowerCase().includes(filtroTipo.toLowerCase())) {
+                // AJUSTE AQUI: Verifica o campo 'tipo' vindo do seletor do painel OU o título
+                const tipoNoBanco = item.tipo || "";
+                const tituloNoBanco = item.titulo || "";
+                
+                if (tipoNoBanco === filtroAtual || tituloNoBanco.includes(filtroAtual)) {
                     encontrou = true;
                     const id = doc.id;
                     const texto = item.texto || '';
@@ -118,7 +119,11 @@
 
                     let midiaHTML = "";
                     if(item.link && item.link.includes('youtube.com')){
-                        const vidId = item.link.split('v=')[1] || item.link.split('/').pop();
+                        // Extração do ID do vídeo do Youtube
+                        let vidId = "";
+                        if(item.link.includes('v=')) vidId = item.link.split('v=')[1].split('&')[0];
+                        else vidId = item.link.split('/').pop();
+                        
                         midiaHTML = `<iframe height="200" src="https://www.youtube.com/embed/${vidId}" allowfullscreen></iframe>`;
                     }
 
@@ -128,7 +133,7 @@
                                 <div class="card-header-info">
                                     <div style="flex: 1;">
                                         <div class="card-data"><i class="material-icons" style="font-size:12px">calendar_today</i> ${dataBR}</div>
-                                        <div class="card-titulo">${titulo}</div>
+                                        <div class="card-titulo">${tituloNoBanco}</div>
                                     </div>
                                     <button class="btn-ver-mais" onclick="toggleSessao('${id}')" id="btn-${id}">
                                         Abrir <i class="material-icons" style="font-size:16px">expand_more</i>
@@ -137,7 +142,7 @@
                                 <div class="conteudo-sessao" id="conteudo-${id}">
                                     <div class="midia-box">${midiaHTML}</div>
                                     <div class="card-texto">${texto}</div>
-                                    <div class="btn-compartilhar" onclick="compartilhar('${titulo}', '${window.location.href}')">
+                                    <div class="btn-compartilhar" onclick="compartilhar('${tituloNoBanco}', '${window.location.href}')">
                                         <i class="material-icons" style="font-size:18px">share</i> Compartilhar
                                     </div>
                                 </div>
@@ -145,7 +150,7 @@
                         </div>`;
                 }
             });
-            if(!encontrou) lista.innerHTML = `<div style="text-align:center; padding:20px; color:#64748b;">Nenhuma sessão ${filtroTipo} encontrada.</div>`;
+            if(!encontrou) lista.innerHTML = `<div style="text-align:center; padding:20px; color:#64748b;">Nenhuma sessão ${filtroAtual} disponível.</div>`;
         });
     }
 
@@ -170,7 +175,6 @@
         if (navigator.share) { navigator.share({ title: t, url: u }); }
     }
 
-    // Inicia carregando as Ordinárias
     carregarSessoes();
 </script>
 </body>
