@@ -1,112 +1,177 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5PL1D78HGL"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5PL1D78HGL');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sessões - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; padding-bottom: 120px; }
-        .header-lista { background: #1e3a8a; color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; position: relative; }
-        .btn-voltar { position: absolute; left: 20px; top: 35px; color: white; text-decoration: none; }
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 140px; }
         
-        .container { padding: 20px; }
-        .card-sessao { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .card-sessao h3 { margin: 0; color: #1e3a8a; font-size: 18px; }
-        .data-sessao { font-size: 12px; color: #64748b; margin-bottom: 10px; display: block; }
-        .texto-sessao { font-size: 14px; color: #334155; line-height: 1.6; margin-bottom: 15px; }
+        .topo-container { background:#1e3a8a; padding:15px; position:sticky; top:0; z-index:1000; border-radius:0 0-25px 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .topo-nav { display:flex; align-items:center; gap:15px; color:white; margin-bottom: 15px; }
         
-        .btn-video { 
-            display: flex; align-items: center; justify-content: center; gap: 10px; 
-            background: #ef4444; color: white; text-decoration: none; padding: 12px; 
-            border-radius: 12px; font-weight: 600; font-size: 14px;
-        }
-        .sem-dados { text-align: center; padding: 40px; color: #64748b; }
+        /* Abas de Filtro */
+        .abas-filtro { display: flex; gap: 10px; margin-bottom: 15px; }
+        .aba { flex: 1; padding: 10px; text-align: center; background: rgba(255,255,255,0.1); color: white; border-radius: 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); }
+        .aba.ativa { background: #22c55e; border-color: #22c55e; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3); }
 
-        /* Rodapé de Redes Sociais */
+        .busca-box { background:white; border-radius:15px; display:flex; align-items:center; padding:5px 15px; }
+        .busca-box i { color: #64748b; font-size: 20px; }
+        .busca-box input { border:none; padding:10px; width:100%; outline:none; font-family:'Poppins'; font-size:14px; }
+
+        .container { padding: 15px; }
+        
+        .card { background:white; border-radius:20px; overflow:hidden; margin-bottom:15px; box-shadow:0 8px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .card-body { padding:15px; }
+        .card-header-info { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .card-data { font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; display: flex; align-items: center; gap: 5px; }
+        .card-titulo { font-size:16px; color:#1e3a8a; font-weight:600; margin:5px 0; line-height: 1.3; }
+        
+        .conteudo-sessao { display: none; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
+        .card-texto { font-size:14px; color:#475569; line-height: 1.6; white-space: pre-wrap; }
+        .midia-box iframe { width:100%; border-radius:12px; margin-bottom:10px; border:none; background: #000; }
+
+        .btn-ver-mais { background: #eff6ff; color: #1e3a8a; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .btn-compartilhar { display:flex; align-items:center; justify-content:center; gap:8px; background:#f1f5f9; color:#1e3a8a; border:none; padding:12px; border-radius:12px; margin-top:20px; cursor:pointer; font-weight:600; width: 100%; }
+
         .rodape-redes { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 0; display: flex; flex-direction: column; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); border-radius: 25px 25px 0 0; z-index: 1000; }
         .rodape-redes p { font-size: 10px; font-weight: 700; color: #64748b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .icones-flex { display: flex; gap: 25px; }
-        .icones-flex a { font-size: 24px; text-decoration: none; transition: 0.3s; }
-        .fa-facebook { color: #1877F2; } .fa-instagram { color: #E1306C; } .fa-tiktok { color: #000; }
+        .icones-flex a { font-size: 24px; text-decoration: none; }
     </style>
 </head>
 <body>
 
-<div class="header-lista">
-    <a href="app.html" class="btn-voltar"><i class="material-icons">arrow_back</i></a>
-    <h2 style="margin:0;">Sessões da Câmara</h2>
-    <p style="margin:5px 0 0; opacity:0.8; font-size:12px;">Transparência Areia Branca/RN</p>
+<div class="topo-container">
+    <div class="topo-nav">
+        <i class="material-icons" onclick="history.back()" style="cursor:pointer">arrow_back</i>
+        <span style="font-weight:600">Sessões da Câmara</span>
+    </div>
+
+    <div class="abas-filtro">
+        <div class="aba ativa" id="abaOrdinaria" onclick="mudarAba('Ordinária')">Ordinárias</div>
+        <div class="aba" id="abaExtraordinaria" onclick="mudarAba('Extraordinária')">Extraordinárias</div>
+    </div>
+
+    <div class="busca-box">
+        <i class="material-icons">search</i>
+        <input type="text" id="inputBusca" placeholder="Pesquisar pauta..." onkeyup="filtrarLista()">
+    </div>
 </div>
 
-<div class="container" id="listaSessoes">
-    <div class="sem-dados">Carregando sessões...</div>
-</div>
+<div class="container" id="lista-publica">Carregando sessões...</div>
 
-<div class="social-footer">
-    <a href="https://instagram.com/andre.de.dede" target="_blank">
-        <i class="fa-brands fa-instagram"></i>
-        <span class="label-social">Instagram</span>
-    </a>
-    <a href="https://facebook.com/andrekelly.santos" target="_blank">
-        <i class="fa-brands fa-facebook"></i>
-        <span class="label-social">Facebook</span>
-    </a>
-    <a href="https://tiktok.com/@andre_de_dede" target="_blank">
-        <i class="fa-brands fa-tiktok"></i>
-        <span class="label-social">TikTok</span>
-    </a>
-    <a href="https://chat.whatsapp.com/I2NSQohQ1jnBQUUuDAgguu" target="_blank">
-        <i class="fa-brands fa-whatsapp"></i>
-        <span class="label-social">WhatsApp</span>
-    </a>
+<div class="rodape-redes">
+    <p>Siga André de Dedé</p>
+    <div class="icones-flex">
+        <a href="https://facebook.com/andrekelly.santos" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+        <a href="https://instagram.com/andre.de.dede" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://tiktok.com/@andre_de_dede" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
 <script>
-    const firebaseConfig = { 
-        apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
-        authDomain: "gabinete-do-povo.firebaseapp.com", 
-        projectId: "gabinete-do-povo" 
-    };
-
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    db.collection("sessoes").orderBy("data", "desc").onSnapshot((snapshot) => {
-        const container = document.getElementById("listaSessoes");
-        container.innerHTML = "";
+    let filtroTipo = "Ordinária";
 
-        if (snapshot.empty) {
-            container.innerHTML = '<div class="sem-dados">Nenhuma sessão encontrada.</div>';
-            return;
-        }
+    function mudarAba(tipo) {
+        filtroTipo = tipo;
+        document.getElementById('abaOrdinaria').classList.toggle('ativa', tipo === 'Ordinária');
+        document.getElementById('abaExtraordinaria').classList.toggle('ativa', tipo === 'Extraordinária');
+        carregarSessoes();
+    }
 
-        snapshot.forEach((doc) => {
-            const sessao = doc.data();
-            const dataFormatada = sessao.data ? sessao.data.split('-').reverse().join('/') : '--/--/----';
-            
-            container.innerHTML += `
-                <div class="card-sessao">
-                    <span class="data-sessao">${dataFormatada}</span>
-                    <h3>${sessao.titulo}</h3>
-                    <p class="texto-sessao">${sessao.texto}</p>
-                    ${sessao.link ? `
-                        <a href="${sessao.link}" target="_blank" class="btn-video">
-                            <i class="material-icons">play_circle</i> Assistir Gravação
-                        </a>
-                    ` : ''}
-                </div>
-            `;
+    function carregarSessoes() {
+        const lista = document.getElementById("lista-publica");
+        // Filtra pela coleção sessoes onde o titulo contém o tipo
+        db.collection("sessoes").orderBy("data", "desc").onSnapshot(snapshot => {
+            lista.innerHTML = "";
+            let encontrou = false;
+
+            snapshot.forEach(doc => {
+                const item = doc.data();
+                const titulo = item.titulo || '';
+                
+                // Filtro lógico: só mostra se o título bater com a aba selecionada (Ordinária ou Extraordinária)
+                if (titulo.toLowerCase().includes(filtroTipo.toLowerCase())) {
+                    encontrou = true;
+                    const id = doc.id;
+                    const texto = item.texto || '';
+                    const dataBR = item.data ? item.data.split('-').reverse().join('/') : "";
+
+                    let midiaHTML = "";
+                    if(item.link && item.link.includes('youtube.com')){
+                        const vidId = item.link.split('v=')[1] || item.link.split('/').pop();
+                        midiaHTML = `<iframe height="200" src="https://www.youtube.com/embed/${vidId}" allowfullscreen></iframe>`;
+                    }
+
+                    lista.innerHTML += `
+                        <div class="card card-item-filtro">
+                            <div class="card-body">
+                                <div class="card-header-info">
+                                    <div style="flex: 1;">
+                                        <div class="card-data"><i class="material-icons" style="font-size:12px">calendar_today</i> ${dataBR}</div>
+                                        <div class="card-titulo">${titulo}</div>
+                                    </div>
+                                    <button class="btn-ver-mais" onclick="toggleSessao('${id}')" id="btn-${id}">
+                                        Abrir <i class="material-icons" style="font-size:16px">expand_more</i>
+                                    </button>
+                                </div>
+                                <div class="conteudo-sessao" id="conteudo-${id}">
+                                    <div class="midia-box">${midiaHTML}</div>
+                                    <div class="card-texto">${texto}</div>
+                                    <div class="btn-compartilhar" onclick="compartilhar('${titulo}', '${window.location.href}')">
+                                        <i class="material-icons" style="font-size:18px">share</i> Compartilhar
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+            });
+            if(!encontrou) lista.innerHTML = `<div style="text-align:center; padding:20px; color:#64748b;">Nenhuma sessão ${filtroTipo} encontrada.</div>`;
         });
-    }, (error) => {
-        document.getElementById("listaSessoes").innerHTML = '<div class="sem-dados">Erro ao carregar dados.</div>';
-    });
-</script>
+    }
 
+    function filtrarLista() {
+        let input = document.getElementById('inputBusca').value.toLowerCase();
+        let cards = document.getElementsByClassName('card-item-filtro');
+        for (let i = 0; i < cards.length; i++) {
+            let txt = cards[i].innerText.toLowerCase();
+            cards[i].style.display = txt.includes(input) ? "block" : "none";
+        }
+    }
+
+    function toggleSessao(id) {
+        const c = document.getElementById(`conteudo-${id}`);
+        const b = document.getElementById(`btn-${id}`);
+        const aberto = c.style.display === "block";
+        c.style.display = aberto ? "none" : "block";
+        b.innerHTML = aberto ? 'Abrir <i class="material-icons">expand_more</i>' : 'Fechar <i class="material-icons">expand_less</i>';
+    }
+
+    function compartilhar(t, u) {
+        if (navigator.share) { navigator.share({ title: t, url: u }); }
+    }
+
+    // Inicia carregando as Ordinárias
+    carregarSessoes();
+</script>
 </body>
 </html>
