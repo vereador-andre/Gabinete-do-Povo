@@ -1,96 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5PL1D78HGL"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-5PL1D78HGL');
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avaliar Mandato - André de Dedé</title>
+    <title>Avaliar - André de Dedé</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; text-align: center; }
-        .header { background: #1e3a8a; color: white; padding: 35px 20px 30px; border-radius: 0 0 30px 30px; display: flex; align-items: center; justify-content: center; position: relative; }
-        .btn-voltar { position: absolute; left: 20px; cursor: pointer; }
+        .header { background: #1e3a8a; color: white; padding: 30px; border-radius: 0 0 30px 30px; }
         .container { padding: 30px 20px; }
         .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        textarea { width: 100%; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; font-family: 'Poppins'; box-sizing: border-box; margin-top: 15px; font-size: 14px; outline: none; background: #f8fafc; }
-        .btn-enviar { background: #22c55e; color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 600; width: 100%; margin-top: 20px; cursor: pointer; font-size: 16px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-enviar:disabled { background: #94a3b8; }
+        textarea { width: 100%; border: 1px solid #ddd; border-radius: 12px; padding: 15px; box-sizing: border-box; margin-top: 15px; font-family: 'Poppins'; outline: none; }
+        .btn-enviar { background: #22c55e; color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 600; width: 100%; margin-top: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="header">
-        <i class="material-icons btn-voltar" onclick="history.back()">arrow_back</i>
-        <span style="font-weight:600">Avaliação do Mandato</span>
+        <i class="material-icons" onclick="history.back()" style="float:left; cursor:pointer">arrow_back</i>
+        <span>Avaliação do Mandato</span>
     </div>
-
     <div class="container">
         <div class="card">
-            <i class="material-icons" style="font-size:60px; color:#f59e0b;">stars</i>
             <h3>Sua opinião é fundamental!</h3>
-            <p style="font-size:13px; color:#64748b;">Deixe sua avaliação abaixo para o gabinete do vereador André de Dedé.</p>
-            
-            <textarea id="textoAvaliacao" rows="6" placeholder="Escreva aqui sua opinião, crítica ou sugestão..."></textarea>
-            
-            <button id="btnEnviar" class="btn-enviar" onclick="enviarAvaliacao()">
-                <i class="material-icons">send</i> Enviar Avaliação
-            </button>
+            <textarea id="textoAvaliacao" rows="6" placeholder="Escreva aqui..."></textarea>
+            <button id="btnEnviar" class="btn-enviar" onclick="enviarAvaliacao()">Enviar Avaliação</button>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    
     <script>
-        const firebaseConfig = { 
-            apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
-            authDomain: "gabinete-do-povo.firebaseapp.com", 
-            projectId: "gabinete-do-povo" 
-        };
-
-        // Inicialização protegida
-        if (!firebase.apps.length) { 
-            firebase.initializeApp(firebaseConfig); 
-        }
+        const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
-        async function enviarAvaliacao() {
-            const texto = document.getElementById('textoAvaliacao').value;
+        function enviarAvaliacao() {
             const btn = document.getElementById('btnEnviar');
-
-            if (texto.trim() === "") { 
-                alert("Por favor, escreva sua avaliação antes de enviar."); 
-                return; 
-            }
-
             btn.disabled = true;
-            btn.innerHTML = "<i class='material-icons'>sync</i> Enviando...";
-
-            const agora = new Date();
-
-            try {
-                // Enviando para a coleção correta
-                await db.collection("avaliacoes_mandato").add({
-                    mensagem: texto,
-                    data: agora.toLocaleDateString('pt-BR'),
-                    hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-                    timestamp: firebase.firestore.Timestamp.fromDate(agora)
-                });
-
-                alert("Obrigado! Sua avaliação foi enviada com sucesso.");
+            db.collection("avaliacoes_mandato").add({
+                mensagem: document.getElementById('textoAvaliacao').value,
+                data: new Date().toLocaleDateString('pt-BR')
+            }).then(() => {
+                alert("Enviado com sucesso!");
                 window.location.href = "app.html";
-            } catch (error) {
-                console.error("Erro ao enviar avaliação:", error);
-                alert("Erro ao enviar. Verifique sua conexão e tente novamente.");
-                btn.disabled = false;
-                btn.innerHTML = "<i class='material-icons'>send</i> Enviar Avaliação";
-            }
+            }).catch((e) => { alert("Erro: " + e.message); btn.disabled = false; });
         }
     </script>
 </body>
