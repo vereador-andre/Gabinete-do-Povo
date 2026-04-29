@@ -43,25 +43,36 @@
         .st-nao { background: #fee2e2; color: #991b1b; }
         .st-disc { background: #e2e8f0; color: #475569; }
 
-        /* ESTILOS EXCLUSIVOS ABA RELATÓRIO */
+        /* ESTILO REFORMULADO - ABA RELATÓRIOS */
         .rel-container { display: flex; flex-direction: column; gap: 15px; }
         .rel-card-master { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .rel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px; }
+        .rel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px; }
         .rel-header h2 { font-size: 18px; color: #1e3a8a; margin:0; }
-        .rel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .rel-stat { background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid #edf2f7; text-align: left; position: relative; overflow: hidden; }
-        .rel-stat label { font-size: 9px; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        .rel-stat b { font-size: 18px; color: #1e3a8a; display: block; }
-        .barra-progresso { height: 8px; background: #e2e8f0; border-radius: 10px; margin: 10px 0; overflow: hidden; display: flex; }
-        .prog-cor { height: 100%; transition: width 0.5s ease-in-out; }
-        .btn-rel-float { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-print { background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 12px; flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; cursor: pointer; }
-        .btn-whatsapp { background: #25d366; color: white; border: none; padding: 15px; border-radius: 12px; flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; cursor: pointer; }
         
+        .rel-section-title { font-size: 12px; color: #1e3a8a; font-weight: 700; text-transform: uppercase; margin: 20px 0 10px 0; display: flex; align-items: center; gap: 8px; }
+        
+        .rel-grid-inv { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .rel-box-inv { background: #f8fafc; padding: 15px; border-radius: 15px; border-left: 5px solid #1e3a8a; }
+        .rel-box-inv label { font-size: 10px; color: #64748b; font-weight: 600; display: block; }
+        .rel-box-inv b { font-size: 20px; color: #1e3a8a; display: block; margin: 5px 0; }
+        .rel-inv-split { display: flex; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 5px; }
+        .rel-inv-split div { display: flex; flex-direction: column; }
+        .rel-inv-split span { font-size: 9px; font-weight: 700; text-transform: uppercase; }
+        
+        .rel-stat-simple { background: white; border: 1px solid #e2e8f0; padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .rel-stat-simple div { display: flex; flex-direction: column; }
+        .rel-stat-simple b { font-size: 18px; color: #1e3a8a; }
+        
+        .barra-progresso { height: 12px; background: #e2e8f0; border-radius: 20px; margin: 10px 0; overflow: hidden; display: flex; }
+        .prog-cor { height: 100%; transition: width 0.5s ease; }
+        
+        .btn-rel-float { display: flex; gap: 10px; margin-top: 25px; }
+        .btn-print { background: #475569; color: white; border: none; padding: 15px; border-radius: 12px; flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; }
+        .btn-whatsapp { background: #25d366; color: white; border: none; padding: 15px; border-radius: 12px; flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; }
+
         @media print {
             .topo, .tabs, .filtro-periodo, .card-controle, .btn-acao, .acoes-card, .btn-rel-float, .dash-resumo { display: none !important; }
-            .container { padding: 0; }
-            .rel-card-master { border: none; box-shadow: none; padding: 0; }
+            .rel-card-master { border: none; box-shadow: none; }
             .secao { display: none !important; }
             #relatorios { display: block !important; }
         }
@@ -91,35 +102,9 @@
             <div class="dash-detalhe"><div class="det-urb">🏙 <span id="dashPedUrb">0</span></div><div class="det-rur">🚜 <span id="dashPedRur">0</span></div></div>
         </div>
     </div>
-
-    <div id="dashContainerLiderancas" class="dash-resumo dash-unica" style="display:none;">
-        <div class="card-mini"><label>Total de Lideranças</label><span id="dashLiderancas">0</span>
-            <div class="dash-detalhe"><div class="det-urb">🏙 Urbana: <span id="dashLidUrb">0</span></div><div class="det-rur">🚜 Rural: <span id="dashLidRur">0</span></div></div>
-        </div>
-    </div>
-
-    <div id="dashContainerAgenda" class="dash-resumo" style="display:none;">
-        <div class="card-mini"><label>Total Reuniões</label><span id="dashTotalReu">0</span></div>
-        <div class="card-mini"><label>Total Pautas</label><span id="dashTotalPau">0</span></div>
-        <div class="card-mini" style="grid-column: span 2;"><label>Status das Pautas</label>
-            <div class="dash-detalhe">
-                <div class="det-res">Atendido: <b id="dashPauTotal">0</b></div>
-                <div class="det-rur">Parcial: <b id="dashPauParcial">0</b></div>
-                <div class="det-pen">Não At: <b id="dashPauNao">0</b></div>
-                <div style="color:#475569">Não Disc: <b id="dashPauDisc">0</b></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="dashContainerEventos" class="dash-resumo" style="display:none;">
-        <div class="card-mini"><label>Total Eventos</label><span id="dashTotalEve">0</span></div>
-        <div class="card-mini"><label>Presença</label>
-            <div class="dash-detalhe">
-                <div class="det-res">✔ Participei: <span id="dashEveSim">0</span></div>
-                <div class="det-pen">✖ Não: <span id="dashEveNao">0</span></div>
-            </div>
-        </div>
-    </div>
+    <div id="dashContainerLiderancas" class="dash-resumo dash-unica" style="display:none;"><div class="card-mini"><label>Lideranças</label><span id="dashLiderancas">0</span><div class="dash-detalhe"><div class="det-urb">🏙 Urb: <span id="dashLidUrb">0</span></div><div class="det-rur">🚜 Rur: <span id="dashLidRur">0</span></div></div></div></div>
+    <div id="dashContainerAgenda" class="dash-resumo" style="display:none;"><div class="card-mini"><label>Reuniões</label><span id="dashTotalReu">0</span></div><div class="card-mini"><label>Pautas</label><span id="dashTotalPau">0</span></div></div>
+    <div id="dashContainerEventos" class="dash-resumo" style="display:none;"><div class="card-mini"><label>Eventos</label><span id="dashTotalEve">0</span></div><div class="card-mini"><label>Presença</label><div class="dash-detalhe"><div class="det-res">✔ <span id="dashEveSim">0</span></div><div class="det-pen">✖ <span id="dashEveNao">0</span></div></div></div></div>
 
     <div class="filtro-periodo">
         <div><label>Início</label><input type="date" id="filtroInicio" class="input-filtro" onchange="aplicarFiltros()"></div>
@@ -130,8 +115,7 @@
     <div id="demandas" class="secao active">
         <div class="card-controle">
             <h4 id="titPedido">Novo Pedido</h4>
-            <input type="hidden" id="pId">
-            <input type="date" id="pData" class="form-controle">
+            <input type="hidden" id="pId"><input type="date" id="pData" class="form-controle">
             <input type="text" id="pNome" class="form-controle" placeholder="Nome do Cidadão">
             <input type="text" id="pBairro" class="form-controle" placeholder="Bairro/Comunidade">
             <select id="pZona" class="form-controle"><option value="Urbana">Zona Urbana</option><option value="Rural">Zona Rural</option></select>
@@ -147,8 +131,7 @@
     <div id="liderancas" class="secao">
         <div class="card-controle">
             <h4 id="titLider">Cadastrar Liderança</h4>
-            <input type="hidden" id="lId">
-            <input type="text" id="lNome" class="form-controle" placeholder="Nome">
+            <input type="hidden" id="lId"><input type="text" id="lNome" class="form-controle" placeholder="Nome">
             <input type="tel" id="lFone" class="form-controle" placeholder="WhatsApp">
             <select id="lZona" class="form-controle"><option value="Urbana">Zona Urbana</option><option value="Rural">Zona Rural</option></select>
             <input type="text" id="lBairroSetor" class="form-controle" placeholder="Bairro/Setor">
@@ -160,8 +143,7 @@
     <div id="agenda" class="secao">
         <div class="card-controle">
             <h4 id="titAgenda">Nova Reunião</h4>
-            <input type="hidden" id="aId">
-            <input type="date" id="aData" class="form-controle">
+            <input type="hidden" id="aId"><input type="date" id="aData" class="form-controle">
             <input type="text" id="aLocal" class="form-controle" placeholder="Local">
             <input type="text" id="aCom" class="form-controle" placeholder="Com quem?">
             <div style="margin-top:10px; background:#f1f5f9; padding:10px; border-radius:10px;">
@@ -177,8 +159,7 @@
     <div id="eventos" class="secao">
         <div class="card-controle">
             <h4 id="titEvento">Novo Evento</h4>
-            <input type="hidden" id="eId">
-            <input type="date" id="eData" class="form-controle">
+            <input type="hidden" id="eId"><input type="date" id="eData" class="form-controle">
             <input type="text" id="eLocal" class="form-controle" placeholder="Local">
             <input type="text" id="eTitulo" class="form-controle" placeholder="Evento">
             <textarea id="eObs" class="form-controle" style="height:60px" placeholder="Observações"></textarea>
@@ -191,54 +172,58 @@
         <div class="rel-container">
             <div class="rel-card-master">
                 <div class="rel-header">
-                    <div style="display:flex; flex-direction:column">
-                        <h2 style="font-size:16px">Resumo de Atuação</h2>
-                        <small style="color:#64748b; font-size:10px">Dados consolidados do período</small>
-                    </div>
-                    <i class="material-icons" style="color:#1e3a8a">analytics</i>
+                    <div><h2>Análise de Atuação</h2><small id="relPeriodoLabel">Geral</small></div>
+                    <i class="material-icons" style="color:#1e3a8a">insert_chart</i>
                 </div>
-                
-                <div class="rel-grid">
-                    <div class="rel-stat">
-                        <label>Resolutividade</label>
-                        <b id="relEfi">0%</b>
-                        <div class="barra-progresso"><div id="progEfi" class="prog-cor" style="background:#166534; width:0%"></div></div>
-                        <small style="font-size:8px; color:#64748b">Pedidos resolvidos vs pendentes</small>
-                    </div>
-                    <div class="rel-stat">
-                        <label>Presença em Eventos</label>
-                        <b id="relPres">0%</b>
-                        <div class="barra-progresso"><div id="progPres" class="prog-cor" style="background:#1e3a8a; width:0%"></div></div>
-                        <small style="font-size:8px; color:#64748b">Participação confirmada</small>
+
+                <div class="rel-section-title"><i class="material-icons" style="font-size:16px">payments</i> Investimentos e Recursos</div>
+                <div class="rel-grid-inv">
+                    <div class="rel-box-inv">
+                        <label>Volume Total Movimentado</label>
+                        <b id="relInvTotal">R$ 0,00</b>
+                        <div class="rel-inv-split">
+                            <div style="color:#166534"><span>Concluído</span><b id="relInvRes" style="font-size:14px">R$ 0,00</b></div>
+                            <div style="color:#991b1b"><span>Em Aberto</span><b id="relInvPen" style="font-size:14px">R$ 0,00</b></div>
+                        </div>
                     </div>
                 </div>
 
-                <div style="margin-top:15px; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                    <div class="rel-stat"><label>Pedidos</label><b id="relPedT">0</b></div>
-                    <div class="rel-stat"><label>Líderes</label><b id="relLidT">0</b></div>
-                    <div class="rel-stat"><label>Reuniões</label><b id="relReuT">0</b></div>
+                <div class="rel-section-title"><i class="material-icons" style="font-size:16px">map</i> Abrangência da Presença</div>
+                <div class="rel-stat-simple">
+                    <div><label style="font-size:10px; color:#64748b; font-weight:600">COMUNIDADES ALCANÇADAS</label><b id="relTotalBairros">0 Locais</b></div>
+                    <i class="material-icons" style="color:#1e3a8a">location_on</i>
                 </div>
 
-                <div class="rel-stat" style="margin-top:10px;">
-                    <label>Investimento Total em Pedidos</label>
-                    <b id="relInvT" style="color:#166534">R$ 0,00</b>
-                </div>
-
-                <div style="margin-top:20px; border-top:1px solid #f1f5f9; padding-top:15px;">
-                    <label class="label-topo">Abrangência Territorial</label>
-                    <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:11px;">
-                        <span>🏙 Urbano: <b id="relUrbP">0%</b></span>
-                        <span>🚜 Rural: <b id="relRurP">0%</b></span>
+                <div style="margin-top:15px;">
+                    <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700">
+                        <span style="color:#1e3a8a">🏙 URBANO (<span id="txtUrb">0</span>)</span>
+                        <span style="color:#854d0e">🚜 RURAL (<span id="txtRur">0</span>)</span>
                     </div>
                     <div class="barra-progresso">
-                        <div id="progUrb" class="prog-cor" style="background:#1e3a8a; width:0%"></div>
-                        <div id="progRur" class="prog-cor" style="background:#854d0e; width:0%"></div>
+                        <div id="barUrb" class="prog-cor" style="background:#1e3a8a; width:50%"></div>
+                        <div id="barRur" class="prog-cor" style="background:#854d0e; width:50%"></div>
+                    </div>
+                </div>
+
+                <div class="rel-section-title"><i class="material-icons" style="font-size:16px">fact_check</i> Balanço de Pedidos</div>
+                <div style="background:#f1f5f9; padding:15px; border-radius:15px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <span style="font-size:11px; font-weight:700; color:#1e3a8a">ATENDIMENTO GERAL</span>
+                        <span id="relPercentAtendimento" style="font-size:11px; font-weight:700">0%</span>
+                    </div>
+                    <div class="barra-progresso" style="background:#cbd5e1; margin:0">
+                        <div id="barAtendimento" class="prog-cor" style="background:#166534; width:0%"></div>
+                    </div>
+                    <div style="display:flex; justify-content:space-around; margin-top:10px; text-align:center">
+                        <div><b id="relPedTotal" style="color:#1e3a8a; font-size:16px">0</b><br><small style="font-size:9px">PEDIDOS</small></div>
+                        <div><b id="relLidTotal" style="color:#1e3a8a; font-size:16px">0</b><br><small style="font-size:9px">LÍDERES</small></div>
+                        <div><b id="relReuTotal" style="color:#1e3a8a; font-size:16px">0</b><br><small style="font-size:9px">REUNIÕES</small></div>
                     </div>
                 </div>
 
                 <div class="btn-rel-float">
-                    <button class="btn-print" onclick="window.print()"><i class="material-icons">print</i> Relatório PDF</button>
-                    <button class="btn-whatsapp" onclick="enviarRelatorioZap()"><i class="material-icons">send</i> Resumo WhatsApp</button>
+                    <button class="btn-print" onclick="window.print()"><i class="material-icons">picture_as_pdf</i> Gerar PDF</button>
+                    <button class="btn-whatsapp" onclick="enviarRelatorioZap()"><i class="material-icons">share</i> WhatsApp</button>
                 </div>
             </div>
         </div>
@@ -254,8 +239,8 @@
     const db = firebase.firestore();
     let pautasParaSalvar = [];
     
-    // Objeto global de totais para garantir somas precisas
-    let totais = { ped:0, res:0, urb:0, rur:0, lid:0, reu:0, eve:0, part:0, inv:0 };
+    // Objeto global de inteligência
+    let intel = { ped:0, res:0, urb:0, rur:0, lid:0, reu:0, invTotal:0, invRes:0, invPen:0, bairros: new Set() };
 
     function switchTab(evt, tabName) {
         document.querySelectorAll('.secao').forEach(s => s.classList.remove('active'));
@@ -268,144 +253,144 @@
         document.getElementById('dashContainerEventos').style.display = (tabName === 'eventos') ? 'grid' : 'none';
     }
 
-    function aplicarFiltros() { renderizarTudo(document.getElementById("filtroInicio").value, document.getElementById("filtroFim").value); }
-    function limparFiltros() { document.getElementById("filtroInicio").value = ""; document.getElementById("filtroFim").value = ""; renderizarTudo(); }
+    function aplicarFiltros() { 
+        const ini = document.getElementById("filtroInicio").value;
+        const fim = document.getElementById("filtroFim").value;
+        document.getElementById("relPeriodoLabel").innerText = (ini && fim) ? `${ini} até ${fim}` : "Geral";
+        renderizarTudo(ini, fim); 
+    }
+    
+    function limparFiltros() { 
+        document.getElementById("filtroInicio").value = ""; 
+        document.getElementById("filtroFim").value = ""; 
+        document.getElementById("relPeriodoLabel").innerText = "Geral";
+        renderizarTudo(); 
+    }
 
     function renderizarTudo(ini = "", fim = "") {
-        // 1. PEDIDOS
+        // PEDIDOS E INVESTIMENTOS
         db.collection("crm_pedidos").orderBy("dataPedido", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
-            totais.ped=0; totais.res=0; totais.urb=0; totais.rur=0; totais.inv=0;
+            intel.ped=0; intel.res=0; intel.urb=0; intel.rur=0; intel.invTotal=0; intel.invRes=0; intel.invPen=0; intel.bairros.clear();
+            
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.dataPedido >= ini) && (!fim || d.dataPedido <= fim)) {
-                    totais.ped++;
-                    totais.inv += parseFloat(d.gasto) || 0;
-                    if(d.status === 'Resolvido') totais.res++;
-                    if(d.zona === 'Urbana') totais.urb++; else totais.rur++;
-                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarPed('${doc.id}','${d.dataPedido}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}','${d.status}',${d.gasto},'${d.descricao}')">edit</i><i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i></div><div class="label-topo">${d.dataPedido} | ${d.status}</div><strong>${d.nome}</strong><br><small>📍 ${d.zona} - ${d.bairro}</small><br><small>👤 Líder: ${d.lideranca || "Direto"}</small><div style="font-size:11px; margin-top:5px; color:#475569; border-top:1px solid #f1f5f9; padding-top:5px;">📝 ${d.descricao || "Sem descrição"}</div><div class="badge-valor">R$ ${d.gasto}</div></div>`;
+                    intel.ped++;
+                    const valor = parseFloat(d.gasto) || 0;
+                    intel.invTotal += valor;
+                    if(d.status === 'Resolvido') { intel.res++; intel.invRes += valor; } else { intel.invPen += valor; }
+                    if(d.zona === 'Urbana') intel.urb++; else intel.rur++;
+                    if(d.bairro) intel.bairros.add(d.bairro.toUpperCase().trim());
+                    
+                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarPed('${doc.id}','${d.dataPedido}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}','${d.status}',${d.gasto},'${d.descricao}')">edit</i><i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i></div><div class="label-topo">${d.dataPedido} | ${d.status}</div><strong>${d.nome}</strong><br><small>📍 ${d.zona} - ${d.bairro}</small><br><small>👤 Líder: ${d.lideranca || "Direto"}</small><div class="badge-valor">R$ ${d.gasto}</div></div>`;
                 }
             });
-            document.getElementById("dashPedidos").innerText=totais.ped;
-            document.getElementById("dashPedRes").innerText=totais.res;
-            document.getElementById("dashPedPen").innerText=(totais.ped - totais.res);
-            document.getElementById("dashPedidosZona").innerText=totais.ped;
-            document.getElementById("dashPedUrb").innerText=totais.urb;
-            document.getElementById("dashPedRur").innerText=totais.rur;
-            atualizarRel();
+            atualizarDashboards();
+            atualizarRelatorioEstrategico();
         });
 
-        // 2. REUNIÕES
+        // REUNIÕES
         db.collection("agenda_vereador").orderBy("dataReuniao", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
-            totais.reu=0; let pT=0, pTo=0, pPa=0, pNa=0, pDi=0;
+            intel.reu=0; let pT=0;
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.dataReuniao >= ini) && (!fim || d.dataReuniao <= fim)) {
-                    totais.reu++;
-                    let pHTML = "";
-                    d.pautas?.forEach(p => { 
-                        pT++; if(p.status==='Atendido total') pTo++; else if(p.status==='Atendido parcial') pPa++; else if(p.status==='Não atendido') pNa++; else pDi++;
-                        pHTML += `<div style="font-size:11px; margin-top:5px;"><span class="status-pauta ${getStatusClass(p.status)}">${p.status}</span> ${p.texto}</div>`;
-                    });
-                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')},'${d.observacoes||""}')">edit</i><i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i></div><div class="label-topo">${d.dataReuniao}</div><strong>${d.comQuem}</strong><br><small>📍 Local: ${d.local || "Não informado"}</small><div style="font-size:11px; margin-top:5px; color:#475569; border-top:1px solid #f1f5f9; padding-top:5px;">${pHTML}</div><div style="font-size:10px; margin-top:8px; font-style:italic; color:#64748b">💬 Obs: ${d.observacoes || "-"}</div></div>`;
+                    intel.reu++;
+                    d.pautas?.forEach(() => pT++);
+                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')},'${d.observacoes||""}')">edit</i><i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i></div><div class="label-topo">${d.dataReuniao}</div><strong>${d.comQuem}</strong><br><small>📍 Local: ${d.local}</small></div>`;
                 }
             });
-            document.getElementById("dashTotalReu").innerText=totais.reu;
+            document.getElementById("dashTotalReu").innerText=intel.reu;
             document.getElementById("dashTotalPau").innerText=pT;
-            document.getElementById("dashPauTotal").innerText=pTo;
-            document.getElementById("dashPauParcial").innerText=pPa;
-            document.getElementById("dashPauNao").innerText=pNa;
-            document.getElementById("dashPauDisc").innerText=pDi;
-            atualizarRel();
+            atualizarRelatorioEstrategico();
         });
 
-        // 3. EVENTOS
+        // EVENTOS
         db.collection("eventos_externos").orderBy("data", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
-            totais.eve=0; totais.part=0;
+            let eT=0, eS=0;
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.data >= ini) && (!fim || d.data <= fim)) {
-                    totais.eve++;
-                    if(d.participou==='Sim') totais.part++;
-                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}','${d.observacoes||""}')">edit</i><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div><div class="label-topo">${d.data}</div><strong>${d.titulo}</strong><br><small>📍 Local: ${d.local || "Não informado"}</small><div style="font-size:10px; margin-top:8px; color:#64748b; border-top:1px solid #f1f5f9; padding-top:5px;">💬 Obs: ${d.observacoes || "-"}</div><select class="form-controle" style="margin-top:10px" onchange="db.collection('eventos_externos').doc('${doc.id}').update({participou:this.value})"><option value="Não" ${d.participou=='Não'?'selected':''}>Não Participei</option><option value="Sim" ${d.participou=='Sim'?'selected':''}>Participei</option></select></div>`;
+                    eT++; if(d.participou==='Sim') eS++;
+                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}','${d.observacoes||""}')">edit</i><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div><div class="label-topo">${d.data}</div><strong>${d.titulo}</strong></div>`;
                 }
             });
-            document.getElementById("dashTotalEve").innerText=totais.eve;
-            document.getElementById("dashEveSim").innerText=totais.part;
-            document.getElementById("dashEveNao").innerText=(totais.eve - totais.part);
-            atualizarRel();
+            document.getElementById("dashTotalEve").innerText=eT;
+            document.getElementById("dashEveSim").innerText=eS;
+            document.getElementById("dashEveNao").innerText=(eT - eS);
         });
     }
 
-    // 4. LIDERANÇAS
+    // LIDERANÇAS
     db.collection("liderancas").orderBy("nome").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas"); const sel = document.getElementById("pLider");
         lista.innerHTML = ""; sel.innerHTML = '<option value="">Direto com Vereador</option>';
-        totais.lid=0; let lU=0, lR=0;
+        intel.lid=0; let lU=0, lR=0;
         snap.forEach(doc => {
-            const l = doc.data();
-            totais.lid++;
+            const l = doc.data(); intel.lid++;
             if(l.zona==='Urbana') lU++; else lR++;
             sel.innerHTML += `<option value="${l.nome}">${l.nome}</option>`;
-            lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarLid('${doc.id}','${l.nome}','${l.fone}','${l.zona}','${l.bairroSetor}')">edit</i><i class="material-icons btn-del" onclick="deletar('liderancas','${doc.id}')">delete</i></div><div class="label-topo">${l.zona}</div><strong>${l.nome}</strong><br><small>📞 ${l.fone || "Sem fone"}</small><br><small>📍 ${l.bairroSetor || "Setor não informado"}</small></div>`;
+            lista.innerHTML += `<div class="card-controle"><strong>${l.nome}</strong><br><small>${l.zona} - ${l.bairroSetor}</small></div>`;
         });
-        document.getElementById("dashLiderancas").innerText=totais.lid;
+        document.getElementById("dashLiderancas").innerText=intel.lid;
         document.getElementById("dashLidUrb").innerText=lU;
         document.getElementById("dashLidRur").innerText=lR;
-        atualizarRel();
+        atualizarRelatorioEstrategico();
     });
 
-    // ATUALIZAÇÃO DA ABA DE RELATÓRIO
-    function atualizarRel() {
-        document.getElementById("relPedT").innerText = totais.ped;
-        document.getElementById("relLidT").innerText = totais.lid;
-        document.getElementById("relReuT").innerText = totais.reu;
-        document.getElementById("relInvT").innerText = "R$ " + totais.inv.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+    function atualizarDashboards() {
+        document.getElementById("dashPedidos").innerText=intel.ped;
+        document.getElementById("dashPedRes").innerText=intel.res;
+        document.getElementById("dashPedPen").innerText=(intel.ped - intel.res);
+        document.getElementById("dashPedidosZona").innerText=intel.ped;
+        document.getElementById("dashPedUrb").innerText=intel.urb;
+        document.getElementById("dashPedRur").innerText=intel.rur;
+    }
 
-        const efi = totais.ped > 0 ? Math.round((totais.res / totais.ped) * 100) : 0;
-        document.getElementById("relEfi").innerText = efi + "%";
-        document.getElementById("progEfi").style.width = efi + "%";
-
-        const pres = totais.eve > 0 ? Math.round((totais.part / totais.eve) * 100) : 0;
-        document.getElementById("relPres").innerText = pres + "%";
-        document.getElementById("progPres").style.width = pres + "%";
-
-        const pUrb = totais.ped > 0 ? Math.round((totais.urb / totais.ped) * 100) : 0;
-        const pRur = totais.ped > 0 ? (100 - pUrb) : 0;
-        document.getElementById("relUrbP").innerText = pUrb + "%";
-        document.getElementById("relRurP").innerText = pRur + "%";
-        document.getElementById("progUrb").style.width = pUrb + "%";
-        document.getElementById("progRur").style.width = pRur + "%";
+    function atualizarRelatorioEstrategico() {
+        // Valores Monetários
+        document.getElementById("relInvTotal").innerText = "R$ " + intel.invTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+        document.getElementById("relInvRes").innerText = "R$ " + intel.invRes.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+        document.getElementById("relInvPen").innerText = "R$ " + intel.invPen.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+        
+        // Abrangência
+        document.getElementById("relTotalBairros").innerText = intel.bairros.size + " Locais";
+        const pUrb = intel.ped > 0 ? Math.round((intel.urb / intel.ped) * 100) : 50;
+        const pRur = 100 - pUrb;
+        document.getElementById("barUrb").style.width = pUrb + "%";
+        document.getElementById("barRur").style.width = pRur + "%";
+        document.getElementById("txtUrb").innerText = pUrb + "%";
+        document.getElementById("txtRur").innerText = pRur + "%";
+        
+        // Balanço Geral
+        document.getElementById("relPedTotal").innerText = intel.ped;
+        document.getElementById("relLidTotal").innerText = intel.lid;
+        document.getElementById("relReuTotal").innerText = intel.reu;
+        
+        const percAtend = intel.ped > 0 ? Math.round((intel.res / intel.ped) * 100) : 0;
+        document.getElementById("relPercentAtendimento").innerText = percAtend + "%";
+        document.getElementById("barAtendimento").style.width = percAtend + "%";
     }
 
     function enviarRelatorioZap() {
-        const msg = `📊 *RELATÓRIO DE MANDATO*%0A%0A` +
-                    `✅ *Resolutividade:* ${document.getElementById("relEfi").innerText}%0A` +
-                    `📍 *Pedidos Totais:* ${totais.ped}%0A` +
-                    `👥 *Lideranças Ativas:* ${totais.lid}%0A` +
-                    `📅 *Reuniões Realizadas:* ${totais.reu}%0A` +
-                    `💰 *Investimento Total:* ${document.getElementById("relInvT").innerText}%0A%0A` +
-                    `_Foco: ${document.getElementById("relUrbP").innerText} Urbano | ${document.getElementById("relRurP").innerText} Rural_`;
+        const msg = `📊 *BALANÇO ESTRATÉGICO DO MANDATO*%0A%0A` +
+                    `💰 *Investimento:* ${document.getElementById("relInvTotal").innerText}%0A` +
+                    `✅ *Concluído:* ${document.getElementById("relInvRes").innerText}%0A` +
+                    `📍 *Comunidades:* ${intel.bairros.size} locais alcançados%0A` +
+                    `👥 *Pedidos:* ${intel.ped} (${percAtend}% atendidos)%0A%0A` +
+                    `_Foco atual: ${document.getElementById("txtUrb").innerText} Urbano | ${document.getElementById("txtRur").innerText} Rural_`;
         window.open(`https://api.whatsapp.com/send?text=${msg}`);
     }
 
-    // FUNÇÕES AUXILIARES MANTIDAS
-    function getStatusClass(status) {
-        if(status === 'Atendido total') return 'st-total';
-        if(status === 'Atendido parcial') return 'st-parcial';
-        if(status === 'Não atendido') return 'st-nao';
-        return 'st-disc';
-    }
+    // FUNÇÕES DE SISTEMA (MANTIDAS)
     function deletar(c, id) { if(confirm("Excluir?")) db.collection(c).doc(id).delete(); }
     function editarPed(id,dt,nm,br,zn,ld,st,gs,ds) { document.getElementById("pId").value=id; document.getElementById("pData").value=dt; document.getElementById("pNome").value=nm; document.getElementById("pBairro").value=br; document.getElementById("pZona").value=zn; document.getElementById("pLider").value=ld; document.getElementById("pStatus").value=st; document.getElementById("pGasto").value=gs; document.getElementById("pDesc").value=ds; window.scrollTo(0,0); }
-    function editarLid(id,nm,fn,zn,bs) { document.getElementById("lId").value=id; document.getElementById("lNome").value=nm; document.getElementById("lFone").value=fn; document.getElementById("lZona").value=zn; document.getElementById("lBairroSetor").value=bs; window.scrollTo(0,0); }
-    function editarReu(id,dt,lc,cq,pts,obs) { document.getElementById("aId").value=id; document.getElementById("aData").value=dt; document.getElementById("aLocal").value=lc; document.getElementById("aCom").value=cq; document.getElementById("aObs").value=obs||""; pautasParaSalvar=pts||[]; renderPautasTemp(); window.scrollTo(0,0); }
-    function editarEve(id,dt,lc,tt,obs) { document.getElementById("eId").value=id; document.getElementById("eData").value=dt; document.getElementById("eLocal").value=lc; document.getElementById("eTitulo").value=tt; document.getElementById("eObs").value=obs||""; window.scrollTo(0,0); }
     function addPautaLista() { const txt=document.getElementById("tempPauta").value; if(txt){pautasParaSalvar.push({texto:txt,status:"Não discutido"});document.getElementById("tempPauta").value="";renderPautasTemp();}}
-    function renderPautasTemp() { const div=document.getElementById("listaPautasTemp"); div.innerHTML=""; pautasParaSalvar.forEach((p,i)=>{ div.innerHTML+=`<div class="pauta-item"><div style="display:flex; justify-content:space-between"><span>${p.texto}</span><i class="material-icons" style="color:red; font-size:18px" onclick="pautasParaSalvar.splice(${i},1);renderPautasTemp();">delete</i></div><select class="form-controle" style="padding:5px" onchange="pautasParaSalvar[${i}].status=this.value"><option value="Não discutido" ${p.status=='Não discutido'?'selected':''}>Não discutido</option><option value="Atendido total" ${p.status=='Atendido total'?'selected':''}>Atendido total</option><option value="Atendido parcial" ${p.status=='Atendido parcial'?'selected':''}>Atendido parcial</option><option value="Não atendido" ${p.status=='Não atendido'?'selected':''}>Não atendido</option></select></div>`;});}
-
+    function renderPautasTemp() { const div=document.getElementById("listaPautasTemp"); div.innerHTML=""; pautasParaSalvar.forEach((p,i)=>{ div.innerHTML+=`<div class="pauta-item"><span>${p.texto}</span></div>`;});}
+    
     async function salvarItem(c) {
         let d = {}; let id = document.getElementById(c === 'crm_pedidos' ? "pId" : c === 'liderancas' ? "lId" : c === 'agenda_vereador' ? "aId" : "eId").value;
         if(c==='crm_pedidos') { d = { dataPedido: document.getElementById("pData").value, nome: document.getElementById("pNome").value, bairro: document.getElementById("pBairro").value, zona: document.getElementById("pZona").value, lideranca: document.getElementById("pLider").value, status: document.getElementById("pStatus").value, gasto: parseFloat(document.getElementById("pGasto").value) || 0, descricao: document.getElementById("pDesc").value }; } 
@@ -414,11 +399,8 @@
         else if(c==='eventos_externos') { d = { data: document.getElementById("eData").value, local: document.getElementById("eLocal").value, titulo: document.getElementById("eTitulo").value, participou: "Não", observacoes: document.getElementById("eObs").value }; }
         try {
             if(id) { await db.collection(c).doc(id).set(d, {merge:true}); } else { await db.collection(c).add(d); }
-            alert("Salvo com sucesso!");
-            if(c==='crm_pedidos') { document.getElementById("pId").value=""; document.querySelectorAll("#demandas input, #demandas textarea").forEach(i => i.value=""); }
-            else if(c==='liderancas') { document.getElementById("lId").value=""; document.querySelectorAll("#liderancas input").forEach(i => i.value=""); }
-            else if(c==='agenda_vereador') { document.getElementById("aId").value=""; pautasParaSalvar=[]; renderPautasTemp(); document.querySelectorAll("#agenda input, #agenda textarea").forEach(i => i.value=""); }
-            else if(c==='eventos_externos') { document.getElementById("eId").value=""; document.querySelectorAll("#eventos input, #eventos textarea").forEach(i => i.value=""); }
+            alert("Salvo!");
+            location.reload();
         } catch (e) { alert("Erro ao salvar."); }
     }
     renderizarTudo();
