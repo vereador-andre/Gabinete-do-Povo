@@ -31,10 +31,9 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
 
-        .banner-aviso { display: none; background: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 12px; margin: 0 20px 15px; font-size: 13px; text-align: center; font-weight: 600; border: 1px solid #fecaca; }
+        .banner-aviso { display: none; background: #fee2e2; color: #b91c1c; padding: 10px; border-radius: 10px; margin: 0 20px 15px; font-size: 12px; text-align: center; font-weight: 600; }
 
-        .btn-logout { margin: 30px 20px; padding: 15px; border-radius: 12px; border: 1px solid #f87171; color: #f87171; text-align: center; cursor: pointer; font-weight: 600; transition: 0.3s; }
-        .btn-logout:hover { background: #fee2e2; }
+        .btn-logout { margin: 30px 20px; padding: 15px; border-radius: 12px; border: 1px solid #f87171; color: #f87171; text-align: center; cursor: pointer; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -61,12 +60,12 @@
 
     <a href="ver-mensagens.html" class="btn-item" style="background:#f0fdf4; color:#16a34a; margin-top: 10px;">
         <i class="material-icons" style="background:#dcfce7;">mail</i> Mensagens Recebidas
-        <div id="notifBadge" class="badge-alerta">0</div>
+        <div id="notifBadge" class="badge-alerta">!</div>
     </a>
     
-    <a href="ver-avaliacoes.html" class="btn-item" style="background:#fdfae6; color:#b45309; margin-top: 5px;">
-        <i class="material-icons" style="background:#fef3c7; color:#f59e0b;">stars</i> Avaliações do Público
-        <div id="notifBadgeAval" class="badge-alerta">0</div>
+    <a href="ver-avaliacoes.html" class="btn-item" style="background:#f0fdf4; color:#16a34a; margin-top: 5px;">
+        <i class="material-icons" style="background:#dcfce7; color:#f59e0b;">stars</i> Avaliações do Público
+        <div id="notifBadgeAval" class="badge-alerta">!</div>
     </a>
 </div>
 
@@ -88,8 +87,8 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    // Notificações de Contatos (Ajustado para o campo lida: false)
-    db.collection("contatos").where("lida", "==", false).onSnapshot(snapshot => {
+    // Notificações de Contatos - Busca apenas o status "Pendente"
+    db.collection("contatos").where("status", "==", "Pendente").onSnapshot(snapshot => {
         const badge = document.getElementById("notifBadge");
         if (snapshot.size > 0) {
             badge.style.display = "flex";
@@ -100,8 +99,8 @@
         verificarAvisosGerais();
     });
 
-    // Notificações de Avaliações (Ajustado para monitorar novas entradas)
-    db.collection("avaliacoes_mandato").where("lida", "==", false).onSnapshot(snapshot => {
+    // Notificações de Avaliações - Busca apenas o status "Novo Comentario"
+    db.collection("avaliacoes_mandato").where("status", "==", "Novo Comentario").onSnapshot(snapshot => {
         const badgeAval = document.getElementById("notifBadgeAval");
         if (snapshot.size > 0) {
             badgeAval.style.display = "flex";
@@ -116,11 +115,10 @@
         const aviso = document.getElementById("avisoMensagem");
         const b1 = document.getElementById("notifBadge").style.display;
         const b2 = document.getElementById("notifBadgeAval").style.display;
-        
-        if (b1 === "flex" || b2 === "flex") {
-            aviso.style.display = "block";
+        if (b1 === "none" && b2 === "none") { 
+            aviso.style.display = "none"; 
         } else {
-            aviso.style.display = "none";
+            aviso.style.display = "block";
         }
     }
 
@@ -130,12 +128,6 @@
             window.location.href = "login.html"; 
         });
     }
-
-    firebase.auth().onAuthStateChanged((user) => {
-        if (!user && localStorage.getItem("logado") === "true") {
-            console.log("Sessão expirada.");
-        }
-    });
 </script>
 </body>
 </html>
