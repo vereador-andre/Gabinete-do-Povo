@@ -12,6 +12,7 @@
         label { display: block; margin: 15px 0 5px; font-size: 13px; font-weight: 600; color: #64748b; }
         input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-family: inherit; }
         .btn-salvar { background: #1e3a8a; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; margin-top: 25px; font-weight: 600; cursor: pointer; }
+        .btn-salvar:disabled { background: #94a3b8; }
         .btn-voltar { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; font-size: 13px; }
     </style>
 </head>
@@ -27,26 +28,58 @@
         <textarea id="texto" rows="6" required></textarea>
         <label>Link da Imagem ou Vídeo YouTube</label>
         <input type="url" id="link" placeholder="https://...">
-        <button type="submit" class="btn-salvar">Publicar Notícia</button>
+        <button type="submit" id="btnPublicar" class="btn-salvar">Publicar Notícia</button>
     </form>
     <a href="admin.html" class="btn-voltar">Voltar ao Painel</a>
 </div>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
-    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-    firebase.initializeApp(firebaseConfig);
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
+        authDomain: "gabinete-do-povo.firebaseapp.com", 
+        projectId: "gabinete-do-povo" 
+    };
+    
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // Importante: O formulário só funciona se o Firebase confirmar que você está logado
     document.getElementById("formNoticia").onsubmit = async (e) => {
         e.preventDefault();
-        await db.collection("noticias").add({
-            titulo: document.getElementById("titulo").value,
-            data: document.getElementById("data").value,
-            texto: document.getElementById("texto").value,
-            link: document.getElementById("link").value,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert("Notícia publicada!"); window.location.href = "admin.html";
+        
+        const user = auth.currentUser;
+        if (!user) {
+            alert("Sessão expirada. Por favor, faça login novamente.");
+            window.location.href = "login.html";
+            return;
+        }
+
+        const btn = document.getElementById("btnPublicar");
+        btn.innerText = "Publicando...";
+        btn.disabled = true;
+
+        try {
+            await db.collection("noticias").add({
+                titulo: document.getElementById("titulo").value,
+                data: document.getElementById("data").value,
+                texto: document.getElementById("texto").value,
+                link: document.getElementById("link").value,
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+                autorId: user.uid // Registra quem publicou
+            });
+            alert("Notícia publicada com sucesso!"); 
+            window.location.href = "admin.html";
+        } catch (error) {
+            console.error("Erro ao publicar:", error);
+            alert("Erro ao publicar: " + error.message);
+            btn.innerText = "Publicar Notícia";
+            btn.disabled = false;
+        }
     };
 </script>
 </body>
