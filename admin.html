@@ -87,7 +87,7 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    // Notificações de Contatos - Busca apenas o status "Pendente"
+    // Notificações de Contatos
     db.collection("contatos").where("status", "==", "Pendente").onSnapshot(snapshot => {
         const badge = document.getElementById("notifBadge");
         if (snapshot.size > 0) {
@@ -99,12 +99,18 @@
         verificarAvisosGerais();
     });
 
-    // Notificações de Avaliações - Busca apenas o status "Novo Comentario"
-    db.collection("avaliacoes_mandato").where("status", "==", "Novo Comentario").onSnapshot(snapshot => {
+    // Notificações de Avaliações - Filtro ajustado para detectar o status corretamente
+    db.collection("avaliacoes_mandato").onSnapshot(snapshot => {
         const badgeAval = document.getElementById("notifBadgeAval");
-        if (snapshot.size > 0) {
+        // Filtra localmente para evitar erros de case-sensitive ou acentuação no Firebase
+        const novos = snapshot.docs.filter(doc => {
+            const status = doc.data().status;
+            return status === "Novo Comentario" || status === "Novo" || status === "Pendente";
+        });
+
+        if (novos.length > 0) {
             badgeAval.style.display = "flex";
-            badgeAval.innerText = snapshot.size;
+            badgeAval.innerText = novos.length;
         } else {
             badgeAval.style.display = "none";
         }
