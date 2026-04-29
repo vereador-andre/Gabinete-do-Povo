@@ -42,7 +42,12 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
-    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
+        authDomain: "gabinete-do-povo.firebaseapp.com", 
+        projectId: "gabinete-do-povo" 
+    };
+    
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
@@ -50,17 +55,20 @@
     const col = urlParams.get('col');
     const id = urlParams.get('id');
 
+    if (!col || !id) {
+        alert("Erro: Referência não encontrada.");
+        history.back();
+    }
+
     document.getElementById("tituloPagina").innerText = "Editar: " + col.replace(/-/g, ' ');
 
-    // Carregar dados atuais
+    // Carregar dados atuais com verificação detalhada
     db.collection(col).doc(id).get().then(doc => {
         if (doc.exists) {
             const d = doc.data();
             document.getElementById("titulo").value = d.titulo || "";
             document.getElementById("data").value = d.data || "";
-            // Verifica se o campo é 'texto' (comum em notícias) ou 'descricao'
             document.getElementById("descricao").value = d.descricao || d.texto || "";
-            // Verifica se o campo é 'imagem' ou 'link'
             document.getElementById("link").value = d.link || d.imagem || "";
             
             if(col === 'sessoes') {
@@ -72,49 +80,53 @@
                 </select>`;
             }
         }
-    }).catch(error => { console.error("Erro ao carregar:", error); });
+    });
 
     document.getElementById("formEdit").onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById("btnSalvar");
         btn.disabled = true;
-        btn.innerText = "Salvando...";
+        btn.innerText = "Processando...";
 
-        const valorDescricao = document.getElementById("descricao").value;
-        const valorLink = document.getElementById("link").value;
+        const vTitulo = document.getElementById("titulo").value;
+        const vData = document.getElementById("data").value;
+        const vDesc = document.getElementById("descricao").value;
+        const vLink = document.getElementById("link").value;
 
-        // Criamos o objeto de atualização
-        const obj = {
-            titulo: document.getElementById("titulo").value,
-            data: document.getElementById("data").value
+        // Criar objeto de atualização dinâmico para não apagar campos existentes
+        let dadosUpdate = {
+            titulo: vTitulo,
+            data: vData
         };
 
-        // Regra para manter o padrão original da coleção
+        // Regra de campos por coleção
         if (col === 'noticias') {
-            obj.texto = valorDescricao;
-            obj.imagem = valorLink;
+            dadosUpdate.texto = vDesc;
+            dadosUpdate.imagem = vLink;
         } else if (col === 'acoes-atendidas') {
-            obj.descricao = valorDescricao;
-            obj.imagem = valorLink;
+            dadosUpdate.descricao = vDesc;
+            dadosUpdate.imagem = vLink;
         } else {
-            obj.descricao = valorDescricao;
-            obj.link = valorLink;
+            dadosUpdate.descricao = vDesc;
+            dadosUpdate.link = vLink;
         }
 
         if(document.getElementById("tipo")) {
-            obj.tipo = document.getElementById("tipo").value;
+            dadosUpdate.tipo = document.getElementById("tipo").value;
         }
 
-        try {
-            await db.collection(col).doc(id).update(obj);
-            alert("Alterações salvas com sucesso!");
+        // Tenta atualizar usando set com merge: true (mais seguro que update direto)
+        db.collection(col).doc(id).set(dadosUpdate, { merge: true })
+        .then(() => {
+            alert("Sucesso! Alterações salvas.");
             window.location.href = "gerenciar.html?col=" + col;
-        } catch (error) {
+        })
+        .catch((error) => {
             console.error("Erro ao salvar:", error);
-            alert("Erro ao salvar alterações.");
+            alert("Erro ao salvar: " + error.message);
             btn.disabled = false;
             btn.innerText = "Salvar Alterações";
-        }
+        });
     };
 </script>
 </body>
