@@ -22,7 +22,6 @@
         .btn-item i { background: #eff6ff; padding: 10px; border-radius: 10px; }
         .btn-manage { background: #cbd5e1; color: #1e293b; width: 55px; border-radius: 15px; display: flex; align-items: center; justify-content: center; text-decoration: none; }
 
-        /* NOTIFICAÇÃO ESTILO BADGE */
         .badge-alerta { 
             position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; 
             width: 24px; height: 24px; border-radius: 50%; display: none; 
@@ -73,61 +72,47 @@
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
 <script>
-
+    // Proteção de página - Verifica se logou no login.html
     if(localStorage.getItem("logado") !== "true") { window.location.href = "login.html"; }
     
-    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
+        authDomain: "gabinete-do-povo.firebaseapp.com", 
+        projectId: "gabinete-do-povo" 
+    };
+
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
+    // Notificações de Contatos
     db.collection("contatos").where("status", "==", "Pendente").onSnapshot(snapshot => {
         const badge = document.getElementById("notifBadge");
-        const aviso = document.getElementById("avisoMensagem");
         if (snapshot.size > 0) {
             badge.style.display = "flex";
             badge.innerText = snapshot.size;
-            aviso.style.display = "block";
+            document.getElementById("avisoMensagem").style.display = "block";
         } else {
             badge.style.display = "none";
             verificarAvisosGerais();
         }
     });
 
+    // Notificações de Avaliações
     db.collection("avaliacoes_mandato").where("status", "==", "Novo").onSnapshot(snapshot => {
         const badgeAval = document.getElementById("notifBadgeAval");
-        const aviso = document.getElementById("avisoMensagem");
         if (snapshot.size > 0) {
             badgeAval.style.display = "flex";
             badgeAval.innerText = snapshot.size;
-            aviso.style.display = "block";
+            document.getElementById("avisoMensagem").style.display = "block";
         } else {
             badgeAval.style.display = "none";
             verificarAvisosGerais();
         }
     });
 
-    function fazerLogin() {
-    var provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider).then((result) => {
-        console.log("Usuário logado:", result.user.email);
-        // Aqui você pode recarregar a página ou liberar o acesso às funções
-    }).catch((error) => {
-        alert("Erro ao logar: " + error.message);
-    });
-}
-
-// Verificar se o usuário está logado ao carregar a página
-firebase.auth().onAuthStateChanged((user) => {
-    if (user && user.email === "seu-email@gmail.com") {
-        renderizarTudo(); // Só carrega os dados se for você
-    } else {
-        // Redireciona ou mostra botão de login
-        document.body.innerHTML = '<button onclick="fazerLogin()">Acessar Painel</button>';
-    }
-});
-    
     function verificarAvisosGerais() {
         const aviso = document.getElementById("avisoMensagem");
         const b1 = document.getElementById("notifBadge").style.display;
@@ -135,7 +120,20 @@ firebase.auth().onAuthStateChanged((user) => {
         if (b1 === "none" && b2 === "none") { aviso.style.display = "none"; }
     }
 
-    function logout() { localStorage.removeItem("logado"); window.location.href = "login.html"; }
+    function logout() { 
+        firebase.auth().signOut().then(() => {
+            localStorage.removeItem("logado"); 
+            window.location.href = "login.html"; 
+        });
+    }
+
+    // Mantém a sessão ativa
+    firebase.auth().onAuthStateChanged((user) => {
+        if (!user && localStorage.getItem("logado") === "true") {
+            // Se o firebase deslogou mas o localstorage diz que sim, removemos a trava
+            console.log("Sessão Firebase encerrada.");
+        }
+    });
 </script>
 </body>
 </html>
