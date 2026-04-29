@@ -10,59 +10,52 @@
         .form-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 500px; margin: auto; }
         h2 { color: #1e3a8a; margin-top: 0; }
         label { display: block; margin: 15px 0 5px; font-size: 13px; font-weight: 600; color: #64748b; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-family: inherit; }
         .btn-salvar { background: #1e3a8a; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; margin-top: 25px; font-weight: 600; cursor: pointer; }
         .btn-voltar { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; font-size: 13px; }
     </style>
 </head>
 <body>
-
 <div class="form-card">
     <h2>Nova Sessão</h2>
     <form id="formSessao">
         <label>Título da Sessão</label>
-        <input type="text" id="titulo" placeholder="Ex: 15ª Sessão Ordinária" required>
-
-        <label>Tipo de Sessão</label>
-        <select id="tipo">
-            <option value="Ordinária">Ordinária</option>
-            <option value="Extraordinária">Extraordinária</option>
-        </select>
-
-        <label>Data da Sessão (Calendário)</label>
+        <input type="text" id="titulo" required placeholder="Ex: Sessão Ordinária - 25/04/2026">
+        <label>Data</label>
         <input type="date" id="data" required>
-
-        <label>Link do Vídeo (YouTube)</label>
-        <input type="url" id="link" placeholder="https://youtube.com/watch?v=..." required>
-
+        <label>Pauta/Resumo</label>
+        <textarea id="texto" rows="3" required></textarea>
+        <label>Link do Vídeo YouTube</label>
+        <input type="url" id="link" placeholder="https://youtube.com/...">
         <button type="submit" class="btn-salvar">Publicar Sessão</button>
     </form>
-    <a href="admin.html" class="btn-voltar">Voltar ao Painel</a>
+    <a href="admin.html" class="btn-voltar">Voltar</a>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
     const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
 
     document.getElementById("formSessao").onsubmit = async (e) => {
         e.preventDefault();
-        const btn = e.target.querySelector("button");
-        btn.innerText = "Salvando...";
-        btn.disabled = true;
+        if (!auth.currentUser) return alert("Sessão não autorizada.");
 
-        await db.collection("sessoes").add({
-            titulo: document.getElementById("titulo").value,
-            tipo: document.getElementById("tipo").value,
-            data: document.getElementById("data").value,
-            link: document.getElementById("link").value,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        alert("Sessão publicada com sucesso!");
-        window.location.href = "admin.html";
+        try {
+            await db.collection("sessoes").add({
+                titulo: document.getElementById("titulo").value,
+                data: document.getElementById("data").value,
+                texto: document.getElementById("texto").value,
+                link: document.getElementById("link").value,
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("Sessão publicada!"); window.location.href = "admin.html";
+        } catch (e) { alert("Erro ao salvar sessão."); }
     };
 </script>
 </body>
