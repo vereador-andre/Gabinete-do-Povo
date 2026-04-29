@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Ação Atendida</title>
+    <title>Cadastrar Ação</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; background: #f1f5f9; padding: 20px; }
         .form-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 500px; margin: auto; }
         h2 { color: #1e3a8a; margin-top: 0; }
         label { display: block; margin: 15px 0 5px; font-size: 13px; font-weight: 600; color: #64748b; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-family: inherit; }
         .btn-salvar { background: #1e3a8a; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; margin-top: 25px; font-weight: 600; cursor: pointer; }
-        .btn-voltar { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; font-size: 13px; font-weight: 600; }
+        .btn-salvar:disabled { background: #94a3b8; }
+        .btn-voltar { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -20,34 +21,46 @@
     <h2>Nova Ação Atendida</h2>
     <form id="formAcao">
         <label>Título da Ação</label>
-        <input type="text" id="titulo" placeholder="Ex: Limpeza do Canal X" required>
-        <label>Data da Realização</label>
+        <input type="text" id="titulo" required>
+        <label>Data</label>
         <input type="date" id="data" required>
         <label>Descrição</label>
-        <textarea id="descricao" rows="4" placeholder="Descreva o que foi realizado..."></textarea>
-        <label>Link da Imagem (URL)</label>
-        <input type="url" id="imagem" placeholder="https://imgur.com/foto.jpg">
-        <button type="submit" class="btn-salvar">Publicar Ação</button>
+        <textarea id="texto" rows="4" required></textarea>
+        <label>Link da Imagem/Foto</label>
+        <input type="url" id="link" placeholder="https://...">
+        <button type="submit" id="btnSalvar" class="btn-salvar">Publicar Ação</button>
     </form>
     <a href="admin.html" class="btn-voltar">Voltar ao Painel</a>
 </div>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
     const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
+
     document.getElementById("formAcao").onsubmit = async (e) => {
         e.preventDefault();
-        await db.collection("acoes-atendidas").add({
-            titulo: document.getElementById("titulo").value,
-            data: document.getElementById("data").value,
-            descricao: document.getElementById("descricao").value,
-            imagem: document.getElementById("imagem").value,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert("Ação publicada!");
-        window.location.href = "admin.html";
+        const user = auth.currentUser;
+        if (!user) return alert("Faça login primeiro.");
+
+        const btn = document.getElementById("btnSalvar");
+        btn.disabled = true; btn.innerText = "Salvando...";
+
+        try {
+            await db.collection("acoes-atendidas").add({
+                titulo: document.getElementById("titulo").value,
+                data: document.getElementById("data").value,
+                texto: document.getElementById("texto").value,
+                link: document.getElementById("link").value,
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("Ação salva!"); window.location.href = "admin.html";
+        } catch (e) { alert("Erro: " + e.message); btn.disabled = false; btn.innerText = "Publicar Ação"; }
     };
 </script>
 </body>
