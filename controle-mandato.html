@@ -369,9 +369,9 @@
     function renderPautasTemp() { const div=document.getElementById("listaPautasTemp"); div.innerHTML=""; pautasParaSalvar.forEach((p,i)=>{ div.innerHTML+=`<div class="pauta-item"><div style="display:flex; justify-content:space-between"><span>${p.texto}</span><i class="material-icons" style="color:red; font-size:18px" onclick="pautasParaSalvar.splice(${i},1);renderPautasTemp();">delete</i></div><select class="form-controle" style="padding:5px" onchange="pautasParaSalvar[${i}].status=this.value"><option value="Não discutido" ${p.status=='Não discutido'?'selected':''}>Não discutido</option><option value="Atendido total" ${p.status=='Atendido total'?'selected':''}>Atendido total</option><option value="Atendido parcial" ${p.status=='Atendido parcial'?'selected':''}>Atendido parcial</option><option value="Não atendido" ${p.status=='Não atendido'?'selected':''}>Não atendido</option></select></div>`;});}
 
     async function salvarItem(c) {
-        let d = {}; let id = "";
+        let d = {}; let id = document.getElementById(c === 'crm_pedidos' ? "pId" : c === 'liderancas' ? "lId" : c === 'agenda_vereador' ? "aId" : "eId").value;
+        
         if(c==='crm_pedidos') {
-            id = document.getElementById("pId").value;
             d = {
                 dataPedido: document.getElementById("pData").value,
                 nome: document.getElementById("pNome").value,
@@ -382,18 +382,14 @@
                 gasto: parseFloat(document.getElementById("pGasto").value) || 0,
                 descricao: document.getElementById("pDesc").value
             };
-            document.getElementById("pId").value=""; document.querySelectorAll("#demandas input, #demandas textarea").forEach(i => i.value="");
         } else if(c==='liderancas') {
-            id = document.getElementById("lId").value;
             d = {
                 nome: document.getElementById("lNome").value,
                 fone: document.getElementById("lFone").value,
                 zona: document.getElementById("lZona").value,
                 bairroSetor: document.getElementById("lBairroSetor").value
             };
-            document.getElementById("lId").value=""; document.querySelectorAll("#liderancas input").forEach(i => i.value="");
         } else if(c==='agenda_vereador') {
-            id = document.getElementById("aId").value;
             d = {
                 dataReuniao: document.getElementById("aData").value,
                 local: document.getElementById("aLocal").value,
@@ -401,21 +397,28 @@
                 pautas: pautasParaSalvar,
                 observacoes: document.getElementById("aObs").value
             };
-            document.getElementById("aId").value=""; pautasParaSalvar=[]; renderPautasTemp(); document.querySelectorAll("#agenda input, #agenda textarea").forEach(i => i.value="");
         } else if(c==='eventos_externos') {
-            id = document.getElementById("eId").value;
             d = {
                 data: document.getElementById("eData").value,
                 local: document.getElementById("eLocal").value,
                 titulo: document.getElementById("eTitulo").value,
                 participou: "Não"
             };
-            document.getElementById("eId").value=""; document.querySelectorAll("#eventos input").forEach(i => i.value="");
         }
 
-        if(id) await db.collection(c).doc(id).update(d);
-        else await db.collection(c).add(d);
-        alert("Salvo com sucesso!");
+        try {
+            if(id) { await db.collection(c).doc(id).set(d, {merge:true}); }
+            else { await db.collection(c).add(d); }
+            alert("Salvo com sucesso!");
+            
+            // Limpar Campos
+            if(c==='crm_pedidos') { document.getElementById("pId").value=""; document.querySelectorAll("#demandas input, #demandas textarea").forEach(i => i.value=""); }
+            else if(c==='liderancas') { document.getElementById("lId").value=""; document.querySelectorAll("#liderancas input").forEach(i => i.value=""); }
+            else if(c==='agenda_vereador') { document.getElementById("aId").value=""; pautasParaSalvar=[]; renderPautasTemp(); document.querySelectorAll("#agenda input, #agenda textarea").forEach(i => i.value=""); }
+            else if(c==='eventos_externos') { document.getElementById("eId").value=""; document.querySelectorAll("#eventos input").forEach(i => i.value=""); }
+        } catch (e) {
+            alert("Erro ao salvar: " + e.message);
+        }
     }
 
     renderizarTudo();
