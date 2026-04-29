@@ -10,7 +10,7 @@
         .form-card { background: white; padding: 25px; border-radius: 20px; max-width: 500px; margin: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         h2 { color: #1e3a8a; margin-top: 0; font-size: 18px; text-transform: uppercase; }
         label { display: block; margin: 15px 0 5px; font-size: 13px; font-weight: 600; color: #64748b; }
-        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-family: 'Poppins'; }
         .btn-salvar { background: #16a34a; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; margin-top: 20px; font-weight: 600; cursor: pointer; }
         .btn-voltar { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; font-size: 13px; font-weight: 600; }
     </style>
@@ -34,7 +34,7 @@
 
         <div id="campoExtra"></div>
 
-        <button type="submit" class="btn-salvar">Salvar Alterações</button>
+        <button type="submit" class="btn-salvar" id="btnSalvar">Salvar Alterações</button>
     </form>
     <a href="javascript:history.back()" class="btn-voltar">Cancelar e Voltar</a>
 </div>
@@ -43,7 +43,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
     const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -52,12 +52,15 @@
 
     document.getElementById("tituloPagina").innerText = "Editar: " + col.replace(/-/g, ' ');
 
+    // Carregar dados atuais
     db.collection(col).doc(id).get().then(doc => {
         if (doc.exists) {
             const d = doc.data();
             document.getElementById("titulo").value = d.titulo || "";
             document.getElementById("data").value = d.data || "";
+            // Verifica se o campo é 'texto' (comum em notícias) ou 'descricao'
             document.getElementById("descricao").value = d.descricao || d.texto || "";
+            // Verifica se o campo é 'imagem' ou 'link'
             document.getElementById("link").value = d.link || d.imagem || "";
             
             if(col === 'sessoes') {
@@ -69,25 +72,49 @@
                 </select>`;
             }
         }
-    });
+    }).catch(error => { console.error("Erro ao carregar:", error); });
 
     document.getElementById("formEdit").onsubmit = async (e) => {
         e.preventDefault();
+        const btn = document.getElementById("btnSalvar");
+        btn.disabled = true;
+        btn.innerText = "Salvando...";
+
+        const valorDescricao = document.getElementById("descricao").value;
+        const valorLink = document.getElementById("link").value;
+
+        // Criamos o objeto de atualização
         const obj = {
             titulo: document.getElementById("titulo").value,
-            data: document.getElementById("data").value,
-            descricao: document.getElementById("descricao").value,
+            data: document.getElementById("data").value
         };
 
-        // Salva o link no campo certo conforme a coleção
-        if(col === 'noticias' || col === 'acoes-atendidas') { obj.imagem = document.getElementById("link").value; }
-        else { obj.link = document.getElementById("link").value; }
+        // Regra para manter o padrão original da coleção
+        if (col === 'noticias') {
+            obj.texto = valorDescricao;
+            obj.imagem = valorLink;
+        } else if (col === 'acoes-atendidas') {
+            obj.descricao = valorDescricao;
+            obj.imagem = valorLink;
+        } else {
+            obj.descricao = valorDescricao;
+            obj.link = valorLink;
+        }
 
-        if(document.getElementById("tipo")) obj.tipo = document.getElementById("tipo").value;
+        if(document.getElementById("tipo")) {
+            obj.tipo = document.getElementById("tipo").value;
+        }
 
-        await db.collection(col).doc(id).update(obj);
-        alert("Atualizado!");
-        window.location.href = "gerenciar.html?col=" + col;
+        try {
+            await db.collection(col).doc(id).update(obj);
+            alert("Alterações salvas com sucesso!");
+            window.location.href = "gerenciar.html?col=" + col;
+        } catch (error) {
+            console.error("Erro ao salvar:", error);
+            alert("Erro ao salvar alterações.");
+            btn.disabled = false;
+            btn.innerText = "Salvar Alterações";
+        }
     };
 </script>
 </body>
