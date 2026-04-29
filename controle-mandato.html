@@ -42,21 +42,24 @@
         .st-parcial { background: #fef9c3; color: #854d0e; }
         .st-nao { background: #fee2e2; color: #991b1b; }
         .st-disc { background: #e2e8f0; color: #475569; }
+
+        /* ESTILOS EXCLUSIVOS ABA RELATÓRIO */
         .rel-container { display: flex; flex-direction: column; gap: 15px; }
         .rel-card-master { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
         .rel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px; }
         .rel-header h2 { font-size: 18px; color: #1e3a8a; margin:0; }
         .rel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .rel-stat { background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid #edf2f7; text-align: left; }
-        .rel-stat label { font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        .rel-stat b { font-size: 18px; color: #1e3a8a; }
+        .rel-stat { background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid #edf2f7; text-align: left; position: relative; overflow: hidden; }
+        .rel-stat label { font-size: 9px; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .rel-stat b { font-size: 18px; color: #1e3a8a; display: block; }
         .barra-progresso { height: 8px; background: #e2e8f0; border-radius: 10px; margin: 10px 0; overflow: hidden; display: flex; }
         .prog-cor { height: 100%; transition: width 0.5s ease-in-out; }
         .btn-rel-float { display: flex; gap: 10px; margin-top: 20px; }
         .btn-print { background: #1e3a8a; color: white; border: none; padding: 15px; border-radius: 12px; flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; cursor: pointer; }
         .btn-whatsapp { background: #25d366; color: white; border: none; padding: 15px; border-radius: 12px; flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; cursor: pointer; }
+        
         @media print {
-            .topo, .tabs, .filtro-periodo, .card-controle, .btn-acao, .acoes-card, .btn-rel-float { display: none !important; }
+            .topo, .tabs, .filtro-periodo, .card-controle, .btn-acao, .acoes-card, .btn-rel-float, .dash-resumo { display: none !important; }
             .container { padding: 0; }
             .rel-card-master { border: none; box-shadow: none; padding: 0; }
             .secao { display: none !important; }
@@ -188,23 +191,43 @@
         <div class="rel-container">
             <div class="rel-card-master">
                 <div class="rel-header">
-                    <h2>Análise de Mandato</h2>
-                    <i class="material-icons" style="color:#1e3a8a">insights</i>
+                    <div style="display:flex; flex-direction:column">
+                        <h2 style="font-size:16px">Resumo de Atuação</h2>
+                        <small style="color:#64748b; font-size:10px">Dados consolidados do período</small>
+                    </div>
+                    <i class="material-icons" style="color:#1e3a8a">analytics</i>
                 </div>
                 
                 <div class="rel-grid">
-                    <div class="rel-stat"><label>Eficiência Geral</label><b id="relEfi">0%</b><div class="barra-progresso"><div id="progEfi" class="prog-cor" style="background:#166534; width:0%"></div></div></div>
-                    <div class="rel-stat"><label>Presença em Eventos</label><b id="relPres">0%</b><div class="barra-progresso"><div id="progPres" class="prog-cor" style="background:#1e3a8a; width:0%"></div></div></div>
-                    <div class="rel-stat"><label>Pedidos Totais</label><b id="relPedT">0</b></div>
-                    <div class="rel-stat"><label>Investimento / Gasto</label><b id="relInvT">R$ 0</b></div>
-                    <div class="rel-stat"><label>Lideranças</label><b id="relLidT">0</b></div>
+                    <div class="rel-stat">
+                        <label>Resolutividade</label>
+                        <b id="relEfi">0%</b>
+                        <div class="barra-progresso"><div id="progEfi" class="prog-cor" style="background:#166534; width:0%"></div></div>
+                        <small style="font-size:8px; color:#64748b">Pedidos resolvidos vs pendentes</small>
+                    </div>
+                    <div class="rel-stat">
+                        <label>Presença em Eventos</label>
+                        <b id="relPres">0%</b>
+                        <div class="barra-progresso"><div id="progPres" class="prog-cor" style="background:#1e3a8a; width:0%"></div></div>
+                        <small style="font-size:8px; color:#64748b">Participação confirmada</small>
+                    </div>
+                </div>
+
+                <div style="margin-top:15px; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                    <div class="rel-stat"><label>Pedidos</label><b id="relPedT">0</b></div>
+                    <div class="rel-stat"><label>Líderes</label><b id="relLidT">0</b></div>
                     <div class="rel-stat"><label>Reuniões</label><b id="relReuT">0</b></div>
                 </div>
 
+                <div class="rel-stat" style="margin-top:10px;">
+                    <label>Investimento Total em Pedidos</label>
+                    <b id="relInvT" style="color:#166534">R$ 0,00</b>
+                </div>
+
                 <div style="margin-top:20px; border-top:1px solid #f1f5f9; padding-top:15px;">
-                    <label class="label-topo">Foco Geográfico (Pedidos)</label>
-                    <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:12px;">
-                        <span>🏙 Urbana: <b id="relUrbP">0%</b></span>
+                    <label class="label-topo">Abrangência Territorial</label>
+                    <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:11px;">
+                        <span>🏙 Urbano: <b id="relUrbP">0%</b></span>
                         <span>🚜 Rural: <b id="relRurP">0%</b></span>
                     </div>
                     <div class="barra-progresso">
@@ -214,8 +237,8 @@
                 </div>
 
                 <div class="btn-rel-float">
-                    <button class="btn-print" onclick="window.print()"><i class="material-icons">print</i> Imprimir</button>
-                    <button class="btn-whatsapp" onclick="enviarRelatorioZap()"><i class="material-icons">share</i> Enviar via WhatsApp</button>
+                    <button class="btn-print" onclick="window.print()"><i class="material-icons">print</i> Relatório PDF</button>
+                    <button class="btn-whatsapp" onclick="enviarRelatorioZap()"><i class="material-icons">send</i> Resumo WhatsApp</button>
                 </div>
             </div>
         </div>
@@ -230,7 +253,9 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     let pautasParaSalvar = [];
-    let totaisRel = { ped:0, pedR:0, lid:0, reu:0, pau:0, eve:0, eveSim:0, inv:0, urb:0, rur:0 };
+    
+    // Objeto global de totais para garantir somas precisas
+    let totais = { ped:0, res:0, urb:0, rur:0, lid:0, reu:0, eve:0, part:0, inv:0 };
 
     function switchTab(evt, tabName) {
         document.querySelectorAll('.secao').forEach(s => s.classList.remove('active'));
@@ -245,40 +270,40 @@
 
     function aplicarFiltros() { renderizarTudo(document.getElementById("filtroInicio").value, document.getElementById("filtroFim").value); }
     function limparFiltros() { document.getElementById("filtroInicio").value = ""; document.getElementById("filtroFim").value = ""; renderizarTudo(); }
-    function getStatusClass(status) {
-        if(status === 'Atendido total') return 'st-total';
-        if(status === 'Atendido parcial') return 'st-parcial';
-        if(status === 'Não atendido') return 'st-nao';
-        return 'st-disc';
-    }
 
     function renderizarTudo(ini = "", fim = "") {
-        // PEDIDOS
+        // 1. PEDIDOS
         db.collection("crm_pedidos").orderBy("dataPedido", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
-            let tG=0, cT=0, cR=0, cP=0, cU=0, cRu=0;
+            totais.ped=0; totais.res=0; totais.urb=0; totais.rur=0; totais.inv=0;
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.dataPedido >= ini) && (!fim || d.dataPedido <= fim)) {
-                    cT++; tG += d.gasto || 0;
-                    if(d.status === 'Resolvido') cR++; else cP++;
-                    if(d.zona === 'Urbana') cU++; else cRu++;
+                    totais.ped++;
+                    totais.inv += parseFloat(d.gasto) || 0;
+                    if(d.status === 'Resolvido') totais.res++;
+                    if(d.zona === 'Urbana') totais.urb++; else totais.rur++;
                     lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarPed('${doc.id}','${d.dataPedido}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}','${d.status}',${d.gasto},'${d.descricao}')">edit</i><i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i></div><div class="label-topo">${d.dataPedido} | ${d.status}</div><strong>${d.nome}</strong><br><small>📍 ${d.zona} - ${d.bairro}</small><br><small>👤 Líder: ${d.lideranca || "Direto"}</small><div style="font-size:11px; margin-top:5px; color:#475569; border-top:1px solid #f1f5f9; padding-top:5px;">📝 ${d.descricao || "Sem descrição"}</div><div class="badge-valor">R$ ${d.gasto}</div></div>`;
                 }
             });
-            document.getElementById("dashPedidos").innerText=cT; document.getElementById("dashPedRes").innerText=cR; document.getElementById("dashPedPen").innerText=cP;
-            document.getElementById("dashPedidosZona").innerText=cT; document.getElementById("dashPedUrb").innerText=cU; document.getElementById("dashPedRur").innerText=cRu;
-            totaisRel.ped=cT; totaisRel.pedR=cR; totaisRel.inv=tG; totaisRel.urb=cU; totaisRel.rur=cRu; atualizarRel();
+            document.getElementById("dashPedidos").innerText=totais.ped;
+            document.getElementById("dashPedRes").innerText=totais.res;
+            document.getElementById("dashPedPen").innerText=(totais.ped - totais.res);
+            document.getElementById("dashPedidosZona").innerText=totais.ped;
+            document.getElementById("dashPedUrb").innerText=totais.urb;
+            document.getElementById("dashPedRur").innerText=totais.rur;
+            atualizarRel();
         });
 
-        // REUNIÕES
+        // 2. REUNIÕES
         db.collection("agenda_vereador").orderBy("dataReuniao", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
-            let rT=0, pT=0, pTo=0, pPa=0, pNa=0, pDi=0;
+            totais.reu=0; let pT=0, pTo=0, pPa=0, pNa=0, pDi=0;
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.dataReuniao >= ini) && (!fim || d.dataReuniao <= fim)) {
-                    rT++; let pHTML = "";
+                    totais.reu++;
+                    let pHTML = "";
                     d.pautas?.forEach(p => { 
                         pT++; if(p.status==='Atendido total') pTo++; else if(p.status==='Atendido parcial') pPa++; else if(p.status==='Não atendido') pNa++; else pDi++;
                         pHTML += `<div style="font-size:11px; margin-top:5px;"><span class="status-pauta ${getStatusClass(p.status)}">${p.status}</span> ${p.texto}</div>`;
@@ -286,58 +311,69 @@
                     lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarReu('${doc.id}','${d.dataReuniao}','${d.local}','${d.comQuem}', ${JSON.stringify(d.pautas).replace(/"/g, '&quot;')},'${d.observacoes||""}')">edit</i><i class="material-icons btn-del" onclick="deletar('agenda_vereador','${doc.id}')">delete</i></div><div class="label-topo">${d.dataReuniao}</div><strong>${d.comQuem}</strong><br><small>📍 Local: ${d.local || "Não informado"}</small><div style="font-size:11px; margin-top:5px; color:#475569; border-top:1px solid #f1f5f9; padding-top:5px;">${pHTML}</div><div style="font-size:10px; margin-top:8px; font-style:italic; color:#64748b">💬 Obs: ${d.observacoes || "-"}</div></div>`;
                 }
             });
-            document.getElementById("dashTotalReu").innerText=rT; document.getElementById("dashTotalPau").innerText=pT;
-            document.getElementById("dashPauTotal").innerText=pTo; document.getElementById("dashPauParcial").innerText=pPa; document.getElementById("dashPauNao").innerText=pNa; document.getElementById("dashPauDisc").innerText=pDi;
-            totaisRel.reu=rT; totaisRel.pau=pT; atualizarRel();
+            document.getElementById("dashTotalReu").innerText=totais.reu;
+            document.getElementById("dashTotalPau").innerText=pT;
+            document.getElementById("dashPauTotal").innerText=pTo;
+            document.getElementById("dashPauParcial").innerText=pPa;
+            document.getElementById("dashPauNao").innerText=pNa;
+            document.getElementById("dashPauDisc").innerText=pDi;
+            atualizarRel();
         });
 
-        // EVENTOS
+        // 3. EVENTOS
         db.collection("eventos_externos").orderBy("data", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
-            let eT=0, eS=0, eN=0;
+            totais.eve=0; totais.part=0;
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.data >= ini) && (!fim || d.data <= fim)) {
-                    eT++; if(d.participou==='Sim') eS++; else eN++;
+                    totais.eve++;
+                    if(d.participou==='Sim') totais.part++;
                     lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}','${d.observacoes||""}')">edit</i><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div><div class="label-topo">${d.data}</div><strong>${d.titulo}</strong><br><small>📍 Local: ${d.local || "Não informado"}</small><div style="font-size:10px; margin-top:8px; color:#64748b; border-top:1px solid #f1f5f9; padding-top:5px;">💬 Obs: ${d.observacoes || "-"}</div><select class="form-controle" style="margin-top:10px" onchange="db.collection('eventos_externos').doc('${doc.id}').update({participou:this.value})"><option value="Não" ${d.participou=='Não'?'selected':''}>Não Participei</option><option value="Sim" ${d.participou=='Sim'?'selected':''}>Participei</option></select></div>`;
                 }
             });
-            document.getElementById("dashTotalEve").innerText=eT; document.getElementById("dashEveSim").innerText=eS; document.getElementById("dashEveNao").innerText=eN;
-            totaisRel.eve=eT; totaisRel.eveSim=eS; atualizarRel();
+            document.getElementById("dashTotalEve").innerText=totais.eve;
+            document.getElementById("dashEveSim").innerText=totais.part;
+            document.getElementById("dashEveNao").innerText=(totais.eve - totais.part);
+            atualizarRel();
         });
     }
 
+    // 4. LIDERANÇAS
     db.collection("liderancas").orderBy("nome").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas"); const sel = document.getElementById("pLider");
         lista.innerHTML = ""; sel.innerHTML = '<option value="">Direto com Vereador</option>';
-        let lT=0, lU=0, lR=0; snap.forEach(doc => {
-            const l = doc.data(); sel.innerHTML += `<option value="${l.nome}">${l.nome}</option>`;
-            lT++; if(l.zona==='Urbana') lU++; else lR++;
+        totais.lid=0; let lU=0, lR=0;
+        snap.forEach(doc => {
+            const l = doc.data();
+            totais.lid++;
+            if(l.zona==='Urbana') lU++; else lR++;
+            sel.innerHTML += `<option value="${l.nome}">${l.nome}</option>`;
             lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarLid('${doc.id}','${l.nome}','${l.fone}','${l.zona}','${l.bairroSetor}')">edit</i><i class="material-icons btn-del" onclick="deletar('liderancas','${doc.id}')">delete</i></div><div class="label-topo">${l.zona}</div><strong>${l.nome}</strong><br><small>📞 ${l.fone || "Sem fone"}</small><br><small>📍 ${l.bairroSetor || "Setor não informado"}</small></div>`;
         });
-        document.getElementById("dashLiderancas").innerText=lT; document.getElementById("dashLidUrb").innerText=lU; document.getElementById("dashLidRur").innerText=lR;
-        totaisRel.lid=lT; atualizarRel();
+        document.getElementById("dashLiderancas").innerText=totais.lid;
+        document.getElementById("dashLidUrb").innerText=lU;
+        document.getElementById("dashLidRur").innerText=lR;
+        atualizarRel();
     });
 
-    // LÓGICA ESTRATÉGICA DE RELATÓRIO
+    // ATUALIZAÇÃO DA ABA DE RELATÓRIO
     function atualizarRel() {
-        document.getElementById("relPedT").innerText = totaisRel.ped;
-        document.getElementById("relInvT").innerText = "R$ " + totaisRel.inv.toLocaleString('pt-BR');
-        document.getElementById("relLidT").innerText = totaisRel.lid;
-        document.getElementById("relReuT").innerText = totaisRel.reu;
-        document.getElementById("relPauT").innerText = totaisRel.pau;
-        document.getElementById("relEveT").innerText = totaisRel.eve;
+        document.getElementById("relPedT").innerText = totais.ped;
+        document.getElementById("relLidT").innerText = totais.lid;
+        document.getElementById("relReuT").innerText = totais.reu;
+        document.getElementById("relInvT").innerText = "R$ " + totais.inv.toLocaleString('pt-BR', {minimumFractionDigits: 2});
 
-        const efi = totaisRel.ped > 0 ? Math.round((totaisRel.pedR / totaisRel.ped) * 100) : 0;
+        const efi = totais.ped > 0 ? Math.round((totais.res / totais.ped) * 100) : 0;
         document.getElementById("relEfi").innerText = efi + "%";
         document.getElementById("progEfi").style.width = efi + "%";
 
-        const pres = totaisRel.eve > 0 ? Math.round((totaisRel.eveSim / totaisRel.eve) * 100) : 0;
+        const pres = totais.eve > 0 ? Math.round((totais.part / totais.eve) * 100) : 0;
         document.getElementById("relPres").innerText = pres + "%";
         document.getElementById("progPres").style.width = pres + "%";
 
-        const pUrb = totaisRel.ped > 0 ? Math.round((totaisRel.urb / totaisRel.ped) * 100) : 0;
-        const pRur = totaisRel.ped > 0 ? (100 - pUrb) : 0;
+        const pUrb = totais.ped > 0 ? Math.round((totais.urb / totais.ped) * 100) : 0;
+        const pRur = totais.ped > 0 ? (100 - pUrb) : 0;
         document.getElementById("relUrbP").innerText = pUrb + "%";
         document.getElementById("relRurP").innerText = pRur + "%";
         document.getElementById("progUrb").style.width = pUrb + "%";
@@ -345,16 +381,23 @@
     }
 
     function enviarRelatorioZap() {
-        const msg = `📊 *RESUMO ESTRATÉGICO DO MANDATO*%0A%0A` +
-                    `✅ *Eficiência:* ${document.getElementById("relEfi").innerText}%0A` +
-                    `📍 *Pedidos:* ${totaisRel.ped} (${totaisRel.pedR} resolvidos)%0A` +
-                    `👥 *Lideranças:* ${totaisRel.lid}%0A` +
-                    `📅 *Reuniões:* ${totaisRel.reu}%0A` +
-                    `💰 *Investimento:* ${document.getElementById("relInvT").innerText}%0A%0A` +
-                    `_Gerado pelo sistema Gabinete Estratégico_`;
+        const msg = `📊 *RELATÓRIO DE MANDATO*%0A%0A` +
+                    `✅ *Resolutividade:* ${document.getElementById("relEfi").innerText}%0A` +
+                    `📍 *Pedidos Totais:* ${totais.ped}%0A` +
+                    `👥 *Lideranças Ativas:* ${totais.lid}%0A` +
+                    `📅 *Reuniões Realizadas:* ${totais.reu}%0A` +
+                    `💰 *Investimento Total:* ${document.getElementById("relInvT").innerText}%0A%0A` +
+                    `_Foco: ${document.getElementById("relUrbP").innerText} Urbano | ${document.getElementById("relRurP").innerText} Rural_`;
         window.open(`https://api.whatsapp.com/send?text=${msg}`);
     }
 
+    // FUNÇÕES AUXILIARES MANTIDAS
+    function getStatusClass(status) {
+        if(status === 'Atendido total') return 'st-total';
+        if(status === 'Atendido parcial') return 'st-parcial';
+        if(status === 'Não atendido') return 'st-nao';
+        return 'st-disc';
+    }
     function deletar(c, id) { if(confirm("Excluir?")) db.collection(c).doc(id).delete(); }
     function editarPed(id,dt,nm,br,zn,ld,st,gs,ds) { document.getElementById("pId").value=id; document.getElementById("pData").value=dt; document.getElementById("pNome").value=nm; document.getElementById("pBairro").value=br; document.getElementById("pZona").value=zn; document.getElementById("pLider").value=ld; document.getElementById("pStatus").value=st; document.getElementById("pGasto").value=gs; document.getElementById("pDesc").value=ds; window.scrollTo(0,0); }
     function editarLid(id,nm,fn,zn,bs) { document.getElementById("lId").value=id; document.getElementById("lNome").value=nm; document.getElementById("lFone").value=fn; document.getElementById("lZona").value=zn; document.getElementById("lBairroSetor").value=bs; window.scrollTo(0,0); }
@@ -371,12 +414,12 @@
         else if(c==='eventos_externos') { d = { data: document.getElementById("eData").value, local: document.getElementById("eLocal").value, titulo: document.getElementById("eTitulo").value, participou: "Não", observacoes: document.getElementById("eObs").value }; }
         try {
             if(id) { await db.collection(c).doc(id).set(d, {merge:true}); } else { await db.collection(c).add(d); }
-            alert("Salvo!");
+            alert("Salvo com sucesso!");
             if(c==='crm_pedidos') { document.getElementById("pId").value=""; document.querySelectorAll("#demandas input, #demandas textarea").forEach(i => i.value=""); }
             else if(c==='liderancas') { document.getElementById("lId").value=""; document.querySelectorAll("#liderancas input").forEach(i => i.value=""); }
             else if(c==='agenda_vereador') { document.getElementById("aId").value=""; pautasParaSalvar=[]; renderPautasTemp(); document.querySelectorAll("#agenda input, #agenda textarea").forEach(i => i.value=""); }
             else if(c==='eventos_externos') { document.getElementById("eId").value=""; document.querySelectorAll("#eventos input, #eventos textarea").forEach(i => i.value=""); }
-        } catch (e) { alert("Erro: " + e.message); }
+        } catch (e) { alert("Erro ao salvar."); }
     }
     renderizarTudo();
 </script>
