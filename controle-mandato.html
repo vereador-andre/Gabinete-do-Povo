@@ -43,12 +43,10 @@
         .st-nao { background: #fee2e2; color: #991b1b; }
         .st-disc { background: #e2e8f0; color: #475569; }
 
-        /* ESTILOS NOVOS PARA SUB-ABAS DE PEDIDOS */
         .sub-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
         .sub-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #1e3a8a; background: white; color: #1e3a8a; font-size: 11px; font-weight: 600; cursor: pointer; }
         .sub-btn.active { background: #1e3a8a; color: white; }
 
-        /* ESTILOS EXCLUSIVOS ABA RELATÓRIO */
         .rel-container { display: flex; flex-direction: column; gap: 12px; }
         .rel-card { background: white; border-radius: 15px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 4px solid #1e3a8a; }
         .rel-titulo { font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
@@ -76,7 +74,6 @@
 </div>
 
 <div class="container">
-    <!-- DASHBOARD PEDIDOS (MODIFICADO: NOMES AO INVÉS DE FIGURINHAS) -->
     <div id="dashContainerPedidos" class="dash-resumo">
         <div class="card-mini">
             <label>Pedidos</label><span id="dashPedidos">0</span>
@@ -94,7 +91,6 @@
         </div>
     </div>
 
-    <!-- OUTROS DASHBOARDS (INTOCADOS) -->
     <div id="dashContainerLiderancas" class="dash-resumo dash-unica" style="display:none;">
         <div class="card-mini"><label>Total de Lideranças</label><span id="dashLiderancas">0</span>
             <div class="dash-detalhe"><div class="det-urb">🏙 Urbana: <span id="dashLidUrb">0</span></div><div class="det-rur">🚜 Rural: <span id="dashLidRur">0</span></div></div>
@@ -130,7 +126,6 @@
         <i class="material-icons" style="color:#1e3a8a; margin-top:12px; cursor:pointer;" onclick="limparFiltros()">filter_list_off</i>
     </div>
 
-    <!-- SEÇÃO PEDIDOS (MODIFICADA COM SUB-ABAS) -->
     <div id="demandas" class="secao active">
         <div class="card-controle">
             <h4 id="titPedido">Novo Pedido</h4>
@@ -155,7 +150,6 @@
         <div id="listaPedidosResolvidos" style="display:none"></div>
     </div>
 
-    <!-- AS OUTRAS ABAS PERMANECEM RIGOROSAMENTE IGUAIS -->
     <div id="liderancas" class="secao">
         <div class="card-controle">
             <h4 id="titLider">Cadastrar Liderança</h4>
@@ -276,7 +270,6 @@
     function limparFiltros() { document.getElementById("filtroInicio").value = ""; document.getElementById("filtroFim").value = ""; renderizarTudo(); }
 
     function renderizarTudo(ini = "", fim = "") {
-        // PEDIDOS COM LÓGICA DE SEPARAÇÃO POR STATUS
         db.collection("crm_pedidos").orderBy("dataPedido", "desc").onSnapshot(snap => {
             const listaPend = document.getElementById("listaPedidosPendentes");
             const listaRes = document.getElementById("listaPedidosResolvidos");
@@ -290,16 +283,9 @@
                     cT++; 
                     const v = parseFloat(d.gasto) || 0;
                     dadosRel.invT += v;
-                    
                     const cardHTML = `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarPed('${doc.id}','${d.dataPedido}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}','${d.status}',${d.gasto},'${d.descricao}')">edit</i><i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i></div><div class="label-topo">${d.dataPedido} | ${d.status}</div><strong>${d.nome}</strong><br><small>📍 ${d.zona} - ${d.bairro}</small><br><small>👤 Líder: ${d.lideranca || "Direto"}</small><div style="font-size:11px; margin-top:5px; color:#475569; border-top:1px solid #f1f5f9; padding-top:5px;">📝 ${d.descricao || "Sem descrição"}</div><div class="badge-valor">R$ ${d.gasto}</div></div>`;
-
-                    if(d.status === 'Resolvido') { 
-                        cR++; dadosRel.invR += v; 
-                        listaRes.innerHTML += cardHTML;
-                    } else { 
-                        cP++; dadosRel.invP += v; 
-                        listaPend.innerHTML += cardHTML;
-                    }
+                    if(d.status === 'Resolvido') { cR++; dadosRel.invR += v; listaRes.innerHTML += cardHTML; } 
+                    else { cP++; dadosRel.invP += v; listaPend.innerHTML += cardHTML; }
                     if(d.zona === 'Urbana') cU++; else cRu++;
                 }
             });
@@ -308,7 +294,6 @@
             atualizarUI_Rel();
         });
 
-        // REUNIÕES (MANTIDO)
         db.collection("agenda_vereador").orderBy("dataReuniao", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
             dadosRel.reuT=0; dadosRel.pauT=0; dadosRel.pauOk=0; dadosRel.pauPa=0; dadosRel.pauNo=0;
@@ -333,7 +318,6 @@
             atualizarUI_Rel();
         });
 
-        // EVENTOS (MANTIDO)
         db.collection("eventos_externos").orderBy("data", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
             dadosRel.eveT=0; dadosRel.eveS=0;
@@ -341,7 +325,7 @@
                 const d = doc.data();
                 if ((!ini || d.data >= ini) && (!fim || d.data <= fim)) {
                     dadosRel.eveT++; if(d.participou==='Sim') dadosRel.eveS++;
-                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}','${d.observacoes||""}')">edit</i><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div><div class="label-topo">${d.data}</div><strong>${d.titulo}</strong><br><small>📍 Local: ${d.local || "Não informado"}</small><div style="font-size:10px; margin-top:8px; color:#64748b; border-top:1px solid #f1f5f9; padding-top:5px;">💬 Obs: ${d.observacoes || "-"}</div><select class="form-controle" style="margin-top:10px" onchange="db.collection('eventos_externos').doc('${doc.id}').update({participou:this.value})"><option value="Não" ${d.participou=='Não'?'selected':''}>Não Participei</option><option value="Sim" ${d.participou=='Sim'?'selected':''}>Participei</option></select></div>`;
+                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}','${d.observacoes||""}')">edit</i><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div><div class="label-topo">${d.data}</div><strong>${d.titulo}</strong><br><small>📍 Local: ${d.local || "Não informado"}</small><div style="font-size:10px; margin-top:8px; color:#64748b; border-top:1px solid #f1f5f9; padding-top:5px;">💬 Obs: ${d.observacoes || "-"}</div><select class="form-controle" style="margin-top:10px" onchange="db.collection('eventos_externos').doc('${doc.id}').update({participou:this.value})"><option value="Aguardando" ${d.participou=='Aguardando'?'selected':''}>⏳ Aguardando</option><option value="Não" ${d.participou=='Não'?'selected':''}>✖ Não Participei</option><option value="Sim" ${d.participou=='Sim'?'selected':''}>✔ Participei</option></select></div>`;
                 }
             });
             document.getElementById("dashTotalEve").innerText=dadosRel.eveT; document.getElementById("dashEveSim").innerText=dadosRel.eveS; document.getElementById("dashEveNao").innerText=(dadosRel.eveT - dadosRel.eveS);
@@ -349,7 +333,6 @@
         });
     }
 
-    // LIDERANCAS (MANTIDO)
     db.collection("liderancas").orderBy("nome").onSnapshot(snap => {
         const lista = document.getElementById("listaLiderancas"); const sel = document.getElementById("pLider");
         lista.innerHTML = ""; sel.innerHTML = '<option value="">Direto com Vereador</option>';
@@ -361,7 +344,6 @@
         document.getElementById("dashLiderancas").innerText=lT; document.getElementById("dashLidUrb").innerText=lU; document.getElementById("dashLidRur").innerText=lR;
     });
 
-    // RELATORIOS (MANTIDO)
     function atualizarUI_Rel() {
         document.getElementById("relInvTotal").innerText = dadosRel.invT.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         document.getElementById("relInvRes").innerText = dadosRel.invR.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -400,7 +382,7 @@
         if(c==='crm_pedidos') { d = { dataPedido: document.getElementById("pData").value, nome: document.getElementById("pNome").value, bairro: document.getElementById("pBairro").value, zona: document.getElementById("pZona").value, lideranca: document.getElementById("pLider").value, status: document.getElementById("pStatus").value, gasto: parseFloat(document.getElementById("pGasto").value) || 0, descricao: document.getElementById("pDesc").value }; } 
         else if(c==='liderancas') { d = { nome: document.getElementById("lNome").value, fone: document.getElementById("lFone").value, zona: document.getElementById("lZona").value, bairroSetor: document.getElementById("lBairroSetor").value }; } 
         else if(c==='agenda_vereador') { d = { dataReuniao: document.getElementById("aData").value, local: document.getElementById("aLocal").value, comQuem: document.getElementById("aCom").value, pautas: pautasParaSalvar, observacoes: document.getElementById("aObs").value }; } 
-        else if(c==='eventos_externos') { d = { data: document.getElementById("eData").value, local: document.getElementById("eLocal").value, titulo: document.getElementById("eTitulo").value, participou: "Não", observacoes: document.getElementById("eObs").value }; }
+        else if(c==='eventos_externos') { d = { data: document.getElementById("eData").value, local: document.getElementById("eLocal").value, titulo: document.getElementById("eTitulo").value, participou: "Aguardando", observacoes: document.getElementById("eObs").value }; }
         try {
             if(id) { await db.collection(c).doc(id).set(d, {merge:true}); } else { await db.collection(c).add(d); }
             alert("Salvo!");
