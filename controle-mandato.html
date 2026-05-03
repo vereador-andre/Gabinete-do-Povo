@@ -122,7 +122,6 @@
         </div>
     </div>
 
-    <!-- DASHBOARD LEGISLATIVO -->
     <div id="dashContainerLegislativo" class="dash-resumo" style="display:none;">
         <div class="card-mini"><label>Total Proposições</label><span id="dashTotalLeg">0</span></div>
         <div class="card-mini"><label>Aprovações</label>
@@ -204,7 +203,6 @@
         <div id="listaEventos"></div>
     </div>
 
-    <!-- SEÇÃO LEGISLATIVO (NOVA) -->
     <div id="legislativo" class="secao">
         <div class="card-controle">
             <h4 id="titLeg">Nova Proposição Legislativa</h4>
@@ -373,7 +371,6 @@
             atualizarUI_Rel();
         });
 
-        // LEGISLATIVO RENDER
         db.collection("legislativo_rascunhos").orderBy("data", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaLegislativo"); lista.innerHTML = "";
             let legT=0, legA=0;
@@ -436,21 +433,26 @@
     function renderPautasTemp() { const div=document.getElementById("listaPautasTemp"); div.innerHTML=""; pautasParaSalvar.forEach((p,i)=>{ div.innerHTML+=`<div class="pauta-item"><div style="display:flex; justify-content:space-between"><span>${p.texto}</span><i class="material-icons" style="color:red; font-size:18px" onclick="pautasParaSalvar.splice(${i},1);renderPautasTemp();">delete</i></div><select class="form-controle" style="padding:5px" onchange="pautasParaSalvar[${i}].status=this.value"><option value="Não discutido" ${p.status=='Não discutido'?'selected':''}>Não discutido</option><option value="Atendido total" ${p.status=='Atendido total'?'selected':''}>Atendido total</option><option value="Atendido parcial" ${p.status=='Atendido parcial'?'selected':''}>Atendido parcial</option><option value="Não atendido" ${p.status=='Não atendido'?'selected':''}>Não atendido</option></select></div>`;});}
 
     async function salvarItem(c) {
-        let d = {}; let id = document.getElementById(c === 'crm_pedidos' ? "pId" : c === 'liderancas' ? "lId" : c === 'agenda_vereador' ? "aId" : c === 'eventos_externos' ? "eId" : "legId").value;
+        let d = {}; 
+        let idInput = c === 'crm_pedidos' ? "pId" : c === 'liderancas' ? "lId" : c === 'agenda_vereador' ? "aId" : c === 'eventos_externos' ? "eId" : "legId";
+        let id = document.getElementById(idInput).value;
+
         if(c==='crm_pedidos') { d = { dataPedido: document.getElementById("pData").value, nome: document.getElementById("pNome").value, bairro: document.getElementById("pBairro").value, zona: document.getElementById("pZona").value, lideranca: document.getElementById("pLider").value, status: document.getElementById("pStatus").value, gasto: parseFloat(document.getElementById("pGasto").value) || 0, descricao: document.getElementById("pDesc").value }; } 
         else if(c==='liderancas') { d = { nome: document.getElementById("lNome").value, fone: document.getElementById("lFone").value, zona: document.getElementById("lZona").value, bairroSetor: document.getElementById("lBairroSetor").value }; } 
         else if(c==='agenda_vereador') { d = { dataReuniao: document.getElementById("aData").value, local: document.getElementById("aLocal").value, comQuem: document.getElementById("aCom").value, pautas: pautasParaSalvar, observacoes: document.getElementById("aObs").value }; } 
         else if(c==='eventos_externos') { d = { data: document.getElementById("eData").value, local: document.getElementById("eLocal").value, titulo: document.getElementById("eTitulo").value, participou: "Aguardando", observacoes: document.getElementById("eObs").value }; }
         else if(c==='legislativo_rascunhos') { d = { data: document.getElementById("legData").value, tipo: document.getElementById("legTipo").value, titulo: document.getElementById("legTitulo").value, acompanhamento: document.getElementById("legAcomp").value, observacoes: document.getElementById("legObs").value }; }
+        
         try {
             if(id) { await db.collection(c).doc(id).set(d, {merge:true}); } else { await db.collection(c).add(d); }
             alert("Salvo!");
+            
             if(c==='crm_pedidos') { document.getElementById("pId").value=""; document.querySelectorAll("#demandas input, #demandas textarea").forEach(i => i.value=""); }
             else if(c==='liderancas') { document.getElementById("lId").value=""; document.querySelectorAll("#liderancas input").forEach(i => i.value=""); }
             else if(c==='agenda_vereador') { document.getElementById("aId").value=""; pautasParaSalvar=[]; renderPautasTemp(); document.querySelectorAll("#agenda input, #agenda textarea").forEach(i => i.value=""); }
             else if(c==='eventos_externos') { document.getElementById("eId").value=""; document.querySelectorAll("#eventos input, #eventos textarea").forEach(i => i.value=""); }
-            else if(c==='legislativo_rascunhos') { document.getElementById("legId").value=""; document.querySelectorAll("#legislativo input, #legislativo select, #legislativo textarea").forEach(i => { if(i.tagName !== 'SELECT') i.value=""; }); }
-        } catch (e) { alert("Erro ao salvar."); }
+            else if(c==='legislativo_rascunhos') { document.getElementById("legId").value=""; document.getElementById("legData").value=""; document.getElementById("legTitulo").value=""; document.getElementById("legObs").value=""; }
+        } catch (e) { alert("Erro ao salvar: " + e.message); }
     }
     renderizarTudo();
 </script>
