@@ -43,6 +43,12 @@
         .st-nao { background: #fee2e2; color: #991b1b; }
         .st-disc { background: #e2e8f0; color: #475569; }
 
+        /* ESTILOS SUB-TABS PEDIDOS */
+        .sub-tabs { display: flex; gap: 10px; margin: 15px 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; }
+        .sub-btn { background: none; border: none; padding: 8px 15px; color: #64748b; font-weight: 600; font-size: 12px; cursor: pointer; position: relative; }
+        .sub-btn.active { color: #1e3a8a; }
+        .sub-btn.active::after { content: ''; position: absolute; bottom: -7px; left: 0; width: 100%; height: 3px; background: #1e3a8a; border-radius: 10px; }
+
         /* ESTILOS EXCLUSIVOS ABA RELATÓRIO */
         .rel-container { display: flex; flex-direction: column; gap: 12px; }
         .rel-card { background: white; border-radius: 15px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 4px solid #1e3a8a; }
@@ -71,6 +77,7 @@
 </div>
 
 <div class="container">
+    <!-- DASHBOARDS GLOBAIS MANTIDOS -->
     <div id="dashContainerPedidos" class="dash-resumo">
         <div class="card-mini"><label>Pedidos</label><span id="dashPedidos">0</span>
             <div class="dash-detalhe"><div class="det-res">✔ <span id="dashPedRes">0</span></div><div class="det-pen">⏳ <span id="dashPedPen">0</span></div></div>
@@ -115,6 +122,7 @@
         <i class="material-icons" style="color:#1e3a8a; margin-top:12px; cursor:pointer;" onclick="limparFiltros()">filter_list_off</i>
     </div>
 
+    <!-- SEÇÃO PEDIDOS (ADICIONADA SUB-TABS PARA FILTRAGEM) -->
     <div id="demandas" class="secao active">
         <div class="card-controle">
             <h4 id="titPedido">Novo Pedido</h4>
@@ -129,9 +137,15 @@
             <textarea id="pDesc" class="form-controle" style="height:70px" placeholder="O que foi solicitado?"></textarea>
             <button class="btn-acao" onclick="salvarItem('crm_pedidos')">Salvar Pedido</button>
         </div>
+
+        <div class="sub-tabs">
+            <button class="sub-btn active" id="subTabPend" onclick="switchSubTab('Pendentes')">Pendentes</button>
+            <button class="sub-btn" id="subTabRes" onclick="switchSubTab('Resolvido')">Resolvidos</button>
+        </div>
         <div id="listaPedidos"></div>
     </div>
 
+    <!-- DEMAIS SEÇÕES MANTIDAS INTACTAS -->
     <div id="liderancas" class="secao">
         <div class="card-controle">
             <h4 id="titLider">Cadastrar Liderança</h4>
@@ -186,31 +200,18 @@
                     <span class="det-pen">Pendentes: <b id="relInvPen">R$ 0,00</b></span>
                 </div>
             </div>
-
             <div class="rel-card" style="border-left-color: #1e3a8a;">
                 <div class="rel-titulo"><i class="material-icons">event_note</i> Reuniões e Pautas</div>
                 <div class="rel-valor-destaque"><span id="relTotalReu">0</span> <small style="font-size: 12px; color: #64748b;">Reuniões</small></div>
-                <div class="rel-sub-info" style="border:none; margin:0; padding:0">
-                    <span>Pautas Totais: <b id="relTotalPau">0</b></span>
-                </div>
-                <div class="rel-sub-info">
-                    <span class="det-res">Atendidas: <b id="relPauOk">0</b></span>
-                    <span class="det-rur">Parciais: <b id="relPauParc">0</b></span>
-                    <span class="det-pen">Não Atend: <b id="relPauNo">0</b></span>
-                </div>
+                <div class="rel-sub-info" style="border:none; margin:0; padding:0"><span>Pautas Totais: <b id="relTotalPau">0</b></span></div>
+                <div class="rel-sub-info"><span class="det-res">Atendidas: <b id="relPauOk">0</b></span><span class="det-rur">Parciais: <b id="relPauParc">0</b></span><span class="det-pen">Não Atend: <b id="relPauNo">0</b></span></div>
             </div>
-
             <div class="rel-card" style="border-left-color: #f59e0b;">
                 <div class="rel-titulo"><i class="material-icons">confirmation_number</i> Eventos e Presença</div>
                 <div class="rel-valor-destaque" id="relPercPresenca">0%</div>
                 <div class="prog-bg"><div id="relProgPres" class="prog-fill" style="background:#f59e0b; width: 0%;"></div></div>
-                <div class="rel-sub-info">
-                    <span>Total Eventos: <b id="relTotalEve">0</b></span>
-                    <span class="det-res">Participou: <b id="relEveSim">0</b></span>
-                    <span class="det-pen">Faltou: <b id="relEveNao">0</b></span>
-                </div>
+                <div class="rel-sub-info"><span>Total Eventos: <b id="relTotalEve">0</b></span><span class="det-res">Participou: <b id="relEveSim">0</b></span><span class="det-pen">Faltou: <b id="relEveNao">0</b></span></div>
             </div>
-
             <div class="btn-rel-float">
                 <button style="background: #1e3a8a;" onclick="window.print()"><i class="material-icons">picture_as_pdf</i> PDF</button>
                 <button style="background: #25d366;" onclick="enviarRelatorioZap()"><i class="material-icons">share</i> WhatsApp</button>
@@ -227,9 +228,8 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     let pautasParaSalvar = [];
-    
-    // Dados para somatórios do relatório
     let dadosRel = { invT:0, invR:0, invP:0, reuT:0, pauT:0, pauOk:0, pauPa:0, pauNo:0, eveT:0, eveS:0 };
+    let subTabPedidosAtiva = "Pendentes"; // Nova variável de controle
 
     function switchTab(evt, tabName) {
         document.querySelectorAll('.secao').forEach(s => s.classList.remove('active'));
@@ -242,23 +242,44 @@
         document.getElementById('dashContainerEventos').style.display = (tabName === 'eventos') ? 'grid' : 'none';
     }
 
+    // Função para alternar entre Pendentes e Resolvidos
+    function switchSubTab(status) {
+        subTabPedidosAtiva = status;
+        document.getElementById('subTabPend').classList.toggle('active', status === 'Pendentes');
+        document.getElementById('subTabRes').classList.toggle('active', status === 'Resolvido');
+        renderizarTudo(document.getElementById("filtroInicio").value, document.getElementById("filtroFim").value);
+    }
+
     function aplicarFiltros() { renderizarTudo(document.getElementById("filtroInicio").value, document.getElementById("filtroFim").value); }
     function limparFiltros() { document.getElementById("filtroInicio").value = ""; document.getElementById("filtroFim").value = ""; renderizarTudo(); }
 
     function renderizarTudo(ini = "", fim = "") {
-        // PEDIDOS
+        // PEDIDOS COM FILTRO DE SUB-ABA
         db.collection("crm_pedidos").orderBy("dataPedido", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaPedidos"); lista.innerHTML = "";
             let cT=0, cR=0, cP=0, cU=0, cRu=0; 
             dadosRel.invT=0; dadosRel.invR=0; dadosRel.invP=0;
+            
             snap.forEach(doc => {
                 const d = doc.data();
-                if ((!ini || d.dataPedido >= ini) && (!fim || d.dataPedido <= fim)) {
-                    cT++; 
-                    const v = parseFloat(d.gasto) || 0;
-                    dadosRel.invT += v;
-                    if(d.status === 'Resolvido') { cR++; dadosRel.invR += v; } else { cP++; dadosRel.invP += v; }
-                    if(d.zona === 'Urbana') cU++; else cRu++;
+                const valor = parseFloat(d.gasto) || 0;
+                
+                // Contabilidade Global (Dashboard)
+                cT++; 
+                dadosRel.invT += valor;
+                if(d.status === 'Resolvido') { cR++; dadosRel.invR += valor; } else { cP++; dadosRel.invP += valor; }
+                if(d.zona === 'Urbana') cU++; else cRu++;
+
+                // Filtro para exibição na Lista (Data + SubTab)
+                const passaData = (!ini || d.dataPedido >= ini) && (!fim || d.dataPedido <= fim);
+                let passaSubTab = false;
+                if(subTabPedidosAtiva === "Resolvido") {
+                    passaSubTab = (d.status === "Resolvido");
+                } else {
+                    passaSubTab = (d.status === "Pendente" || d.status === "Encaminhado");
+                }
+
+                if (passaData && passaSubTab) {
                     lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarPed('${doc.id}','${d.dataPedido}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}','${d.status}',${d.gasto},'${d.descricao}')">edit</i><i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i></div><div class="label-topo">${d.dataPedido} | ${d.status}</div><strong>${d.nome}</strong><br><small>📍 ${d.zona} - ${d.bairro}</small><br><small>👤 Líder: ${d.lideranca || "Direto"}</small><div style="font-size:11px; margin-top:5px; color:#475569; border-top:1px solid #f1f5f9; padding-top:5px;">📝 ${d.descricao || "Sem descrição"}</div><div class="badge-valor">R$ ${d.gasto}</div></div>`;
                 }
             });
@@ -267,7 +288,7 @@
             atualizarUI_Rel();
         });
 
-        // REUNIÕES
+        // REUNIÕES (MANTIDO)
         db.collection("agenda_vereador").orderBy("dataReuniao", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaAgenda"); lista.innerHTML = "";
             dadosRel.reuT=0; dadosRel.pauT=0; dadosRel.pauOk=0; dadosRel.pauPa=0; dadosRel.pauNo=0;
@@ -292,7 +313,7 @@
             atualizarUI_Rel();
         });
 
-        // EVENTOS
+        // EVENTOS (MANTIDO)
         db.collection("eventos_externos").orderBy("data", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
             dadosRel.eveT=0; dadosRel.eveS=0;
@@ -319,23 +340,17 @@
         document.getElementById("dashLiderancas").innerText=lT; document.getElementById("dashLidUrb").innerText=lU; document.getElementById("dashLidRur").innerText=lR;
     });
 
-    // ATUALIZAÇÃO EXCLUSIVA DA ABA RELATÓRIOS
     function atualizarUI_Rel() {
-        // Financeiro
         document.getElementById("relInvTotal").innerText = dadosRel.invT.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         document.getElementById("relInvRes").innerText = dadosRel.invR.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         document.getElementById("relInvPen").innerText = dadosRel.invP.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         const percInv = dadosRel.invT > 0 ? (dadosRel.invR / dadosRel.invT) * 100 : 0;
         document.getElementById("relProgInv").style.width = percInv + "%";
-
-        // Reuniões
         document.getElementById("relTotalReu").innerText = dadosRel.reuT;
         document.getElementById("relTotalPau").innerText = dadosRel.pauT;
         document.getElementById("relPauOk").innerText = dadosRel.pauOk;
         document.getElementById("relPauParc").innerText = dadosRel.pauPa;
         document.getElementById("relPauNo").innerText = dadosRel.pauNo;
-
-        // Eventos
         document.getElementById("relTotalEve").innerText = dadosRel.eveT;
         document.getElementById("relEveSim").innerText = dadosRel.eveS;
         document.getElementById("relEveNao").innerText = (dadosRel.eveT - dadosRel.eveS);
@@ -345,15 +360,10 @@
     }
 
     function enviarRelatorioZap() {
-        const msg = `📊 *RESUMO DO MANDATO*%0A%0A` +
-                    `💰 *Investimentos:* ${document.getElementById("relInvTotal").innerText}%0A` +
-                    `📅 *Reuniões:* ${dadosRel.reuT} (${dadosRel.pauOk} pautas atendidas)%0A` +
-                    `🎗 *Presença em Eventos:* ${document.getElementById("relPercPresenca").innerText}%0A%0A` +
-                    `_Gerado pelo Gabinete Estratégico_`;
+        const msg = `📊 *RESUMO DO MANDATO*%0A%0A💰 *Investimentos:* ${document.getElementById("relInvTotal").innerText}%0A📅 *Reuniões:* ${dadosRel.reuT} (${dadosRel.pauOk} pautas atendidas)%0A🎗 *Presença em Eventos:* ${document.getElementById("relPercPresenca").innerText}%0A%0AGerado pelo Gabinete Estratégico`;
         window.open(`https://api.whatsapp.com/send?text=${msg}`);
     }
 
-    // FUNÇÕES AUXILIARES MANTIDAS (SEM ALTERAÇÃO)
     function getStatusClass(status) {
         if(status === 'Atendido total') return 'st-total';
         if(status === 'Atendido parcial') return 'st-parcial';
