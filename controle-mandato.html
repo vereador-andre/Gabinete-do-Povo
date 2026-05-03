@@ -110,12 +110,14 @@
         </div>
     </div>
 
+    <!-- DASHBOARD EVENTOS (MODIFICADO COM AGUARDANDO) -->
     <div id="dashContainerEventos" class="dash-resumo" style="display:none;">
         <div class="card-mini"><label>Total Eventos</label><span id="dashTotalEve">0</span></div>
         <div class="card-mini"><label>Presença</label>
             <div class="dash-detalhe">
-                <div class="det-res">✔ Participei: <span id="dashEveSim">0</span></div>
+                <div class="det-res">✔ Sim: <span id="dashEveSim">0</span></div>
                 <div class="det-pen">✖ Não: <span id="dashEveNao">0</span></div>
+                <div style="color:#64748b; font-weight:600">⏳ Aguard: <span id="dashEveAgu">0</span></div>
             </div>
         </div>
     </div>
@@ -140,12 +142,10 @@
             <textarea id="pDesc" class="form-controle" style="height:70px" placeholder="O que foi solicitado?"></textarea>
             <button class="btn-acao" onclick="salvarItem('crm_pedidos')">Salvar Pedido</button>
         </div>
-
         <div class="sub-tabs">
             <button class="sub-btn active" id="subTabPend" onclick="toggleSubTab('pendente')">PENDENTES / ENC.</button>
             <button class="sub-btn" id="subTabRes" onclick="toggleSubTab('resolvido')">RESOLVIDOS</button>
         </div>
-
         <div id="listaPedidosPendentes"></div>
         <div id="listaPedidosResolvidos" style="display:none"></div>
     </div>
@@ -180,6 +180,7 @@
         <div id="listaAgenda"></div>
     </div>
 
+    <!-- SEÇÃO EVENTOS (MANTIDA, APENAS O CARD É GERADO VIA JS COM A NOVA OPÇÃO) -->
     <div id="eventos" class="secao">
         <div class="card-controle">
             <h4 id="titEvento">Novo Evento</h4>
@@ -276,16 +277,12 @@
             listaPend.innerHTML = ""; listaRes.innerHTML = "";
             let cT=0, cR=0, cP=0, cU=0, cRu=0; 
             dadosRel.invT=0; dadosRel.invR=0; dadosRel.invP=0;
-
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.dataPedido >= ini) && (!fim || d.dataPedido <= fim)) {
-                    cT++; 
-                    const v = parseFloat(d.gasto) || 0;
-                    dadosRel.invT += v;
+                    cT++; const v = parseFloat(d.gasto) || 0; dadosRel.invT += v;
                     const cardHTML = `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarPed('${doc.id}','${d.dataPedido}','${d.nome}','${d.bairro}','${d.zona}','${d.lideranca}','${d.status}',${d.gasto},'${d.descricao}')">edit</i><i class="material-icons btn-del" onclick="deletar('crm_pedidos','${doc.id}')">delete</i></div><div class="label-topo">${d.dataPedido} | ${d.status}</div><strong>${d.nome}</strong><br><small>📍 ${d.zona} - ${d.bairro}</small><br><small>👤 Líder: ${d.lideranca || "Direto"}</small><div style="font-size:11px; margin-top:5px; color:#475569; border-top:1px solid #f1f5f9; padding-top:5px;">📝 ${d.descricao || "Sem descrição"}</div><div class="badge-valor">R$ ${d.gasto}</div></div>`;
-                    if(d.status === 'Resolvido') { cR++; dadosRel.invR += v; listaRes.innerHTML += cardHTML; } 
-                    else { cP++; dadosRel.invP += v; listaPend.innerHTML += cardHTML; }
+                    if(d.status === 'Resolvido') { cR++; dadosRel.invR += v; listaRes.innerHTML += cardHTML; } else { cP++; dadosRel.invP += v; listaPend.innerHTML += cardHTML; }
                     if(d.zona === 'Urbana') cU++; else cRu++;
                 }
             });
@@ -301,8 +298,7 @@
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.dataReuniao >= ini) && (!fim || d.dataReuniao <= fim)) {
-                    dadosRel.reuT++; 
-                    let pHTML = "";
+                    dadosRel.reuT++; let pHTML = "";
                     d.pautas?.forEach(p => { 
                         dadosRel.pauT++; 
                         if(p.status==='Atendido total') { pTo++; dadosRel.pauOk++; } 
@@ -318,17 +314,24 @@
             atualizarUI_Rel();
         });
 
+        // EVENTOS COM LÓGICA DE AGUARDANDO
         db.collection("eventos_externos").orderBy("data", "desc").onSnapshot(snap => {
             const lista = document.getElementById("listaEventos"); lista.innerHTML = "";
-            dadosRel.eveT=0; dadosRel.eveS=0;
+            dadosRel.eveT=0; dadosRel.eveS=0; let eveA=0;
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!ini || d.data >= ini) && (!fim || d.data <= fim)) {
-                    dadosRel.eveT++; if(d.participou==='Sim') dadosRel.eveS++;
-                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}','${d.observacoes||""}')">edit</i><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div><div class="label-topo">${d.data}</div><strong>${d.titulo}</strong><br><small>📍 Local: ${d.local || "Não informado"}</small><div style="font-size:10px; margin-top:8px; color:#64748b; border-top:1px solid #f1f5f9; padding-top:5px;">💬 Obs: ${d.observacoes || "-"}</div><select class="form-controle" style="margin-top:10px" onchange="db.collection('eventos_externos').doc('${doc.id}').update({participou:this.value})"><option value="Aguardando" ${d.participou=='Aguardando'?'selected':''}>⏳ Aguardando</option><option value="Não" ${d.participou=='Não'?'selected':''}>✖ Não Participei</option><option value="Sim" ${d.participou=='Sim'?'selected':''}>✔ Participei</option></select></div>`;
+                    dadosRel.eveT++; 
+                    if(d.participou==='Sim') dadosRel.eveS++;
+                    else if(d.participou==='Aguardando') eveA++;
+                    
+                    lista.innerHTML += `<div class="card-controle"><div class="acoes-card"><i class="material-icons btn-edit" onclick="editarEve('${doc.id}','${d.data}','${d.local}','${d.titulo}','${d.observacoes||""}')">edit</i><i class="material-icons btn-del" onclick="deletar('eventos_externos','${doc.id}')">delete</i></div><div class="label-topo">${d.data}</div><strong>${d.titulo}</strong><br><small>📍 Local: ${d.local || "Não informado"}</small><div style="font-size:10px; margin-top:8px; color:#64748b; border-top:1px solid #f1f5f9; padding-top:5px;">💬 Obs: ${d.observacoes || "-"}</div><select class="form-controle" style="margin-top:10px" onchange="db.collection('eventos_externos').doc('${doc.id}').update({participou:this.value})"><option value="Aguardando" ${d.participou=='Aguardando'?'selected':''}>⏳ Aguardando</option><option value="Sim" ${d.participou=='Sim'?'selected':''}>✔ Participei</option><option value="Não" ${d.participou=='Não'?'selected':''}>✖ Não Participei</option></select></div>`;
                 }
             });
-            document.getElementById("dashTotalEve").innerText=dadosRel.eveT; document.getElementById("dashEveSim").innerText=dadosRel.eveS; document.getElementById("dashEveNao").innerText=(dadosRel.eveT - dadosRel.eveS);
+            document.getElementById("dashTotalEve").innerText=dadosRel.eveT; 
+            document.getElementById("dashEveSim").innerText=dadosRel.eveS; 
+            document.getElementById("dashEveNao").innerText=(dadosRel.eveT - dadosRel.eveS - eveA);
+            document.getElementById("dashEveAgu").innerText=eveA;
             atualizarUI_Rel();
         });
     }
