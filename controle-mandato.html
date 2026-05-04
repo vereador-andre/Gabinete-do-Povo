@@ -413,45 +413,34 @@
     });
 
     function atualizarUI_Rel() {
-        // Pedidos e Eficiência
-        const totalPed = parseInt(document.getElementById("dashPedidos").innerText) || 0;
-        const resPed = parseInt(document.getElementById("dashPedRes").innerText) || 0;
-        const penPed = parseInt(document.getElementById("dashPedPen").innerText) || 0;
-        const percEfic = totalPed > 0 ? (resPed / totalPed) * 100 : 0;
-        
-        document.getElementById("relTotalPed").innerText = totalPed;
-        document.getElementById("relPedRes").innerText = resPed;
-        document.getElementById("relPedPen").innerText = penPed;
-        document.getElementById("relPercEficiencia").innerText = Math.round(percEfic) + "%";
-        document.getElementById("relProgEficiencia").style.width = percEfic + "%";
+        // Lógica de Pedidos/Investimentos
+        document.getElementById("relInvTotal").innerText = dadosRel.invT.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const percInv = dadosRel.invT > 0 ? (dadosRel.invR / dadosRel.invT) * 100 : 0;
+        document.getElementById("relProgInv").style.width = (dadosRel.invT > 0 ? (dadosRel.invR / dadosRel.invT * 100) : 0) + "%";
+        document.getElementById("relPedResRel").innerText = document.getElementById("dashPedRes").innerText;
+        document.getElementById("relPedPenRel").innerText = document.getElementById("dashPedPen").innerText;
 
-        // Financeiro
-        const invTotal = dadosRel.invT || 0;
-        document.getElementById("relInvTotal").innerText = invTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        document.getElementById("relInvRes").innerText = dadosRel.invR.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        document.getElementById("relInvPen").innerText = dadosRel.invP.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        
-        const custoMedio = resPed > 0 ? (dadosRel.invR / resPed) : 0;
-        document.getElementById("relCustoMedio").innerText = custoMedio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        // Lógica de Reuniões/Pautas
+        document.getElementById("relTotalPau2").innerText = dadosRel.pauT;
+        document.getElementById("relPauAnd").innerText = dadosRel.pauPa;
+        const percPau = dadosRel.pauT > 0 ? (dadosRel.pauOk / dadosRel.pauT) * 100 : 0;
+        document.getElementById("relPercPau").innerText = Math.round(percPau) + "%";
+        document.getElementById("relProgPau").style.width = percPau + "%";
 
-        // Geográfico
-        const urb = parseInt(document.getElementById("dashPedUrb").innerText) || 0;
-        const rur = parseInt(document.getElementById("dashPedRur").innerText) || 0;
-        document.getElementById("relPedUrb").innerText = urb;
-        document.getElementById("relPedRur").innerText = rur;
-        
-        const percUrb = totalPed > 0 ? (urb / totalPed) * 100 : 50;
-        document.getElementById("relProgGeo").style.width = percUrb + "%";
-        document.getElementById("relGeoDestaque").innerText = urb >= rur ? "Foco: Atendimento Urbano" : "Foco: Atendimento Rural";
+        // Lógica de Eventos
+        document.getElementById("relTotalEve").innerText = dadosRel.eveT;
+        document.getElementById("relEveSim").innerText = dadosRel.eveS;
+        const percEve = dadosRel.eveT > 0 ? (dadosRel.eveS / dadosRel.eveT) * 100 : 0;
+        document.getElementById("relPercPresenca").innerText = Math.round(percEve) + "%";
 
-        // Legislativo
+        // Lógica de Legislativo
         const legT = parseInt(document.getElementById("dashTotalLeg").innerText) || 0;
         const legA = parseInt(document.getElementById("dashLegAprov").innerText) || 0;
         const percLeg = legT > 0 ? (legA / legT) * 100 : 0;
-        
-        document.getElementById("relLegT").innerText = legT;
-        document.getElementById("relLegA").innerText = legA;
+        document.getElementById("relLegTotal").innerText = legT;
+        document.getElementById("relLegAprov").innerText = legA;
         document.getElementById("relPercLeg").innerText = Math.round(percLeg) + "%";
+        document.getElementById("relProgLeg").style.width = percLeg + "%";
     }
 
     // Ajuste na função de Zap para o novo formato
