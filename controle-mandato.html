@@ -232,52 +232,57 @@
 
     <div id="relatorios" class="secao">
         <div class="rel-container">
-            <!-- Card de Investimentos -->
-            <div class="rel-card" style="border-left-color: #166534;">
-                <div class="rel-titulo"><i class="material-icons">payments</i> Investimentos em Pedidos</div>
-                <div class="rel-valor-destaque" id="relInvTotal">R$ 0,00</div>
-                <div class="prog-bg"><div id="relProgInv" class="prog-fill" style="background:#166534; width: 0%;"></div></div>
-                <div class="rel-sub-info">
-                    <span class="det-res">Resolvidos: <b id="relInvRes">R$ 0,00</b></span>
-                    <span class="det-pen">Pendentes: <b id="relInvPen">R$ 0,00</b></span>
-                </div>
-            </div>
-
-            <!-- Card de Reuniões -->
+            
+            <!-- CARD 1: PERFORMANCE DE ATENDIMENTO (KPI PRINCIPAL) -->
             <div class="rel-card" style="border-left-color: #1e3a8a;">
-                <div class="rel-titulo"><i class="material-icons">event_note</i> Reuniões e Pautas</div>
-                <div class="rel-valor-destaque"><span id="relTotalReu">0</span> <small style="font-size: 12px; color: #64748b;">Encontros</small></div>
+                <div class="rel-titulo"><i class="material-icons">trending_up</i> Eficiência de Mandato</div>
+                <div class="rel-valor-destaque" id="relPercEficiencia">0%</div>
+                <div style="font-size: 10px; color: #64748b; margin-top: -5px;">Taxa de Resolução de Pedidos</div>
+                <div class="prog-bg"><div id="relProgEficiencia" class="prog-fill" style="width: 0%;"></div></div>
                 <div class="rel-sub-info">
-                    <span class="det-res">Pautas Atendidas: <b id="relPauOk">0</b></span>
-                    <span class="det-pen">Não Atendidas: <b id="relPauNo">0</b></span>
+                    <span>Total: <b id="relTotalPed">0</b></span>
+                    <span class="det-res">Resolvidos: <b id="relPedRes">0</b></span>
+                    <span class="det-pen">Pendentes: <b id="relPedPen">0</b></span>
                 </div>
             </div>
 
-            <!-- Card de Legislativo (Novo) -->
-            <div class="rel-card" style="border-left-color: #6366f1;">
-                <div class="rel-titulo"><i class="material-icons">gavel</i> Atividade Legislativa</div>
-                <div class="rel-valor-destaque"><span id="relTotalLeg">0</span> <small style="font-size: 12px; color: #64748b;">Proposições</small></div>
-                <div class="prog-bg"><div id="relProgLeg" class="prog-fill" style="background:#6366f1; width: 0%;"></div></div>
+            <!-- CARD 2: GESTÃO FINANCEIRA (TOMADA DE DECISÃO) -->
+            <div class="rel-card" style="border-left-color: #166534;">
+                <div class="rel-titulo"><i class="material-icons">account_balance_wallet</i> Investimento Estratégico</div>
+                <div class="rel-valor-destaque" id="relInvTotal">R$ 0,00</div>
+                <div class="rel-sub-info" style="border:none; margin:0; padding:0">
+                    <span style="font-size: 10px; color: #64748b;">Custo Médio por Atendimento: <b id="relCustoMedio" style="color: #166534;">R$ 0,00</b></span>
+                </div>
                 <div class="rel-sub-info">
-                    <span class="det-res">Aprovadas/Sanc.: <b id="relLegAprov">0</b></span>
-                    <span style="color:#64748b">Em Tramitação: <b id="relLegTram">0</b></span>
+                    <span class="det-res">Investido: <b id="relInvRes">R$ 0,00</b></span>
+                    <span class="det-pen">Em Aberto: <b id="relInvPen">R$ 0,00</b></span>
                 </div>
             </div>
 
-            <!-- Card de Eventos -->
-            <div class="rel-card" style="border-left-color: #f59e0b;">
-                <div class="rel-titulo"><i class="material-icons">confirmation_number</i> Presença em Eventos</div>
-                <div class="rel-valor-destaque" id="relPercPresenca">0%</div>
-                <div class="prog-bg"><div id="relProgPres" class="prog-fill" style="background:#f59e0b; width: 0%;"></div></div>
+            <!-- CARD 3: EQUILÍBRIO GEOGRÁFICO -->
+            <div class="rel-card" style="border-left-color: #854d0e;">
+                <div class="rel-titulo"><i class="material-icons">map</i> Cobertura Territorial</div>
+                <div id="relGeoDestaque" style="font-size: 14px; font-weight: 600; color: #1e3a8a; margin: 5px 0;">Calculando foco...</div>
+                <div class="prog-bg" style="background: #fee2e2;"><div id="relProgGeo" class="prog-fill" style="background:#854d0e; width: 50%;"></div></div>
                 <div class="rel-sub-info">
-                    <span>Total Eventos: <b id="relTotalEve">0</b></span>
-                    <span class="det-res">Participou: <b id="relEveSim">0</b></span>
+                    <span class="det-urb">Urbana: <b id="relPedUrb">0</b></span>
+                    <span class="det-rur">Rural: <b id="relPedRur">0</b></span>
+                </div>
+            </div>
+
+            <!-- CARD 4: RESULTADO LEGISLATIVO -->
+            <div class="rel-card" style="border-left-color: #64748b;">
+                <div class="rel-titulo"><i class="material-icons">gavel</i> Sucesso Legislativo</div>
+                <div class="rel-valor-destaque" id="relPercLeg">0%</div>
+                <div class="rel-sub-info">
+                    <span>Projetos: <b id="relLegT">0</b></span>
+                    <span class="det-res">Aprovados: <b id="relLegA">0</b></span>
                 </div>
             </div>
 
             <div class="btn-rel-float">
-                <button style="background: #1e3a8a;" onclick="window.print()"><i class="material-icons">picture_as_pdf</i> PDF</button>
-                <button style="background: #25d366;" onclick="enviarRelatorioZap()"><i class="material-icons">share</i> WhatsApp</button>
+                <button style="background: #1e3a8a;" onclick="window.print()"><i class="material-icons">picture_as_pdf</i> Gerar Relatório</button>
+                <button style="background: #25d366;" onclick="enviarRelatorioZap()"><i class="material-icons">share</i> Enviar ao Vereador</button>
             </div>
         </div>
     </div>
@@ -412,26 +417,52 @@
     });
 
     function atualizarUI_Rel() {
-        document.getElementById("relInvTotal").innerText = dadosRel.invT.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        // Pedidos e Eficiência
+        const totalPed = parseInt(document.getElementById("dashPedidos").innerText) || 0;
+        const resPed = parseInt(document.getElementById("dashPedRes").innerText) || 0;
+        const penPed = parseInt(document.getElementById("dashPedPen").innerText) || 0;
+        const percEfic = totalPed > 0 ? (resPed / totalPed) * 100 : 0;
+        
+        document.getElementById("relTotalPed").innerText = totalPed;
+        document.getElementById("relPedRes").innerText = resPed;
+        document.getElementById("relPedPen").innerText = penPed;
+        document.getElementById("relPercEficiencia").innerText = Math.round(percEfic) + "%";
+        document.getElementById("relProgEficiencia").style.width = percEfic + "%";
+
+        // Financeiro
+        const invTotal = dadosRel.invT || 0;
+        document.getElementById("relInvTotal").innerText = invTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         document.getElementById("relInvRes").innerText = dadosRel.invR.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         document.getElementById("relInvPen").innerText = dadosRel.invP.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        const percInv = dadosRel.invT > 0 ? (dadosRel.invR / dadosRel.invT) * 100 : 0;
-        document.getElementById("relProgInv").style.width = percInv + "%";
-        document.getElementById("relTotalReu").innerText = dadosRel.reuT;
-        document.getElementById("relTotalPau").innerText = dadosRel.pauT;
-        document.getElementById("relPauOk").innerText = dadosRel.pauOk;
-        document.getElementById("relPauParc").innerText = dadosRel.pauPa;
-        document.getElementById("relPauNo").innerText = dadosRel.pauNo;
-        document.getElementById("relTotalEve").innerText = dadosRel.eveT;
-        document.getElementById("relEveSim").innerText = dadosRel.eveS;
-        document.getElementById("relEveNao").innerText = (dadosRel.eveT - dadosRel.eveS);
-        const percEve = dadosRel.eveT > 0 ? (dadosRel.eveS / dadosRel.eveT) * 100 : 0;
-        document.getElementById("relPercPresenca").innerText = Math.round(percEve) + "%";
-        document.getElementById("relProgPres").style.width = percEve + "%";
+        
+        const custoMedio = resPed > 0 ? (dadosRel.invR / resPed) : 0;
+        document.getElementById("relCustoMedio").innerText = custoMedio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        // Geográfico
+        const urb = parseInt(document.getElementById("dashPedUrb").innerText) || 0;
+        const rur = parseInt(document.getElementById("dashPedRur").innerText) || 0;
+        document.getElementById("relPedUrb").innerText = urb;
+        document.getElementById("relPedRur").innerText = rur;
+        
+        const percUrb = totalPed > 0 ? (urb / totalPed) * 100 : 50;
+        document.getElementById("relProgGeo").style.width = percUrb + "%";
+        document.getElementById("relGeoDestaque").innerText = urb >= rur ? "Foco: Atendimento Urbano" : "Foco: Atendimento Rural";
+
+        // Legislativo
+        const legT = parseInt(document.getElementById("dashTotalLeg").innerText) || 0;
+        const legA = parseInt(document.getElementById("dashLegAprov").innerText) || 0;
+        const percLeg = legT > 0 ? (legA / legT) * 100 : 0;
+        
+        document.getElementById("relLegT").innerText = legT;
+        document.getElementById("relLegA").innerText = legA;
+        document.getElementById("relPercLeg").innerText = Math.round(percLeg) + "%";
     }
 
+    // Ajuste na função de Zap para o novo formato
     function enviarRelatorioZap() {
-        const msg = `📊 *RESUMO DO MANDATO*%0A%0A💰 *Investimentos:* ${document.getElementById("relInvTotal").innerText}%0A📅 *Reuniões:* ${dadosRel.reuT} (${dadosRel.pauOk} pautas atendidas)%0A🎗 *Presença em Eventos:* ${document.getElementById("relPercPresenca").innerText}%0A%0AGerado pelo Gabinete Estratégico`;
+        const efic = document.getElementById("relPercEficiencia").innerText;
+        const total = document.getElementById("relInvTotal").innerText;
+        const msg = `📊 *RELATÓRIO ESTRATÉGICO DE MANDATO*%0A%0A📈 *Eficiência:* ${efic} de resolução%0A💰 *Investimento Total:* ${total}%0A📍 *Perfil:* ${document.getElementById("relGeoDestaque").innerText}%0A⚖️ *Sucesso Legislativo:* ${document.getElementById("relPercLeg").innerText}%0A%0A_Dados atualizados em tempo real._`;
         window.open(`https://api.whatsapp.com/send?text=${msg}`);
     }
 
