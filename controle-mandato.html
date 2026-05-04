@@ -233,56 +233,52 @@
     <div id="relatorios" class="secao">
         <div class="rel-container">
             
-            <!-- CARD 1: PERFORMANCE DE ATENDIMENTO (KPI PRINCIPAL) -->
+            <!-- CARD 1: PERFORMANCE LEGISLATIVA (DADOS DA ABA LEGISLATIVO) -->
             <div class="rel-card" style="border-left-color: #1e3a8a;">
-                <div class="rel-titulo"><i class="material-icons">trending_up</i> Eficiência de Mandato</div>
-                <div class="rel-valor-destaque" id="relPercEficiencia">0%</div>
-                <div style="font-size: 10px; color: #64748b; margin-top: -5px;">Taxa de Resolução de Pedidos</div>
-                <div class="prog-bg"><div id="relProgEficiencia" class="prog-fill" style="width: 0%;"></div></div>
+                <div class="rel-titulo"><i class="material-icons">gavel</i> Performance Legislativa</div>
+                <div class="rel-valor-destaque"><span id="relPercLeg">0%</span> <small style="font-size: 11px; color: #64748b;">de Aprovação</small></div>
+                <div class="prog-bg"><div id="relProgLeg" class="prog-fill" style="background:#1e3a8a; width: 0%;"></div></div>
                 <div class="rel-sub-info">
-                    <span>Total: <b id="relTotalPed">0</b></span>
-                    <span class="det-res">Resolvidos: <b id="relPedRes">0</b></span>
-                    <span class="det-pen">Pendentes: <b id="relPedPen">0</b></span>
+                    <span>Total Proposto: <b id="relLegTotal">0</b></span>
+                    <span class="det-res">Aprovados: <b id="relLegAprov">0</b></span>
                 </div>
             </div>
 
-            <!-- CARD 2: GESTÃO FINANCEIRA (TOMADA DE DECISÃO) -->
+            <!-- CARD 2: EFICIÊNCIA DE REUNIÕES (DADOS DA ABA AGENDA) -->
+            <div class="rel-card" style="border-left-color: #f59e0b;">
+                <div class="rel-titulo"><i class="material-icons">fact_check</i> Resolutividade em Reuniões</div>
+                <div class="rel-valor-destaque"><span id="relPercPau">0%</span> <small style="font-size: 11px; color: #64748b;">Pautas Atendidas</small></div>
+                <div class="prog-bg"><div id="relProgPau" class="prog-fill" style="background:#f59e0b; width: 0%;"></div></div>
+                <div class="rel-sub-info">
+                    <span>Total Pautas: <b id="relTotalPau2">0</b></span>
+                    <span class="det-rur">Em Andamento: <b id="relPauAnd">0</b></span>
+                </div>
+            </div>
+
+            <!-- CARD 3: IMPACTO SOCIAL E FINANCEIRO (DADOS DA ABA PEDIDOS) -->
             <div class="rel-card" style="border-left-color: #166534;">
-                <div class="rel-titulo"><i class="material-icons">account_balance_wallet</i> Investimento Estratégico</div>
+                <div class="rel-titulo"><i class="material-icons">volunteer_activism</i> Impacto Social (Pedidos)</div>
                 <div class="rel-valor-destaque" id="relInvTotal">R$ 0,00</div>
-                <div class="rel-sub-info" style="border:none; margin:0; padding:0">
-                    <span style="font-size: 10px; color: #64748b;">Custo Médio por Atendimento: <b id="relCustoMedio" style="color: #166534;">R$ 0,00</b></span>
-                </div>
+                <div class="prog-bg"><div id="relProgInv" class="prog-fill" style="background:#166534; width: 0%;"></div></div>
                 <div class="rel-sub-info">
-                    <span class="det-res">Investido: <b id="relInvRes">R$ 0,00</b></span>
-                    <span class="det-pen">Em Aberto: <b id="relInvPen">R$ 0,00</b></span>
+                    <span class="det-res">Atendidos: <b id="relPedResRel">0</b></span>
+                    <span class="det-pen">Pendentes: <b id="relPedPenRel">0</b></span>
                 </div>
             </div>
 
-            <!-- CARD 3: EQUILÍBRIO GEOGRÁFICO -->
-            <div class="rel-card" style="border-left-color: #854d0e;">
-                <div class="rel-titulo"><i class="material-icons">map</i> Cobertura Territorial</div>
-                <div id="relGeoDestaque" style="font-size: 14px; font-weight: 600; color: #1e3a8a; margin: 5px 0;">Calculando foco...</div>
-                <div class="prog-bg" style="background: #fee2e2;"><div id="relProgGeo" class="prog-fill" style="background:#854d0e; width: 50%;"></div></div>
+            <!-- CARD 4: PRESENÇA EM EVENTOS (DADOS DA ABA EVENTOS) -->
+            <div class="rel-card" style="border-left-color: #6366f1;">
+                <div class="rel-titulo"><i class="material-icons">event_available</i> Assiduidade em Eventos</div>
+                <div class="rel-valor-destaque" id="relPercPresenca">0%</div>
                 <div class="rel-sub-info">
-                    <span class="det-urb">Urbana: <b id="relPedUrb">0</b></span>
-                    <span class="det-rur">Rural: <b id="relPedRur">0</b></span>
-                </div>
-            </div>
-
-            <!-- CARD 4: RESULTADO LEGISLATIVO -->
-            <div class="rel-card" style="border-left-color: #64748b;">
-                <div class="rel-titulo"><i class="material-icons">gavel</i> Sucesso Legislativo</div>
-                <div class="rel-valor-destaque" id="relPercLeg">0%</div>
-                <div class="rel-sub-info">
-                    <span>Projetos: <b id="relLegT">0</b></span>
-                    <span class="det-res">Aprovados: <b id="relLegA">0</b></span>
+                    <span>Eventos Totais: <b id="relTotalEve">0</b></span>
+                    <span class="det-res">Presença: <b id="relEveSim">0</b></span>
                 </div>
             </div>
 
             <div class="btn-rel-float">
-                <button style="background: #1e3a8a;" onclick="window.print()"><i class="material-icons">picture_as_pdf</i> Gerar Relatório</button>
-                <button style="background: #25d366;" onclick="enviarRelatorioZap()"><i class="material-icons">share</i> Enviar ao Vereador</button>
+                <button style="background: #1e3a8a;" onclick="window.print()"><i class="material-icons">picture_as_pdf</i> Gerar PDF</button>
+                <button style="background: #25d366;" onclick="enviarRelatorioZap()"><i class="material-icons">share</i> Enviar WhatsApp</button>
             </div>
         </div>
     </div>
