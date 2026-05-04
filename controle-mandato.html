@@ -232,6 +232,7 @@
 
     <div id="relatorios" class="secao">
         <div class="rel-container">
+            <!-- Card de Investimentos -->
             <div class="rel-card" style="border-left-color: #166534;">
                 <div class="rel-titulo"><i class="material-icons">payments</i> Investimentos em Pedidos</div>
                 <div class="rel-valor-destaque" id="relInvTotal">R$ 0,00</div>
@@ -241,33 +242,45 @@
                     <span class="det-pen">Pendentes: <b id="relInvPen">R$ 0,00</b></span>
                 </div>
             </div>
+
+            <!-- Card de Reuniões -->
             <div class="rel-card" style="border-left-color: #1e3a8a;">
                 <div class="rel-titulo"><i class="material-icons">event_note</i> Reuniões e Pautas</div>
-                <div class="rel-valor-destaque"><span id="relTotalReu">0</span> <small style="font-size: 12px; color: #64748b;">Reuniões</small></div>
-                <div class="rel-sub-info" style="border:none; margin:0; padding:0"><span>Pautas Totais: <b id="relTotalPau">0</b></span></div>
+                <div class="rel-valor-destaque"><span id="relTotalReu">0</span> <small style="font-size: 12px; color: #64748b;">Encontros</small></div>
                 <div class="rel-sub-info">
-                    <span class="det-res">Atendidas: <b id="relPauOk">0</b></span>
-                    <span class="det-rur">Parciais: <b id="relPauParc">0</b></span>
-                    <span class="det-pen">Não Atend: <b id="relPauNo">0</b></span>
+                    <span class="det-res">Pautas Atendidas: <b id="relPauOk">0</b></span>
+                    <span class="det-pen">Não Atendidas: <b id="relPauNo">0</b></span>
                 </div>
             </div>
+
+            <!-- Card de Legislativo (Novo) -->
+            <div class="rel-card" style="border-left-color: #6366f1;">
+                <div class="rel-titulo"><i class="material-icons">gavel</i> Atividade Legislativa</div>
+                <div class="rel-valor-destaque"><span id="relTotalLeg">0</span> <small style="font-size: 12px; color: #64748b;">Proposições</small></div>
+                <div class="prog-bg"><div id="relProgLeg" class="prog-fill" style="background:#6366f1; width: 0%;"></div></div>
+                <div class="rel-sub-info">
+                    <span class="det-res">Aprovadas/Sanc.: <b id="relLegAprov">0</b></span>
+                    <span style="color:#64748b">Em Tramitação: <b id="relLegTram">0</b></span>
+                </div>
+            </div>
+
+            <!-- Card de Eventos -->
             <div class="rel-card" style="border-left-color: #f59e0b;">
-                <div class="rel-titulo"><i class="material-icons">confirmation_number</i> Eventos e Presença</div>
+                <div class="rel-titulo"><i class="material-icons">confirmation_number</i> Presença em Eventos</div>
                 <div class="rel-valor-destaque" id="relPercPresenca">0%</div>
                 <div class="prog-bg"><div id="relProgPres" class="prog-fill" style="background:#f59e0b; width: 0%;"></div></div>
                 <div class="rel-sub-info">
                     <span>Total Eventos: <b id="relTotalEve">0</b></span>
                     <span class="det-res">Participou: <b id="relEveSim">0</b></span>
-                    <span class="det-pen">Faltou: <b id="relEveNao">0</b></span>
                 </div>
             </div>
+
             <div class="btn-rel-float">
                 <button style="background: #1e3a8a;" onclick="window.print()"><i class="material-icons">picture_as_pdf</i> PDF</button>
                 <button style="background: #25d366;" onclick="enviarRelatorioZap()"><i class="material-icons">share</i> WhatsApp</button>
             </div>
         </div>
     </div>
-</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
