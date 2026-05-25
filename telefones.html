@@ -7,8 +7,8 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-XXXXXXXXXX');
-      function trackClick(servico) {
-        gtag('event', 'ligacao_util', { 'servico': servico });
+      function trackClick(servico, tipo) {
+        gtag('event', 'clique_util', { 'servico': servico, 'tipo': tipo });
       }
     </script>
 
@@ -39,12 +39,8 @@
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            text-decoration: none;
             color: inherit;
-            transition: 0.3s;
         }
-
-        .card-telefone:active { transform: scale(0.98); background: #f8fafc; }
 
         .info-tel { display: flex; align-items: center; gap: 15px; }
         .info-tel i { 
@@ -58,8 +54,9 @@
         .nome-tel { font-weight: 600; font-size: 15px; color: #1e3a8a; display: block; }
         .numero-tel { font-size: 13px; color: #64748b; }
 
-        .btn-ligar {
-            background: #22c55e;
+        .acoes-tel { display: flex; gap: 8px; }
+
+        .btn-acao-tel {
             color: white;
             width: 40px;
             height: 40px;
@@ -67,7 +64,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            text-decoration: none;
+            transition: 0.3s;
         }
+        .btn-acao-tel:active { transform: scale(0.90); }
+        .bg-ligar { background: #1e3a8a; }
+        .bg-whats { background: #22c55e; }
     </style>
 </head>
 <body>
@@ -81,7 +83,8 @@
 
 <div class="container-lista">
 
-    <a href="tel:192" class="card-telefone" onclick="trackClick('SAMU')">
+    <!-- SAMU -->
+    <div class="card-telefone">
         <div class="info-tel">
             <i class="material-icons">medical_services</i>
             <div>
@@ -89,10 +92,13 @@
                 <span class="numero-tel">192</span>
             </div>
         </div>
-        <div class="btn-ligar"><i class="material-icons">call</i></div>
-    </a>
+        <div class="acoes-tel">
+            <a href="tel:192" class="btn-acao-tel bg-whats" style="background:#22c55e;" onclick="trackClick('SAMU', 'Ligacao')"><i class="material-icons">call</i></a>
+        </div>
+    </div>
 
-    <a href="tel:84920005876" class="card-telefone" onclick="trackClick('Hospital')">
+    <!-- Hospital -->
+    <div class="card-telefone">
         <div class="info-tel">
             <i class="material-icons">local_hospital</i>
             <div>
@@ -100,10 +106,14 @@
                 <span class="numero-tel">(84) 92000-5876</span>
             </div>
         </div>
-        <div class="btn-ligar"><i class="material-icons">call</i></div>
-    </a>
+        <div class="acoes-tel">
+            <a href="https://wa.me/5584920005876" target="_blank" class="btn-acao-tel bg-whats" onclick="trackClick('Hospital', 'WhatsApp')"><i class="material-icons">chat</i></a>
+            <a href="tel:84920005876" class="btn-acao-tel bg-ligar" onclick="trackClick('Hospital', 'Ligacao')"><i class="material-icons">call</i></a>
+        </div>
+    </div>
 
-    <a href="tel:84998295295" class="card-telefone" onclick="trackClick('Policia Militar')">
+    <!-- Polícia Militar -->
+    <div class="card-telefone">
         <div class="info-tel">
             <i class="material-icons">policy</i>
             <div>
@@ -111,10 +121,14 @@
                 <span class="numero-tel">(84) 99829-5295</span>
             </div>
         </div>
-        <div class="btn-ligar"><i class="material-icons">call</i></div>
-    </a>
+        <div class="acoes-tel">
+            <a href="https://wa.me/5584998295295" target="_blank" class="btn-acao-tel bg-whats" onclick="trackClick('Policia Militar', 'WhatsApp')"><i class="material-icons">chat</i></a>
+            <a href="tel:84998295295" class="btn-acao-tel bg-ligar" onclick="trackClick('Policia Militar', 'Ligacao')"><i class="material-icons">call</i></a>
+        </div>
+    </div>
 
-    <a href="tel:84986579701" class="card-telefone" onclick="trackClick('Policia Civil')">
+    <!-- Polícia Civil -->
+    <div class="card-telefone">
         <div class="info-tel">
             <i class="material-icons">local_police</i>
             <div>
@@ -122,10 +136,14 @@
                 <span class="numero-tel">(84) 98657-9701</span>
             </div>
         </div>
-        <div class="btn-ligar"><i class="material-icons">call</i></div>
-    </a>
+        <div class="acoes-tel">
+            <a href="https://wa.me/5584986579701" target="_blank" class="btn-acao-tel bg-whats" onclick="trackClick('Policia Civil', 'WhatsApp')"><i class="material-icons">chat</i></a>
+            <a href="tel:84986579701" class="btn-acao-tel bg-ligar" onclick="trackClick('Policia Civil', 'Ligacao')"><i class="material-icons">call</i></a>
+        </div>
+    </div>
 
-    <a href="tel:84920006270" class="card-telefone" onclick="trackClick('Guarda Civil')">
+    <!-- Guarda Civil -->
+    <div class="card-telefone">
         <div class="info-tel">
             <i class="material-icons">security</i>
             <div>
@@ -133,10 +151,14 @@
                 <span class="numero-tel">(84) 92000-6270</span>
             </div>
         </div>
-        <div class="btn-ligar"><i class="material-icons">call</i></div>
-    </a>
+        <div class="acoes-tel">
+            <a href="https://wa.me/5584920006270" target="_blank" class="btn-acao-tel bg-whats" onclick="trackClick('Guarda Civil', 'WhatsApp')"><i class="material-icons">chat</i></a>
+            <a href="tel:84920006270" class="btn-acao-tel bg-ligar" onclick="trackClick('Guarda Civil', 'Ligacao')"><i class="material-icons">call</i></a>
+        </div>
+    </div>
 
-    <a href="tel:84999959186" class="card-telefone" onclick="trackClick('Iluminacao Publica')">
+    <!-- Iluminação Pública -->
+    <div class="card-telefone">
         <div class="info-tel">
             <i class="material-icons">lightbulb</i>
             <div>
@@ -144,10 +166,14 @@
                 <span class="numero-tel">(84) 99995-9186</span>
             </div>
         </div>
-        <div class="btn-ligar"><i class="material-icons">call</i></div>
-    </a>
+        <div class="acoes-tel">
+            <a href="https://wa.me/558499995-9186" target="_blank" class="btn-acao-tel bg-whats" onclick="trackClick('Iluminacao Publica', 'WhatsApp')"><i class="material-icons">chat</i></a>
+            <a href="tel:84999959186" class="btn-acao-tel bg-ligar" onclick="trackClick('Iluminacao Publica', 'Ligacao')"><i class="material-icons">call</i></a>
+        </div>
+    </div>
 
-    <a href="tel:84986636285" class="card-telefone" onclick="trackClick('Limpeza')">
+    <!-- Limpeza -->
+    <div class="card-telefone">
         <div class="info-tel">
             <i class="material-icons">delete_outline</i>
             <div>
@@ -155,10 +181,14 @@
                 <span class="numero-tel">(84) 98663-6285</span>
             </div>
         </div>
-        <div class="btn-ligar"><i class="material-icons">call</i></div>
-    </a>
+        <div class="acoes-tel">
+            <a href="https://wa.me/5584986636285" target="_blank" class="btn-acao-tel bg-whats" onclick="trackClick('Limpeza', 'WhatsApp')"><i class="material-icons">chat</i></a>
+            <a href="tel:84986636285" class="btn-acao-tel bg-ligar" onclick="trackClick('Limpeza', 'Ligacao')"><i class="material-icons">call</i></a>
+        </div>
+    </div>
 
-    <a href="tel:84991319913" class="card-telefone" onclick="trackClick('Esgoto')">
+    <!-- Esgoto -->
+    <div class="card-telefone">
         <div class="info-tel">
             <i class="material-icons">water_drop</i>
             <div>
@@ -166,10 +196,14 @@
                 <span class="numero-tel">(84) 99131-9913</span>
             </div>
         </div>
-        <div class="btn-ligar"><i class="material-icons">call</i></div>
-    </a>
+        <div class="acoes-tel">
+            <a href="https://wa.me/5584991319913" target="_blank" class="btn-acao-tel bg-whats" onclick="trackClick('Esgoto', 'WhatsApp')"><i class="material-icons">chat</i></a>
+            <a href="tel:84991319913" class="btn-acao-tel bg-ligar" onclick="trackClick('Esgoto', 'Ligacao')"><i class="material-icons">call</i></a>
+        </div>
+    </div>
 
-    <a href="tel:84999412590" class="card-telefone" onclick="trackClick('Transito')">
+    <!-- Trânsito -->
+    <div class="card-telefone">
         <div class="info-tel">
             <i class="material-icons">traffic</i>
             <div>
@@ -177,13 +211,16 @@
                 <span class="numero-tel">(84) 99941-2590</span>
             </div>
         </div>
-        <div class="btn-ligar"><i class="material-icons">call</i></div>
-    </a>
+        <div class="acoes-tel">
+            <a href="https://wa.me/5584999412590" target="_blank" class="btn-acao-tel bg-whats" onclick="trackClick('Transito', 'WhatsApp')"><i class="material-icons">chat</i></a>
+            <a href="tel:84999412590" class="btn-acao-tel bg-ligar" onclick="trackClick('Transito', 'Ligacao')"><i class="material-icons">call</i></a>
+        </div>
+    </div>
 
 </div>
 
 <p style="text-align:center; font-size:12px; color:#94a3b8; margin-top:30px; padding:0 30px;">
-    Toque sobre o serviço para realizar a ligação direto do seu celular.
+    Toque no ícone correspondente para iniciar um chat de WhatsApp ou realizar uma chamada telefônica.
 </p>
 
 </body>
