@@ -65,7 +65,7 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    // Consulta simplificada para evitar falhas caso haja documentos sem a data mapeada
+    // Alterado para buscar na coleção exata que armazena os dados de ações
     db.collection("acoes").onSnapshot(snapshot => {
         const lista = document.getElementById("lista-publica");
         lista.innerHTML = "";
@@ -115,8 +115,8 @@
                 </div>`;
         });
     }, error => {
-        console.error("Erro ao carregar ações:", error);
-        document.getElementById("lista-publica").innerHTML = "<p style='text-align:center; color:red;'>Erro ao carregar dados.</p>";
+        console.error("Erro ao carregar dados:", error);
+        document.getElementById("lista-publica").innerHTML = "<p style='text-align:center; color:red;'>Erro ao carregar dados. Verifique a conexão.</p>";
     });
 
     function filtrarLista() {
