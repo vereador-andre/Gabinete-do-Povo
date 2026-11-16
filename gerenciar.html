@@ -43,11 +43,15 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // Pega o nome da coleção pela URL
+    // Pega o nome da coleção pela URL e garante o mapeamento correto para ações
     const urlParams = new URLSearchParams(window.location.search);
-    const col = urlParams.get('col');
+    let col = urlParams.get('col');
+    if (col === 'acoes') {
+        col = 'acoes-atendidas';
+    }
+
     if (col) {
-        document.getElementById("nomeColecao").innerText = col.replace(/-/g, ' ');
+        document.getElementById("nomeColecao").innerText = col === 'acoes-atendidas' ? 'Ações' : col.replace(/-/g, ' ');
     }
 
     // Carrega os itens e atualiza em tempo real
@@ -57,16 +61,22 @@
         db.collection(col).orderBy("data", "desc").onSnapshot(s => {
             const lista = document.getElementById("listaItens");
             lista.innerHTML = "";
+            
+            if (s.empty) {
+                lista.innerHTML = "<p style='color:#64748b; font-size:13px;'>Nenhum registro encontrado nesta seção.</p>";
+                return;
+            }
+
             s.forEach(doc => {
                 const data = doc.data();
-                // Formatação simples da data para exibição
                 const dataExibicao = data.data ? data.data.split('-').reverse().join('/') : '--/--/----';
+                const catExibicao = data.categoria ? ` • <b>${data.categoria}</b>` : '';
                 
                 lista.innerHTML += `
                     <div class="card-item">
                         <div class="info">
                             <h4>${data.titulo || 'Sem título'}</h4>
-                            <p>${dataExibicao}</p>
+                            <p>${dataExibicao}${catExibicao}</p>
                         </div>
                         <div class="actions">
                             <i class="material-icons btn-edit" onclick="editar('${doc.id}')">edit</i>
@@ -83,7 +93,6 @@
     }
 
     async function excluir(id) {
-        // Verifica se o usuário está logado antes de tentar deletar
         const user = auth.currentUser;
         if (!user) {
             alert("Sessão expirada. Faça login novamente.");
@@ -106,13 +115,10 @@
         window.location.href = `editar.html?col=${col}&id=${id}`;
     }
 
-    // Só inicia o carregamento quando o Firebase confirmar o estado da autenticação
     auth.onAuthStateChanged(user => {
         if (user) {
             carregarDados();
         } else {
-            // Se não estiver logado pelo Firebase, mas o localStorage diz que sim, 
-            // ainda assim precisamos do login do Firebase para as permissões
             window.location.href = "login.html";
         }
     });
