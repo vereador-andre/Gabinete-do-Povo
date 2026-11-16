@@ -65,10 +65,16 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    db.collection("acoes").orderBy("data", "desc").onSnapshot(snapshot => {
+    // Consulta simplificada para evitar falhas caso haja documentos sem a data mapeada
+    db.collection("acoes").onSnapshot(snapshot => {
         const lista = document.getElementById("lista-publica");
         lista.innerHTML = "";
         
+        if (snapshot.empty) {
+            lista.innerHTML = "<p style='text-align:center; color:#64748b;'>Nenhuma ação cadastrada.</p>";
+            return;
+        }
+
         snapshot.forEach(doc => {
             const item = doc.data();
             const id = doc.id;
@@ -108,6 +114,9 @@
                     </div>
                 </div>`;
         });
+    }, error => {
+        console.error("Erro ao carregar ações:", error);
+        document.getElementById("lista-publica").innerHTML = "<p style='text-align:center; color:red;'>Erro ao carregar dados.</p>";
     });
 
     function filtrarLista() {
