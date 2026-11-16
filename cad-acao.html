@@ -48,13 +48,10 @@
     const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
-    const auth = firebase.auth();
 
     document.getElementById("formAcao").onsubmit = async (e) => {
         e.preventDefault();
-        const user = auth.currentUser;
-        if (!user) { alert("Faça login novamente."); window.location.href = "login.html"; return; }
-
+        
         const btn = document.getElementById("btnPublicar");
         btn.innerText = "Publicando...";
         btn.disabled = true;
@@ -71,7 +68,8 @@
             alert("Ação publicada com sucesso!");
             window.location.href = "admin.html";
         } catch (error) {
-            alert("Erro: " + error.message);
+            console.error("Erro ao salvar:", error);
+            alert("Erro ao publicar: " + error.message);
             btn.innerText = "Publicar Ação";
             btn.disabled = false;
         }
