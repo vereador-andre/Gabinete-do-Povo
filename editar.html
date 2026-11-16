@@ -20,15 +20,23 @@
 <div class="form-card">
     <h2 id="tituloPagina">Editar Registro</h2>
     <form id="formEdit">
+        <label>Assunto / Categoria (Ex: Esporte, Saúde, Infraestrutura)</label>
+        <input type="text" id="categoria" placeholder="Ex: Esporte" required>
+
         <label>Título / Assunto</label>
         <input type="text" id="titulo" required>
+
         <label>Data (Calendário)</label>
         <input type="date" id="data" required>
+
         <label>Descrição</label>
         <textarea id="descricao" rows="5"></textarea>
+
         <label>Link da Imagem ou Vídeo</label>
         <input type="url" id="link">
+
         <div id="campoExtra"></div>
+
         <button type="submit" class="btn-salvar" id="btnSalvar">Salvar Alterações</button>
     </form>
     <a href="javascript:history.back()" class="btn-voltar">Cancelar e Voltar</a>
@@ -42,14 +50,18 @@
     const db = firebase.firestore();
 
     const urlParams = new URLSearchParams(window.location.search);
-    const col = urlParams.get('col');
+    let col = urlParams.get('col');
     const id = urlParams.get('id');
+
+    // Mapeamento correto caso venha 'acoes' pela URL
+    if (col === 'acoes') { col = 'acoes-atendidas'; }
 
     document.getElementById("tituloPagina").innerText = "Editar: " + col.replace(/-/g, ' ');
 
     db.collection(col).doc(id).get().then(doc => {
         if (doc.exists) {
             const d = doc.data();
+            document.getElementById("categoria").value = d.categoria || d.assunto || "";
             document.getElementById("titulo").value = d.titulo || "";
             document.getElementById("data").value = d.data || "";
             document.getElementById("descricao").value = d.descricao || d.texto || "";
@@ -67,6 +79,7 @@
         btn.innerText = "Aguarde...";
 
         let dadosUpdate = {
+            categoria: document.getElementById("categoria").value,
             titulo: document.getElementById("titulo").value,
             data: document.getElementById("data").value
         };
@@ -82,7 +95,7 @@
 
         db.collection(col).doc(id).set(dadosUpdate, { merge: true })
         .then(() => {
-            alert("Alterações salvas!");
+            alert("Alterações salvas com sucesso!");
             window.location.href = "gerenciar.html?col=" + col;
         })
         .catch((error) => {
