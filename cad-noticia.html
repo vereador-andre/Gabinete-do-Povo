@@ -20,14 +20,21 @@
 <div class="form-card">
     <h2>Nova Notícia</h2>
     <form id="formNoticia">
+        <label>Assunto / Categoria (Ex: Esporte, Saúde, Educação)</label>
+        <input type="text" id="categoria" placeholder="Ex: Esporte" required>
+
         <label>Título da Notícia</label>
         <input type="text" id="titulo" required>
+
         <label>Data (Para ordenação)</label>
         <input type="date" id="data" required>
+
         <label>Conteúdo da Notícia</label>
         <textarea id="texto" rows="6" required></textarea>
+
         <label>Link da Imagem ou Vídeo YouTube</label>
         <input type="url" id="link" placeholder="https://...">
+
         <button type="submit" id="btnPublicar" class="btn-salvar">Publicar Notícia</button>
     </form>
     <a href="admin.html" class="btn-voltar">Voltar ao Painel</a>
@@ -48,7 +55,6 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // Importante: O formulário só funciona se o Firebase confirmar que você está logado
     document.getElementById("formNoticia").onsubmit = async (e) => {
         e.preventDefault();
         
@@ -65,12 +71,13 @@
 
         try {
             await db.collection("noticias").add({
+                categoria: document.getElementById("categoria").value,
                 titulo: document.getElementById("titulo").value,
                 data: document.getElementById("data").value,
                 texto: document.getElementById("texto").value,
                 link: document.getElementById("link").value,
                 criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
-                autorId: user.uid // Registra quem publicou
+                autorId: user.uid
             });
             alert("Notícia publicada com sucesso!"); 
             window.location.href = "admin.html";
