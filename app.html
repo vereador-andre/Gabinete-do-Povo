@@ -25,12 +25,28 @@ body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; paddi
 .header-app h1 { margin: 4px 0; font-size: 22px; font-weight: 700; }
 .header-app p { margin: 2px 0; font-size: 13px; opacity: 0.92; }
 
-.social-area { display: flex; justify-content: center; gap: 22px; margin-top: 14px; }
+.social-area { display: flex; justify-content: center; align-items: flex-start; gap: 18px; margin-top: 14px; flex-wrap: wrap; }
 .social-area a { text-decoration: none; font-size: 24px; transition: transform 0.2s; }
 .social-area a:hover { transform: scale(1.1); }
 .fa-instagram { color: #E1306C; }
 .fa-facebook { color: #1877F2; }
 .fa-tiktok { color: #000; background: #fff; border-radius: 50%; padding: 2px; font-size: 20px!important; }
+.fa-whatsapp { color: #25D366; }
+
+.whatsapp-grupo-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 10px;
+}
+.whatsapp-grupo-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #dcfce7;
+    margin-top: 4px;
+    line-height: 1.1;
+    max-width: 76px;
+}
 
 .grid-menu {
     display: grid;
@@ -145,9 +161,13 @@ body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; paddi
     <p>Sigam nossas redes sociais</p>
 
     <div class="social-area">
-        <a href="https://instagram.com/andre.de.dede" target="_blank" onclick="trackClick('Instagram')"><i class="fa-brands fa-instagram"></i></a>
-        <a href="https://facebook.com/andrekelly.santos" target="_blank" onclick="trackClick('Facebook')"><i class="fa-brands fa-facebook"></i></a>
-        <a href="https://tiktok.com/@andre_de_dede" target="_blank" onclick="trackClick('TikTok')"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="https://instagram.com/andre.de.dede" target="_blank" onclick="trackClick('Instagram')" style="margin-top: 4px;"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://facebook.com/andrekelly.santos" target="_blank" onclick="trackClick('Facebook')" style="margin-top: 4px;"><i class="fa-brands fa-facebook"></i></a>
+        <a href="https://tiktok.com/@andre_de_dede" target="_blank" onclick="trackClick('TikTok')" style="margin-top: 4px;"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="https://chat.whatsapp.com/I2NSQohQ1jnBQUUuDAgguu?mode=gi_t" target="_blank" onclick="trackClick('WhatsApp')" class="whatsapp-grupo-box">
+            <i class="fa-brands fa-whatsapp"></i>
+            <span class="whatsapp-grupo-label">entre no nosso grupo</span>
+        </a>
     </div>
 </div>
 
