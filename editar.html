@@ -12,6 +12,7 @@
         label { display: block; margin: 15px 0 5px; font-size: 13px; font-weight: 600; color: #64748b; }
         input, textarea, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-family: 'Poppins'; }
         .btn-salvar { background: #16a34a; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; margin-top: 20px; font-weight: 600; cursor: pointer; }
+        .btn-salvar:disabled { background: #94a3b8; }
         .btn-voltar { display: block; text-align: center; margin-top: 15px; color: #64748b; text-decoration: none; font-size: 13px; font-weight: 600; }
     </style>
 </head>
@@ -43,40 +44,66 @@
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
-    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
+        authDomain: "gabinete-do-povo.firebaseapp.com", 
+        projectId: "gabinete-do-povo" 
+    };
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
+    const auth = firebase.auth();
 
     const urlParams = new URLSearchParams(window.location.search);
     let col = urlParams.get('col');
     const id = urlParams.get('id');
 
-    // Mapeamento correto caso venha 'acoes' pela URL
     if (col === 'acoes') { col = 'acoes-atendidas'; }
 
-    document.getElementById("tituloPagina").innerText = "Editar: " + col.replace(/-/g, ' ');
+    document.getElementById("tituloPagina").innerText = "Editar: " + (col === 'acoes-atendidas' ? 'Ações' : col.replace(/-/g, ' '));
 
-    db.collection(col).doc(id).get().then(doc => {
-        if (doc.exists) {
-            const d = doc.data();
-            document.getElementById("categoria").value = d.categoria || d.assunto || "";
-            document.getElementById("titulo").value = d.titulo || "";
-            document.getElementById("data").value = d.data || "";
-            document.getElementById("descricao").value = d.descricao || d.texto || "";
-            document.getElementById("link").value = d.link || d.imagem || "";
-            if(col === 'sessoes') {
-                document.getElementById("campoExtra").innerHTML = `<label>Tipo de Sessão</label><select id="tipo"><option value="Ordinária" ${d.tipo==='Ordinária'?'selected':''}>Ordinária</option><option value="Extraordinária" ${d.tipo==='Extraordinária'?'selected':''}>Extraordinária</option></select>`;
+    function carregarRegistro() {
+        db.collection(col).doc(id).get().then(doc => {
+            if (doc.exists) {
+                const d = doc.data();
+                document.getElementById("categoria").value = d.categoria || d.assunto || "";
+                document.getElementById("titulo").value = d.titulo || "";
+                document.getElementById("data").value = d.data || "";
+                document.getElementById("descricao").value = d.descricao || d.texto || "";
+                document.getElementById("link").value = d.link || d.imagem || "";
+                if(col === 'sessoes') {
+                    document.getElementById("campoExtra").innerHTML = `<label>Tipo de Sessão</label><select id="tipo"><option value="Ordinária" ${d.tipo==='Ordinária'?'selected':''}>Ordinária</option><option value="Extraordinária" ${d.tipo==='Extraordinária'?'selected':''}>Extraordinária</option></select>`;
+                }
             }
+        });
+    }
+
+    // Garante que o usuário está autenticado antes de carregar e permitir edição
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            carregarRegistro();
+        } else {
+            alert("Sua sessão expirou. Faça login novamente para editar.");
+            window.location.href = "login.html";
         }
     });
 
     document.getElementById("formEdit").onsubmit = async (e) => {
         e.preventDefault();
+        
+        const user = auth.currentUser;
+        if (!user) {
+            alert("Sessão expirada. Faça login novamente.");
+            window.location.href = "login.html";
+            return;
+        }
+
         const btn = document.getElementById("btnSalvar");
         btn.disabled = true;
-        btn.innerText = "Aguarde...";
+        btn.innerText = "Salvando...";
 
         let dadosUpdate = {
             categoria: document.getElementById("categoria").value,
@@ -93,16 +120,15 @@
 
         if(document.getElementById("tipo")) { dadosUpdate.tipo = document.getElementById("tipo").value; }
 
-        db.collection(col).doc(id).set(dadosUpdate, { merge: true })
-        .then(() => {
+        try {
+            await db.collection(col).doc(id).set(dadosUpdate, { merge: true });
             alert("Alterações salvas com sucesso!");
             window.location.href = "gerenciar.html?col=" + col;
-        })
-        .catch((error) => {
-            alert("Erro: " + error.message);
+        } catch (error) {
+            alert("Erro ao salvar: " + error.message);
             btn.disabled = false;
             btn.innerText = "Salvar Alterações";
-        });
+        }
     };
 </script>
 </body>
