@@ -3,102 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mensagens Recebidas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Mensagens Recebidas - André de Dedé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; }
-        .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; }
-        .container { padding: 15px; }
-        .card-msg { background:white; padding:15px; border-radius:15px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid #cbd5e1; }
-        
-        /* Estilos para Foto e Localização */
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 30px; }
+        .topo { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; position: sticky; top:0; z-index: 100; }
+        .container { padding: 15px; max-width: 650px; margin: auto; }
+        .card-msg { background:white; padding:16px; border-radius:16px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid #1e3a8a; }
+        .protocolo-tag { background: #eff6ff; color: #1e3a8a; font-weight: 700; font-size: 11.5px; padding: 3px 9px; border-radius: 6px; border: 1px solid #bfdbfe; display: inline-block; margin-bottom: 8px; }
         .foto-anexo { width: 100%; border-radius: 10px; margin-top: 10px; display: block; border: 1px solid #e2e8f0; }
-        .btn-localizacao { 
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            background: #3b82f6; color: white; text-decoration: none; padding: 10px;
-            border-radius: 10px; margin-top: 10px; font-weight: 600; font-size: 13px;
-        }
-
-        .status-select { 
-            width: 100%; padding: 10px; border-radius: 8px; margin-top: 10px; 
-            font-family: inherit; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0;
-        }
-        .btn-whatsapp {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            background: #25d366; color: white; text-decoration: none; padding: 12px;
-            border-radius: 10px; margin-top: 10px; font-weight: 600; font-size: 14px;
-        }
-        .acoes-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
+        .btn-localizacao { display: flex; align-items: center; justify-content: center; gap: 8px; background: #3b82f6; color: white; text-decoration: none; padding: 10px; border-radius: 10px; margin-top: 10px; font-weight: 600; font-size: 13px; }
+        label-mini { display: block; font-size: 11px; font-weight: 600; color: #64748b; margin-top: 10px; margin-bottom: 4px; }
+        .status-select { width: 100%; padding: 10px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; border: 1px solid #cbd5e1; background: #f8fafc; }
+        .box-resposta { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .box-resposta textarea { width: 100%; box-sizing: border-box; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: inherit; font-size: 13px; resize: vertical; min-height: 60px; }
+        .btn-salvar-resp { background: #1e3a8a; color: white; border: none; padding: 9px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 600; cursor: pointer; align-self: flex-end; }
+        .btn-whatsapp { display: flex; align-items: center; justify-content: center; gap: 8px; background: #25d366; color: white; text-decoration: none; padding: 12px; border-radius: 10px; margin-top: 12px; font-weight: 600; font-size: 14px; }
+        .acoes-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
     </style>
 </head>
 <body>
 <div class="topo">
     <i class="material-icons" onclick="location.href='admin.html'" style="cursor:pointer">arrow_back</i>
-    <span>Mensagens do Público</span>
+    <span style="font-weight:600;">Mensagens e Protocolos</span>
 </div>
 <div class="container" id="lista">Carregando...</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
     const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
+    const auth = firebase.auth();
 
     function mudarStatus(id, novoStatus) {
-        db.collection("contatos").doc(id).update({ status: novoStatus });
+        let statusPublico = "Recebido";
+        if (novoStatus === "Em andamento") statusPublico = "Encaminhado à Prefeitura";
+        else if (novoStatus === "Atendido") statusPublico = "Resolvido";
+        else if (novoStatus === "Não Atendido") statusPublico = "Arquivado / Não Atendido";
+
+        db.collection("contatos").doc(id).update({
+            status: novoStatus,
+            statusProtocolo: statusPublico,
+            lida: true
+        });
     }
 
-    db.collection("contatos").orderBy("criadoEm", "desc").onSnapshot(snapshot => {
-        const lista = document.getElementById("lista");
-        lista.innerHTML = "";
-        snapshot.forEach(doc => {
-            const m = doc.data();
-            const id = doc.id;
-            const status = m.status || "Pendente";
-            const zapLimpo = m.whatsapp ? m.whatsapp.replace(/\D/g, '') : "";
+    function salvarResposta(id) {
+        const texto = document.getElementById("resp_" + id).value.trim();
+        db.collection("contatos").doc(id).update({
+            respostaGabinete: texto,
+            lida: true
+        }).then(() => {
+            alert("Resposta salva! O cidadão já pode visualizar ao consultar o protocolo.");
+        }).catch(err => alert("Erro ao salvar resposta: " + err.message));
+    }
 
-            // Verifica se existe foto e localização para montar o HTML extra
-            const htmlFoto = m.foto ? `<img src="${m.foto}" class="foto-anexo">` : "";
-            const htmlLocal = m.localizacao ? `
-                <a href="${m.localizacao}" target="_blank" class="btn-localizacao">
-                    <i class="material-icons">location_on</i> Ver Localização no Mapa
-                </a>` : "";
+    function carregarMensagens() {
+        db.collection("contatos").onSnapshot(snapshot => {
+            const lista = document.getElementById("lista");
+            lista.innerHTML = "";
 
-            lista.innerHTML += `
-                <div class="card-msg">
-                    <div style="display:flex; justify-content:space-between; font-size:12px;">
-                        <strong style="color:#1e3a8a;">${m.nome}</strong> 
-                        <span class="badge" style="background:#f1f5f9; padding:2px 8px; border-radius:5px; color:#64748b;">${m.tipo || 'Mensagem'}</span>
-                    </div>
-                    
-                    <p style="font-size:14px; margin:10px 0; color:#475569;">${m.mensagem}</p>
-                    
-                    ${htmlFoto}
-                    ${htmlLocal}
-                    
-                    <div style="margin-top:10px; font-size:11px; color:#94a3b8; text-align:right;">Enviado em: ${m.data}</div>
+            if (snapshot.empty) {
+                lista.innerHTML = "<p style='text-align:center; color:#64748b;'>Nenhuma mensagem recebida ainda.</p>";
+                return;
+            }
 
-                    <select class="status-select" onchange="mudarStatus('${id}', this.value)">
-                        <option value="Pendente" ${status=='Pendente'?'selected':''}>⏳ Pendente</option>
-                        <option value="Em andamento" ${status=='Em andamento'?'selected':''}>⚙️ Em andamento</option>
-                        <option value="Atendido" ${status=='Atendido'?'selected':''}>✅ Atendido</option>
-                        <option value="Não Atendido" ${status=='Não Atendido'?'selected':''}>❌ Não Atendido</option>
-                    </select>
+            // Ordena localmente usando timestamp ou criadoEm para não ocultar nenhum registro
+            const docsOrdenados = snapshot.docs.sort((a, b) => {
+                const dA = a.data();
+                const dB = b.data();
+                const tA = (dA.timestamp && dA.timestamp.seconds) || (dA.criadoEm && dA.criadoEm.seconds) || 0;
+                const tB = (dB.timestamp && dB.timestamp.seconds) || (dB.criadoEm && dB.criadoEm.seconds) || 0;
+                return tB - tA;
+            });
 
-                    <a href="https://wa.me/55${zapLimpo}" target="_blank" class="btn-whatsapp">
-                        <i class="material-icons">chat</i> Responder via WhatsApp
-                    </a>
+            docsOrdenados.forEach(doc => {
+                const m = doc.data();
+                const id = doc.id;
+                const status = m.status || "Pendente";
+                const zapLimpo = m.whatsapp ? m.whatsapp.replace(/\D/g, '') : "";
+                const protocoloTexto = m.protocolo ? `<div class="protocolo-tag">Protocolo: ${m.protocolo}</div>` : "";
 
-                    <div class="acoes-footer">
-                        <small style="color:#94a3b8;">ID: ${id.substring(0,5)}</small>
-                        <button onclick="if(confirm('Excluir mensagem?')) db.collection('contatos').doc('${id}').delete()" style="border:none; background:none; color:#ef4444; display:flex; align-items:center; gap:5px; cursor:pointer;">
-                            <i class="material-icons" style="font-size:18px;">delete</i> Excluir
-                        </button>
-                    </div>
-                </div>`;
+                const htmlFoto = m.foto ? `<img src="${m.foto}" class="foto-anexo">` : "";
+                const htmlLocal = m.localizacao ? `
+                    <a href="${m.localizacao}" target="_blank" class="btn-localizacao">
+                        <i class="material-icons">location_on</i> Ver Localização no Mapa
+                    </a>` : "";
+
+                lista.innerHTML += `
+                    <div class="card-msg">
+                        ${protocoloTexto}
+                        <div style="display:flex; justify-content:space-between; font-size:12px;">
+                            <strong style="color:#1e3a8a;">${m.nome || 'Cidadão'}</strong>
+                            <span style="background:#f1f5f9; padding:2px 8px; border-radius:5px; color:#64748b;">${m.tipo || 'Mensagem'}</span>
+                        </div>
+
+                        <p style="font-size:14px; margin:10px 0; color:#334155;">${m.mensagem || ''}</p>
+
+                        ${htmlFoto}
+                        ${htmlLocal}
+
+                        <div style="margin-top:8px; font-size:11px; color:#94a3b8; text-align:right;">Enviado em: ${m.data || '--'}</div>
+
+                        <label-mini>Andamento (Atualiza automaticamente o Protocolo do Cidadão):</label-mini>
+                        <select class="status-select" onchange="mudarStatus('${id}', this.value)">
+                            <option value="Pendente" ${status=='Pendente'?'selected':''}>⏳ Recebido (Pendente)</option>
+                            <option value="Em andamento" ${status=='Em andamento'?'selected':''}>🏛️ Encaminhado à Prefeitura (Em andamento)</option>
+                            <option value="Atendido" ${status=='Atendido'?'selected':''}>✅ Resolvido (Atendido)</option>
+                            <option value="Não Atendido" ${status=='Não Atendido'?'selected':''}>❌ Não Atendido</option>
+                        </select>
+
+                        <div class="box-resposta">
+                            <label-mini>Retorno / Parecer Público do Gabinete (visível na consulta de protocolo):</label-mini>
+                            <textarea id="resp_${id}" placeholder="Ex: Ofício nº 45/2026 enviado à Secretaria de Obras solicitando reparo...">${m.respostaGabinete || ''}</textarea>
+                            <button type="button" class="btn-salvar-resp" onclick="salvarResposta('${id}')">Salvar Parecer no Protocolo</button>
+                        </div>
+
+                        ${zapLimpo ? `<a href="https://wa.me/55${zapLimpo}?text=Olá%20${encodeURIComponent(m.nome || '')},%20sobre%20seu%20protocolo%20${encodeURIComponent(m.protocolo || '')}%20no%20Gabinete%20do%20Vereador%20André%20de%20Dedé:" target="_blank" class="btn-whatsapp">
+                            <i class="material-icons">chat</i> Responder via WhatsApp
+                        </a>` : ''}
+
+                        <div class="acoes-footer">
+                            <small style="color:#94a3b8;">ID: ${id.substring(0,5)}</small>
+                            <button onclick="if(confirm('Excluir mensagem?')) db.collection('contatos').doc('${id}').delete()" style="border:none; background:none; color:#ef4444; display:flex; align-items:center; gap:5px; cursor:pointer; font-weight:600;">
+                                <i class="material-icons" style="font-size:18px;">delete</i> Excluir
+                            </button>
+                        </div>
+                    </div>`;
+            });
         });
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user) { carregarMensagens(); }
+        else { window.location.href = "login.html"; }
     });
 </script>
 </body>
