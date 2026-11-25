@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta Popular - André de Dedé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; color:#0f172a; padding-bottom: 35px; }
+        .topo-interna { background:#1e3a8a; color:white; padding:20px; display:flex; align-items:center; gap:15px; position: sticky; top:0; z-index:1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 0 0 25px 25px; }
+        .btn-voltar { cursor:pointer; display:flex; align-items:center; justify-content:center; background: rgba(255,255,255,0.15); border-radius: 12px; padding: 8px; }
+        .titulo-pagina { font-weight:600; font-size:18px; }
+        .container { padding: 18px; max-width: 600px; margin: auto; }
+        .card-enquete { background: white; padding: 20px; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06); border: 1px solid #e2e8f0; }
+        .tag-status { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; margin-bottom: 8px; text-transform: uppercase; }
+        .tag-ativa { background: #dcfce7; color: #166534; }
+        .tag-encerrada { background: #f1f5f9; color: #64748b; }
+        .pergunta { font-size: 16px; font-weight: 700; color: #1e3a8a; margin: 4px 0 8px; line-height: 1.35; }
+        .descricao { font-size: 13px; color: #475569; margin-bottom: 16px; line-height: 1.45; }
+        .botoes-voto { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-voto { border: none; padding: 13px 10px; border-radius: 12px; font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
+        .btn-voto:active { transform: scale(0.97); }
+        .btn-sim { background: #22c55e; color: white; }
+        .btn-nao { background: #ef4444; color: white; }
+        .resultado-box { margin-top: 14px; }
+        .linha-res { margin-bottom: 10px; }
+        .topo-res { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .barra-fundo { width: 100%; height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+        .barra-sim { height: 100%; background: #22c55e; transition: width 0.5s ease; }
+        .barra-nao { height: 100%; background: #ef4444; transition: width 0.5s ease; }
+        .total-votos { font-size: 11.5px; color: #64748b; margin-top: 8px; text-align: right; font-weight: 600; }
+    </style>
+</head>
+<body>
+<div class="topo-interna">
+    <div class="btn-voltar" onclick="history.back()"><i class="material-icons">arrow_back</i></div>
+    <div class="titulo-pagina">Como Você Vota?</div>
+</div>
+
+<div class="container" id="listaEnquetes">
+    <p style="text-align:center; color:#64748b;">Carregando enquetes...</p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", authDomain: "gabinete-do-povo.firebaseapp.com", projectId: "gabinete-do-povo" };
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
+
+    function votar(id, opcao) {
+        const chave = "voto_enquete_" + id;
+        if (localStorage.getItem(chave)) {
+            alert("Você já registrou seu voto nesta enquete!");
+            return;
+        }
+
+        const campo = opcao === 'sim' ? 'votosSim' : 'votosNao';
+        db.collection("enquetes").doc(id).update({
+            [campo]: firebase.firestore.FieldValue.increment(1)
+        }).then(() => {
+            localStorage.setItem(chave, opcao);
+        }).catch(err => {
+            alert("Erro ao registrar voto: " + err.message);
+        });
+    }
+
+    db.collection("enquetes").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+        const container = document.getElementById("listaEnquetes");
+        container.innerHTML = "";
+
+        if (snapshot.empty) {
+            container.innerHTML = `<div class="card-enquete" style="text-align:center; color:#64748b;">Nenhuma enquete disponível no momento.</div>`;
+            return;
+        }
+
+        snapshot.forEach(doc => {
+            const e = doc.data();
+            const id = doc.id;
+            const sim = e.votosSim || 0;
+            const nao = e.votosNao || 0;
+            const total = sim + nao;
+            const pctSim = total > 0 ? Math.round((sim / total) * 100) : 0;
+            const pctNao = total > 0 ? (100 - pctSim) : 0;
+
+            const jaVotou = localStorage.getItem("voto_enquete_" + id);
+            const ativa = e.ativa !== false;
+
+            const statusBadge = ativa
+                ? `<span class="tag-status tag-ativa">● Votação Aberta</span>`
+                : `<span class="tag-status tag-encerrada">Votação Encerrada</span>`;
+
+            let corpoInteracao = "";
+            if (ativa && !jaVotou) {
+                corpoInteracao = `
+                    <div class="botoes-voto">
+                        <button class="btn-voto btn-sim" onclick="votar('${id}', 'sim')"><i class="material-icons">thumb_up</i> SIM</button>
+                        <button class="btn-voto btn-nao" onclick="votar('${id}', 'nao')"><i class="material-icons">thumb_down</i> NÃO</button>
+                    </div>`;
+            } else {
+                const avisoVoto = jaVotou ? `<div style="font-size:12px; color:#166534; font-weight:600; margin-bottom:10px;">✓ Seu voto (${jaVotou.toUpperCase()}) foi computado!</div>` : "";
+                corpoInteracao = `
+                    ${avisoVoto}
+                    <div class="resultado-box">
+                        <div class="linha-res">
+                            <div class="topo-res"><span>👍 Sim (A favor)</span><span>${pctSim}% (${sim})</span></div>
+                            <div class="barra-fundo"><div class="barra-sim" style="width:${pctSim}%"></div></div>
+                        </div>
+                        <div class="linha-res">
+                            <div class="topo-res"><span>👎 Não (Contra)</span><span>${pctNao}% (${nao})</span></div>
+                            <div class="barra-fundo"><div class="barra-nao" style="width:${pctNao}%"></div></div>
+                        </div>
+                        <div class="total-votos">Total de participantes: ${total}</div>
+                    </div>`;
+            }
+
+            container.innerHTML += `
+                <div class="card-enquete">
+                    ${statusBadge}
+                    <div class="pergunta">${e.pergunta}</div>
+                    ${e.descricao ? `<div class="descricao">${e.descricao}</div>` : ''}
+                    ${corpoInteracao}
+                </div>`;
+        });
+    });
+</script>
+</body>
+</html>
