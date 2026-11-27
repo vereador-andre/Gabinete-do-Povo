@@ -281,6 +281,14 @@ body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; paddi
         <span>Sair do App</span>
     </a>
 </div>
-
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch((err) => {
+        console.log("Falha ao registrar Service Worker:", err);
+      });
+    });
+  }
+</script>
 </body>
 </html>
