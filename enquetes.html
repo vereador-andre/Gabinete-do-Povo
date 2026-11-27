@@ -21,6 +21,7 @@
         .botoes-voto { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn-voto { border: none; padding: 13px 10px; border-radius: 12px; font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
         .btn-voto:active { transform: scale(0.97); }
+        .btn-voto:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-sim { background: #22c55e; color: white; }
         .btn-nao { background: #ef4444; color: white; }
         .resultado-box { margin-top: 14px; }
@@ -49,35 +50,21 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    function votar(id, opcao) {
-        const chave = "voto_enquete_" + id;
-        if (localStorage.getItem(chave)) {
-            alert("Você já registrou seu voto nesta enquete!");
-            return;
-        }
+    let enquetesAtuais = [];
+    const votosEmAndamento = {};
 
-        const campo = opcao === 'sim' ? 'votosSim' : 'votosNao';
-        db.collection("enquetes").doc(id).update({
-            [campo]: firebase.firestore.FieldValue.increment(1)
-        }).then(() => {
-            localStorage.setItem(chave, opcao);
-        }).catch(err => {
-            alert("Erro ao registrar voto: " + err.message);
-        });
-    }
-
-    db.collection("enquetes").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+    function renderizarEnquetes() {
         const container = document.getElementById("listaEnquetes");
         container.innerHTML = "";
 
-        if (snapshot.empty) {
+        if (enquetesAtuais.length === 0) {
             container.innerHTML = `<div class="card-enquete" style="text-align:center; color:#64748b;">Nenhuma enquete disponível no momento.</div>`;
             return;
         }
 
-        snapshot.forEach(doc => {
-            const e = doc.data();
-            const id = doc.id;
+        enquetesAtuais.forEach(item => {
+            const e = item.dados;
+            const id = item.id;
             const sim = e.votosSim || 0;
             const nao = e.votosNao || 0;
             const total = sim + nao;
@@ -95,8 +82,8 @@
             if (ativa && !jaVotou) {
                 corpoInteracao = `
                     <div class="botoes-voto">
-                        <button class="btn-voto btn-sim" onclick="votar('${id}', 'sim')"><i class="material-icons">thumb_up</i> SIM</button>
-                        <button class="btn-voto btn-nao" onclick="votar('${id}', 'nao')"><i class="material-icons">thumb_down</i> NÃO</button>
+                        <button class="btn-voto btn-sim" id="btnSim_${id}" onclick="votar('${id}', 'sim')"><i class="material-icons">thumb_up</i> SIM</button>
+                        <button class="btn-voto btn-nao" id="btnNao_${id}" onclick="votar('${id}', 'nao')"><i class="material-icons">thumb_down</i> NÃO</button>
                     </div>`;
             } else {
                 const avisoVoto = jaVotou ? `<div style="font-size:12px; color:#166534; font-weight:600; margin-bottom:10px;">✓ Seu voto (${jaVotou.toUpperCase()}) foi computado!</div>` : "";
@@ -123,6 +110,42 @@
                     ${corpoInteracao}
                 </div>`;
         });
+    }
+
+    function votar(id, opcao) {
+        const chave = "voto_enquete_" + id;
+        if (localStorage.getItem(chave) || votosEmAndamento[id]) {
+            alert("Você já registrou seu voto nesta enquete!");
+            return;
+        }
+
+        votosEmAndamento[id] = true;
+        const btnSim = document.getElementById("btnSim_" + id);
+        const btnNao = document.getElementById("btnNao_" + id);
+        if (btnSim) btnSim.disabled = true;
+        if (btnNao) btnNao.disabled = true;
+
+        const campo = opcao === 'sim' ? 'votosSim' : 'votosNao';
+        db.collection("enquetes").doc(id).update({
+            [campo]: firebase.firestore.FieldValue.increment(1)
+        }).then(() => {
+            localStorage.setItem(chave, opcao);
+            delete votosEmAndamento[id];
+            renderizarEnquetes();
+        }).catch(err => {
+            delete votosEmAndamento[id];
+            if (btnSim) btnSim.disabled = false;
+            if (btnNao) btnNao.disabled = false;
+            alert("Erro ao registrar voto: " + err.message);
+        });
+    }
+
+    db.collection("enquetes").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+        enquetesAtuais = snapshot.docs.map(doc => ({
+            id: doc.id,
+            dados: doc.data()
+        }));
+        renderizarEnquetes();
     });
 </script>
 </body>
