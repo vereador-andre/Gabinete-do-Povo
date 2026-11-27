@@ -119,11 +119,31 @@
             border-top: 1px solid #e2e8f0;
             padding-top: 12px;
         }
+        .lista-fila-cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
         .lista-fila-titulo {
             font-size: 12px;
             font-weight: 600;
             color: #64748b;
-            margin-bottom: 8px;
+        }
+        .btn-limpar-fila {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 4px;
         }
         .item-fila-notif {
             background: #f8fafc;
@@ -141,6 +161,12 @@
             font-weight: 600;
             color: #0f172a;
         }
+        .item-fila-acoes {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
         .tag-status-fila {
             font-size: 10px;
             padding: 2px 8px;
@@ -148,6 +174,26 @@
             background: #fef3c7;
             color: #b45309;
             text-transform: uppercase;
+        }
+        .tag-status-enviado {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .btn-excluir-alerta {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            border-radius: 6px;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+        }
+        .btn-excluir-alerta i {
+            font-size: 15px;
         }
         .item-fila-texto {
             color: #475569;
@@ -238,7 +284,12 @@
         <div id="statusNotifManual" class="status-disparo-notif"></div>
 
         <div class="lista-fila-notif">
-            <div class="lista-fila-titulo">Últimos alertas registrados na fila:</div>
+            <div class="lista-fila-cabecalho">
+                <div class="lista-fila-titulo">Últimos alertas registrados na fila:</div>
+                <button type="button" id="btnLimparFila" class="btn-limpar-fila" onclick="limparHistoricoFila()">
+                    <i class="material-icons" style="font-size:13px;">delete_sweep</i> Limpar tudo
+                </button>
+            </div>
             <div id="listaFilaNotificacoes">Carregando histórico...</div>
         </div>
     </div>
@@ -279,7 +330,6 @@
     // Notificações de Avaliações - Filtro ajustado para detectar o status corretamente
     db.collection("avaliacoes_mandato").onSnapshot(snapshot => {
         const badgeAval = document.getElementById("notifBadgeAval");
-        // Filtra localmente para evitar erros de case-sensitive ou acentuação no Firebase
         const novos = snapshot.docs.filter(doc => {
             const status = doc.data().status;
             return status === "Novo Comentario" || status === "Novo" || status === "Pendente";
@@ -357,7 +407,7 @@
             document.getElementById("notifMensagem").value = "";
 
             if (disparouWorker) {
-                mostrarFeedbackNotif("Notificação enviada para processamento e disparada para os celulares!", true);
+                mostrarFeedbackNotif("Notificação enviada e disparada para os celulares!", true);
             } else {
                 mostrarFeedbackNotif("Notificação salva na fila! Confira as credenciais do Cloudflare Worker para o disparo automático.", true);
             }
@@ -369,12 +419,37 @@
         }
     }
 
-    db.collection("fila_notificacoes").orderBy("criadoEm", "desc").limit(5).onSnapshot(snapshot => {
+    async function excluirAlertaFila(docId) {
+        if (!confirm("Excluir este alerta do histórico?")) return;
+        try {
+            await db.collection("fila_notificacoes").doc(docId).delete();
+        } catch (err) {
+            alert("Erro ao excluir alerta: " + err.message);
+        }
+    }
+
+    async function limparHistoricoFila() {
+        if (!confirm("Deseja excluir todos os alertas listados no histórico?")) return;
+        try {
+            const snap = await db.collection("fila_notificacoes").get();
+            const exclusoes = snap.docs.map(doc => doc.ref.delete());
+            await Promise.all(exclusoes);
+        } catch (err) {
+            alert("Erro ao limpar histórico: " + err.message);
+        }
+    }
+
+    db.collection("fila_notificacoes").orderBy("criadoEm", "desc").limit(10).onSnapshot(snapshot => {
         const container = document.getElementById("listaFilaNotificacoes");
+        const btnLimpar = document.getElementById("btnLimparFila");
+
         if (snapshot.empty) {
             container.innerHTML = '<div class="item-fila-texto">Nenhuma notificação registrada ainda.</div>';
+            if (btnLimpar) btnLimpar.style.display = "none";
             return;
         }
+
+        if (btnLimpar) btnLimpar.style.display = "inline-flex";
 
         let html = "";
         snapshot.forEach(doc => {
@@ -382,13 +457,20 @@
             const tituloSafe = (d.title || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             const corpoSafe = (d.body || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             const destinoSafe = (d.url || "./app.html").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            const statusSafe = (d.status || "pendente").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const statusRaw = d.status || "pendente";
+            const statusSafe = statusRaw.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const classeStatus = statusRaw === "enviado" ? "tag-status-fila tag-status-enviado" : "tag-status-fila";
 
             html += `
                 <div class="item-fila-notif">
                     <div class="item-fila-topo">
                         <span>${tituloSafe}</span>
-                        <span class="tag-status-fila">${statusSafe}</span>
+                        <div class="item-fila-acoes">
+                            <span class="${classeStatus}">${statusSafe}</span>
+                            <button type="button" class="btn-excluir-alerta" title="Excluir alerta" onclick="excluirAlertaFila('${doc.id}')">
+                                <i class="material-icons">delete</i>
+                            </button>
+                        </div>
                     </div>
                     <div class="item-fila-texto">${corpoSafe}</div>
                     <div class="item-fila-destino">Destino: ${destinoSafe}</div>
