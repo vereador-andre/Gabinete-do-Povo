@@ -7,11 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 40px; }
+        body { margin:0; font-family:'Poppins', sans-serif; background:#f1f5f9; padding-bottom: 40px; color: #0f172a; }
         .header-admin { background:#1e3a8a; color:white; padding:40px 20px; text-align:center; border-radius:0 0 30px 30px; position: relative; }
         .header-admin h1 { margin:0; font-size:22px; }
         
-        .grid-admin { display:grid; grid-template-columns: 1fr; gap:12px; padding:20px; margin-top: -20px; }
+        .grid-admin { display:grid; grid-template-columns: 1fr; gap:12px; padding:20px; margin-top: -20px; max-width: 640px; margin-left: auto; margin-right: auto; box-sizing: border-box; }
         .admin-row { display: flex; gap: 8px; }
         
         .btn-item { 
@@ -31,9 +31,136 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
 
-        .banner-aviso { display: none; background: #fee2e2; color: #b91c1c; padding: 10px; border-radius: 10px; margin: 0 20px 15px; font-size: 12px; text-align: center; font-weight: 600; }
+        .banner-aviso { display: none; background: #fee2e2; color: #b91c1c; padding: 10px; border-radius: 10px; margin: 0 20px 15px; font-size: 12px; text-align: center; font-weight: 600; max-width: 600px; margin-left: auto; margin-right: auto; }
 
-        .btn-logout { margin: 30px 20px; padding: 15px; border-radius: 12px; border: 1px solid #f87171; color: #f87171; text-align: center; cursor: pointer; font-weight: 600; }
+        /* Card de Disparo Manual de Notificações */
+        .card-notif-manual {
+            background: white;
+            border-radius: 18px;
+            padding: 18px;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .card-notif-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: #1e3a8a;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .card-notif-header i {
+            background: #eff6ff;
+            padding: 8px;
+            border-radius: 10px;
+            color: #1e3a8a;
+        }
+        .campo-notif {
+            margin-bottom: 12px;
+        }
+        .campo-notif label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 5px;
+        }
+        .campo-notif select,
+        .campo-notif input,
+        .campo-notif textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            color: #0f172a;
+            background: #f8fafc;
+        }
+        .campo-notif textarea {
+            resize: vertical;
+            min-height: 72px;
+        }
+        .btn-disparar-notif {
+            width: 100%;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
+        }
+        .btn-disparar-notif:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+        .status-disparo-notif {
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            padding: 8px 10px;
+            border-radius: 10px;
+        }
+        .lista-fila-notif {
+            margin-top: 14px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+        }
+        .lista-fila-titulo {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        .item-fila-notif {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        .item-fila-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .tag-status-fila {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #fef3c7;
+            color: #b45309;
+            text-transform: uppercase;
+        }
+        .item-fila-texto {
+            color: #475569;
+            margin-top: 4px;
+        }
+        .item-fila-destino {
+            color: #1e3a8a;
+            font-size: 11px;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .btn-logout { margin: 30px auto; max-width: 600px; padding: 15px; border-radius: 12px; border: 1px solid #f87171; color: #f87171; text-align: center; cursor: pointer; font-weight: 600; background: white; }
     </style>
 </head>
 <body>
@@ -71,7 +198,50 @@
     <a href="gerenciar-enquetes.html" class="btn-item" style="background:#fffbeb; color:#b45309; margin-top: 5px;">
         <i class="material-icons" style="background:#fef3c7; color:#d97706;">how_to_vote</i> Enquetes Populares
     </a>
-    
+
+    <!-- Disparo Manual de Notificações -->
+    <div class="card-notif-manual">
+        <div class="card-notif-header">
+            <i class="material-icons">notifications_active</i>
+            <span>Enviar Notificação Push (Manual)</span>
+        </div>
+
+        <div class="campo-notif">
+            <label for="notifCategoria">Tipo de Novidade / Tela de Destino</label>
+            <select id="notifCategoria">
+                <option value="noticia|noticias.html">Notícia importante (abre Notícias)</option>
+                <option value="enquete|enquetes.html">Nova Enquete Popular (abre Enquetes)</option>
+                <option value="requerimento|requerimentos.html">Novo Requerimento (abre Requerimentos)</option>
+                <option value="indicacao|indicacoes.html">Nova Indicação (abre Indicações)</option>
+                <option value="projeto|projetos.html">Novo Projeto de Lei (abre Projetos de Lei)</option>
+                <option value="sessao|sessoes.html">Nova Sessão (abre Sessões)</option>
+                <option value="acao|acoes.html">Nova Ação Atendida (abre Ações)</option>
+                <option value="geral|app.html">Aviso Geral do Gabinete (abre Menu do App)</option>
+            </select>
+        </div>
+
+        <div class="campo-notif">
+            <label for="notifTitulo">Título da Notificação</label>
+            <input type="text" id="notifTitulo" maxlength="80" placeholder="Ex.: Nova enquete aberta no Gabinete do Povo">
+        </div>
+
+        <div class="campo-notif">
+            <label for="notifMensagem">Texto da Notificação</label>
+            <textarea id="notifMensagem" maxlength="200" placeholder="Ex.: Participe da consulta popular e deixe a sua opinião."></textarea>
+        </div>
+
+        <button type="button" id="btnEnviarNotifManual" class="btn-disparar-notif" onclick="enfileirarNotificacaoManual()">
+            <i class="material-icons">send</i>
+            <span>Enviar Notificação para o App</span>
+        </button>
+
+        <div id="statusNotifManual" class="status-disparo-notif"></div>
+
+        <div class="lista-fila-notif">
+            <div class="lista-fila-titulo">Últimos alertas registrados na fila:</div>
+            <div id="listaFilaNotificacoes">Carregando histórico...</div>
+        </div>
+    </div>
 </div>
 
 <div class="btn-logout" onclick="logout()">Sair do Sistema</div>
@@ -132,6 +302,88 @@
             aviso.style.display = "block";
         }
     }
+
+    function mostrarFeedbackNotif(msg, sucesso) {
+        const el = document.getElementById("statusNotifManual");
+        el.style.display = "block";
+        el.innerText = msg;
+        if (sucesso) {
+            el.style.background = "#dcfce7";
+            el.style.color = "#166534";
+        } else {
+            el.style.background = "#fee2e2";
+            el.style.color = "#991b1b";
+        }
+    }
+
+    async function enfileirarNotificacaoManual() {
+        const selectCat = document.getElementById("notifCategoria").value;
+        const partes = selectCat.split("|");
+        const categoria = partes[0] || "geral";
+        const urlDestino = partes[1] || "app.html";
+
+        const titulo = document.getElementById("notifTitulo").value.trim();
+        const corpo = document.getElementById("notifMensagem").value.trim();
+        const btn = document.getElementById("btnEnviarNotifManual");
+
+        if (!titulo || !corpo) {
+            mostrarFeedbackNotif("Preencha o título e o texto da notificação antes de enviar.", false);
+            return;
+        }
+
+        btn.disabled = true;
+        try {
+            await db.collection("fila_notificacoes").add({
+                categoria: categoria,
+                title: titulo,
+                body: corpo,
+                url: "./" + urlDestino,
+                status: "pendente",
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+                criadoPor: (firebase.auth().currentUser && firebase.auth().currentUser.email) || "admin"
+            });
+
+            document.getElementById("notifTitulo").value = "";
+            document.getElementById("notifMensagem").value = "";
+            mostrarFeedbackNotif("Notificação registrada na fila! Assim que o envio automático estiver ativo, ela sairá para os celulares.", true);
+        } catch (err) {
+            console.error("Erro ao registrar notificação:", err);
+            mostrarFeedbackNotif("Erro ao registrar notificação: " + err.message, false);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    db.collection("fila_notificacoes").orderBy("criadoEm", "desc").limit(5).onSnapshot(snapshot => {
+        const container = document.getElementById("listaFilaNotificacoes");
+        if (snapshot.empty) {
+            container.innerHTML = '<div class="item-fila-texto">Nenhuma notificação registrada ainda.</div>';
+            return;
+        }
+
+        let html = "";
+        snapshot.forEach(doc => {
+            const d = doc.data();
+            const tituloSafe = (d.title || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const corpoSafe = (d.body || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const destinoSafe = (d.url || "./app.html").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const statusSafe = (d.status || "pendente").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+            html += `
+                <div class="item-fila-notif">
+                    <div class="item-fila-topo">
+                        <span>${tituloSafe}</span>
+                        <span class="tag-status-fila">${statusSafe}</span>
+                    </div>
+                    <div class="item-fila-texto">${corpoSafe}</div>
+                    <div class="item-fila-destino">Destino: ${destinoSafe}</div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }, err => {
+        console.log("Histórico da fila ainda sem índice/permissão:", err.message);
+    });
 
     function logout() { 
         firebase.auth().signOut().then(() => {
