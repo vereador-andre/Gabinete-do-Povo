@@ -10,10 +10,11 @@
         body { font-family: 'Poppins', sans-serif; background: #f1f5f9; margin: 0; padding: 20px; }
         .header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
         .header h2 { margin: 0; color: #1e3a8a; text-transform: capitalize; }
-        .card-item { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card-item { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); gap: 10px; }
         .info h4 { margin: 0; color: #1e3a8a; font-size: 14px; }
         .info p { margin: 5px 0 0; font-size: 11px; color: #64748b; }
-        .actions { display: flex; gap: 10px; }
+        .actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+        .btn-notif { color: #1e3a8a; cursor: pointer; }
         .btn-edit { color: #3b82f6; cursor: pointer; }
         .btn-del { color: #ef4444; cursor: pointer; }
         .btn-voltar { display: inline-flex; align-items: center; text-decoration: none; color: #1e3a8a; font-weight: 600; margin-bottom: 20px; }
@@ -33,6 +34,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
+    const WORKER_NOTIF_URL = "https://notificacoes-gabinete.andrezinhok.workers.dev";
     const firebaseConfig = { 
         apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
         authDomain: "gabinete-do-povo.firebaseapp.com", 
@@ -43,18 +45,61 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // Pega o nome da coleção pela URL e garante o mapeamento correto para ações
     const urlParams = new URLSearchParams(window.location.search);
     let col = urlParams.get('col');
     if (col === 'acoes') {
         col = 'acoes-atendidas';
     }
 
+    const configColecao = {
+        "noticias": { label: "Notícia", url: "./noticias.html" },
+        "acoes-atendidas": { label: "Ação Atendida", url: "./acoes.html" },
+        "indicacoes": { label: "Indicação", url: "./indicacoes.html" },
+        "requerimentos": { label: "Requerimento", url: "./requerimentos.html" },
+        "projetos": { label: "Projeto de Lei", url: "./projetos.html" },
+        "sessoes": { label: "Sessão", url: "./sessoes.html" }
+    };
+
     if (col) {
         document.getElementById("nomeColecao").innerText = col === 'acoes-atendidas' ? 'Ações' : col.replace(/-/g, ' ');
     }
 
-    // Carrega os itens e atualiza em tempo real
+    async function notificarItem(id, titulo) {
+        const user = auth.currentUser;
+        if (!user) {
+            alert("Sessão expirada. Faça login novamente.");
+            window.location.href = "login.html";
+            return;
+        }
+
+        const cfg = configColecao[col] || { label: "Novidade", url: "./app.html" };
+        if (!confirm(`Enviar notificação push sobre:\n"${titulo}"?`)) return;
+
+        try {
+            await db.collection("fila_notificacoes").add({
+                categoria: col || "geral",
+                referenciaId: id,
+                title: `Novo(a) ${cfg.label}`,
+                body: titulo,
+                url: cfg.url,
+                status: "pendente",
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+                criadoPor: user.email || "admin"
+            });
+
+            try {
+                await fetch(WORKER_NOTIF_URL, { method: "GET" });
+            } catch (e) {
+                console.log("Aviso ao acionar worker:", e);
+            }
+
+            alert("Notificação enviada para processamento!");
+        } catch (err) {
+            console.error("Erro ao notificar item:", err);
+            alert("Erro ao enviar notificação: " + err.message);
+        }
+    }
+
     function carregarDados() {
         if (!col) return;
         
@@ -69,18 +114,21 @@
 
             s.forEach(doc => {
                 const data = doc.data();
+                const tituloRaw = data.titulo || 'Sem título';
+                const tituloEscapado = tituloRaw.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 const dataExibicao = data.data ? data.data.split('-').reverse().join('/') : '--/--/----';
                 const catExibicao = data.categoria ? ` • <b>${data.categoria}</b>` : '';
                 
                 lista.innerHTML += `
                     <div class="card-item">
                         <div class="info">
-                            <h4>${data.titulo || 'Sem título'}</h4>
+                            <h4>${tituloRaw}</h4>
                             <p>${dataExibicao}${catExibicao}</p>
                         </div>
                         <div class="actions">
-                            <i class="material-icons btn-edit" onclick="editar('${doc.id}')">edit</i>
-                            <i class="material-icons btn-del" onclick="excluir('${doc.id}')">delete</i>
+                            <i class="material-icons btn-notif" title="Notificar cidadãos" onclick="notificarItem('${doc.id}', '${tituloEscapado}')">notifications_active</i>
+                            <i class="material-icons btn-edit" title="Editar" onclick="editar('${doc.id}')">edit</i>
+                            <i class="material-icons btn-del" title="Excluir" onclick="excluir('${doc.id}')">delete</i>
                         </div>
                     </div>`;
             });
