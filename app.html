@@ -125,6 +125,92 @@ body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; paddi
 .btn-contato { background: #22c55e; }
 .btn-notificacoes { background: #1e3a8a; }
 
+/* Convite de Notificações na Entrada do App */
+.modal-notif-entrada {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.58);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.modal-notif-entrada.ativo {
+    display: flex;
+}
+.caixa-notif-entrada {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 24px 20px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.25);
+    border: 1px solid #e2e8f0;
+    animation: popEntrada 0.22s ease-out;
+}
+@keyframes popEntrada {
+    from { opacity: 0; transform: scale(0.94); }
+    to { opacity: 1; transform: scale(1); }
+}
+.icone-notif-entrada {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #eff6ff;
+    color: #1e3a8a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+}
+.icone-notif-entrada i {
+    font-size: 30px;
+}
+.caixa-notif-entrada h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #0f172a;
+}
+.caixa-notif-entrada p {
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.45;
+}
+.acoes-notif-entrada {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.btn-confirmar-entrada {
+    width: 100%;
+    background: #1e3a8a;
+    color: #ffffff;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(30, 58, 138, 0.22);
+}
+.btn-adiar-entrada {
+    width: 100%;
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    border-radius: 14px;
+    padding: 11px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
 /* BOTÃO FLUTUANTE COM LEGENDA */
 .container-flutuante {
     position: fixed; bottom: 96px; right: 18px;
@@ -153,6 +239,24 @@ body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; paddi
 </head>
 
 <body>
+
+<div id="modalNotifEntrada" class="modal-notif-entrada" role="dialog" aria-modal="true" aria-labelledby="tituloNotifEntrada">
+    <div class="caixa-notif-entrada">
+        <div class="icone-notif-entrada">
+            <i class="material-icons">notifications_active</i>
+        </div>
+        <h2 id="tituloNotifEntrada">Receber avisos do mandato?</h2>
+        <p>Deseja receber notificações importantes de André de Dedé, como novas enquetes, notícias e ações no aplicativo?</p>
+        <div class="acoes-notif-entrada">
+            <button type="button" class="btn-confirmar-entrada" onclick="confirmarNotificacaoEntrada()">
+                Sim, ativar notificações
+            </button>
+            <button type="button" class="btn-adiar-entrada" onclick="fecharConviteEntrada()">
+                Agora não
+            </button>
+        </div>
+    </div>
+</div>
 
 <div class="container-flutuante">
     <div class="label-flutuante">Avalie o Mandato de André de Dedé</div>
@@ -321,12 +425,40 @@ function atualizarEstadoBotaoNotif() {
     }
 }
 
+function abrirConviteEntradaSePreciso() {
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
+    if (Notification.permission !== "default") return;
+    if (sessionStorage.getItem("conviteNotifAdiado") === "true") return;
+
+    const modal = document.getElementById("modalNotifEntrada");
+    if (modal) {
+        modal.classList.add("ativo");
+    }
+}
+
+function fecharConviteEntrada() {
+    sessionStorage.setItem("conviteNotifAdiado", "true");
+    const modal = document.getElementById("modalNotifEntrada");
+    if (modal) {
+        modal.classList.remove("ativo");
+    }
+}
+
+async function confirmarNotificacaoEntrada() {
+    const modal = document.getElementById("modalNotifEntrada");
+    if (modal) {
+        modal.classList.remove("ativo");
+    }
+    await ativarNotificacoesApp();
+}
+
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
         navigator.serviceWorker.register("firebase-messaging-sw.js").catch((err) => {
             console.log("Falha ao registrar Service Worker:", err);
         });
         atualizarEstadoBotaoNotif();
+        setTimeout(abrirConviteEntradaSePreciso, 900);
     });
 }
 
