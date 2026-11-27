@@ -114,10 +114,16 @@ body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; paddi
     box-shadow: 0 5px 15px rgba(0,0,0,0.09);
     font-size: 14px;
     transition: transform 0.18s ease;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
 }
 .btn-destaque:active { transform: scale(0.98); }
 .btn-telefones { background: #3b82f6; }
 .btn-contato { background: #22c55e; }
+.btn-notificacoes { background: #1e3a8a; }
 
 /* BOTÃO FLUTUANTE COM LEGENDA */
 .container-flutuante {
@@ -265,10 +271,14 @@ body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; paddi
     </a>
     
     <a href="enquetes.html" class="btn-destaque" style="background: #f59e0b;" onclick="trackClick('Enquetes')">
-    <i class="material-icons">how_to_vote</i>
-    <span>Como Você Vota? (Enquetes)</span>
+        <i class="material-icons">how_to_vote</i>
+        <span>Como Você Vota? (Enquetes)</span>
     </a>
-    
+
+    <button type="button" id="btnAtivarNotif" class="btn-destaque btn-notificacoes" onclick="ativarNotificacoesApp()">
+        <i class="material-icons">notifications_active</i>
+        <span id="txtBtnNotif">Ativar Notificações</span>
+    </button>
 </div>
 
 <div class="admin-footer">
@@ -281,14 +291,80 @@ body { margin: 0; font-family: 'Poppins', sans-serif; background: #f1f5f9; paddi
         <span>Sair do App</span>
     </a>
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+
 <script>
-  if ("serviceWorker" in navigator) {
+const VAPID_PUBLIC_KEY = "BH_wfK8FJ9JWIKTxnPMss8I92uHMnzB0ZB4zJirEwVlalWum8WplBi2gXSnel0GJPCIl40SeZ-q_JvjQ_k3r39M";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc",
+  authDomain: "gabinete-do-povo.firebaseapp.com",
+  projectId: "gabinete-do-povo",
+  storageBucket: "gabinete-do-povo.firebasestorage.app",
+  messagingSenderId: "450444313568",
+  appId: "1:450444313568:web:e12ba742d940dc23e52185"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+
+function atualizarEstadoBotaoNotif() {
+    const txt = document.getElementById("txtBtnNotif");
+    if (!txt || !("Notification" in window)) return;
+    if (Notification.permission === "granted") {
+        txt.innerText = "Notificações Ativas";
+    }
+}
+
+if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("sw.js").catch((err) => {
-        console.log("Falha ao registrar Service Worker:", err);
-      });
+        navigator.serviceWorker.register("firebase-messaging-sw.js").catch((err) => {
+            console.log("Falha ao registrar Service Worker:", err);
+        });
+        atualizarEstadoBotaoNotif();
     });
-  }
+}
+
+async function ativarNotificacoesApp() {
+    trackClick("Ativar Notificacoes");
+    try {
+        if (!("Notification" in window) || !("serviceWorker" in navigator)) {
+            alert("Este navegador não suporta notificações push. No iPhone, adicione o site à Tela de Início primeiro.");
+            return;
+        }
+
+        const permissao = await Notification.requestPermission();
+        if (permissao !== "granted") {
+            alert("As notificações não foram ativadas. Você pode permitir nas configurações do navegador.");
+            return;
+        }
+
+        const swReg = await navigator.serviceWorker.register("firebase-messaging-sw.js");
+        const messaging = firebase.messaging();
+        const token = await messaging.getToken({
+            vapidKey: VAPID_PUBLIC_KEY,
+            serviceWorkerRegistration: swReg
+        });
+
+        if (token) {
+            await db.collection("tokens_notificacoes").doc(token).set({
+                token: token,
+                atualizadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+                userAgent: navigator.userAgent
+            }, { merge: true });
+            atualizarEstadoBotaoNotif();
+            alert("Notificações ativadas com sucesso!");
+        }
+    } catch (err) {
+        console.error("Erro ao ativar notificações:", err);
+        alert("Não foi possível ativar as notificações agora: " + err.message);
+    }
+}
 </script>
 </body>
 </html>
