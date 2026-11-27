@@ -82,8 +82,8 @@
             window.location.href = "admin.html";
         } catch (error) {
             let msg = "Erro (" + error.code + "): " + error.message;
-            if (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
-                msg = "Senha incorreta para este e-mail. Se acabou de redefinir, use a nova senha.";
+            if (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential" || error.code === "auth/invalid-login-credentials") {
+                msg = "E-mail ou senha inválidos (" + error.code + "). Confira se o autocompletar preencheu a senha correta para este domínio.";
             } else if (error.code === "auth/user-not-found") {
                 msg = "E-mail não cadastrado na lista de usuários do Firebase.";
             } else if (error.code === "auth/too-many-requests") {
@@ -101,7 +101,7 @@
         if (!email) return alert("Digite seu e-mail primeiro para receber o link de recuperação.");
 
         auth.sendPasswordResetEmail(email)
-            .then(() => alert("Um link de redefinição foi enviado para o seu e-mail! Abra-o imediatamente em uma aba anônima."))
+            .then(() => alert("Um link de redefinição foi enviado para o seu e-mail! Abra-o diretamente no navegador padrão."))
             .catch(error => alert("Erro (" + error.code + "): " + error.message));
     }
 </script>
