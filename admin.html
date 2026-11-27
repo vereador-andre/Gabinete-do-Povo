@@ -253,6 +253,8 @@
 <script>
     if(localStorage.getItem("logado") !== "true") { window.location.href = "login.html"; }
     
+    const WORKER_NOTIF_URL = "https://notificacoes-gabinete.andrezinhok.workers.dev";
+
     const firebaseConfig = { 
         apiKey: "AIzaSyAS_4zDyNAMXGAF9tp-30QIp0ywRJhIjLc", 
         authDomain: "gabinete-do-povo.firebaseapp.com", 
@@ -343,9 +345,22 @@
                 criadoPor: (firebase.auth().currentUser && firebase.auth().currentUser.email) || "admin"
             });
 
+            let disparouWorker = false;
+            try {
+                const resp = await fetch(WORKER_NOTIF_URL, { method: "GET" });
+                disparouWorker = resp.ok;
+            } catch (workerErr) {
+                console.log("Aviso ao chamar worker:", workerErr);
+            }
+
             document.getElementById("notifTitulo").value = "";
             document.getElementById("notifMensagem").value = "";
-            mostrarFeedbackNotif("Notificação registrada na fila! Assim que o envio automático estiver ativo, ela sairá para os celulares.", true);
+
+            if (disparouWorker) {
+                mostrarFeedbackNotif("Notificação enviada para processamento e disparada para os celulares!", true);
+            } else {
+                mostrarFeedbackNotif("Notificação salva na fila! Confira as credenciais do Cloudflare Worker para o disparo automático.", true);
+            }
         } catch (err) {
             console.error("Erro ao registrar notificação:", err);
             mostrarFeedbackNotif("Erro ao registrar notificação: " + err.message, false);
